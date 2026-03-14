@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0D0D1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>汉字 HànZì — Учим китайский</title>
+<link rel="manifest" href="manifest.json">
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0D1A;
+  --bg2: #141428;
+  --bg3: #1C1C35;
+  --surface: #1E1E38;
+  --surface2: #252545;
+  --red: #FF3B5C;
+  --red2: #FF6B6B;
+  --gold: #FFB800;
+  --gold2: #FFD166;
+  --green: #06D6A0;
+  --green2: #36EFC0;
+  --blue: #4CC9F0;
+  --purple: #7B2FBE;
+  --text: #F0F0FF;
+  --text2: #A0A0C0;
+  --text3: #606080;
+  --border: rgba(255,255,255,0.07);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+  --font-cn: 'Noto Serif SC', serif;
+  --font-ui: 'Outfit', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:var(--font-ui); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+/* APP SHELL */
+#app { height:100vh; display:flex; flex-direction:column; overflow:hidden; position:relative; }
+
+/* SCREENS */
+.screen { display:none; flex:1; flex-direction:column; overflow:hidden; animation:fadeIn 0.3s ease; }
+.screen.active { display:flex; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* BOTTOM NAV */
+#nav { 
+  display:flex; background:var(--bg2); border-top:1px solid var(--border);
+  padding:8px 0 max(8px, env(safe-area-inset-bottom)); flex-shrink:0; z-index:10;
+}
+.nav-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:6px 4px; border:none; background:none; color:var(--text3); cursor:pointer;
+  font-family:var(--font-ui); font-size:10px; font-weight:600; letter-spacing:0.5px;
+  transition:all 0.2s; position:relative;
+}
+.nav-btn .nav-icon { font-size:22px; transition:transform 0.2s; }
+.nav-btn.active { color:var(--red); }
+.nav-btn.active .nav-icon { transform:translateY(-2px); }
+.nav-btn::after {
+  content:''; position:absolute; bottom:-8px; left:50%; transform:translateX(-50%);
+  width:0; height:3px; background:var(--red); border-radius:3px 3px 0 0; transition:width 0.2s;
+}
+.nav-btn.active::after { width:24px; }
+
+/* HEADER */
+.header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px 12px; flex-shrink:0;
+}
+.header-title { font-size:22px; font-weight:800; letter-spacing:-0.5px; }
+.header-title span { color:var(--red); }
+
+/* STATS BAR */
+.stats-bar {
+  display:flex; gap:8px; padding:0 20px 16px; flex-shrink:0;
+}
+.stat-chip {
+  display:flex; align-items:center; gap:6px; background:var(--surface);
+  border:1px solid var(--border); border-radius:20px; padding:6px 12px;
+  font-size:13px; font-weight:700;
+}
+.stat-chip .icon { font-size:16px; }
+
+/* SCROLLABLE CONTENT */
+.scroll-area { flex:1; overflow-y:auto; overflow-x:hidden; padding:0 20px 20px; }
+
+/* CARDS */
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px; margin-bottom:12px;
+  transition:all 0.2s;
+}
+.card:active { transform:scale(0.98); }
+
+/* STREAK CARD */
+.streak-card {
+  background: linear-gradient(135deg, #1a0a1e 0%, #2d1040 50%, #1a0a1e 100%);
+  border:1px solid rgba(255,184,0,0.3); border-radius:var(--radius-lg);
+  padding:24px; margin-bottom:16px; position:relative; overflow:hidden;
+}
+.streak-card::before {
+  content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px;
+  background:radial-gradient(circle, rgba(255,184,0,0.15) 0%, transparent 70%);
+}
+.streak-number { font-size:64px; font-weight:900; color:var(--gold); line-height:1; }
+.streak-label { font-size:14px; color:var(--text2); margin-top:4px; font-weight:500; }
+.streak-days { display:flex; gap:6px; margin-top:16px; }
+.streak-day {
+  width:32px; height:32px; border-radius:8px; border:2px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-size:11px;
+  font-weight:700; color:var(--text3); transition:all 0.3s;
+}
+.streak-day.done { background:var(--gold); border-color:var(--gold); color:#000; }
+.streak-day.today { border-color:var(--gold); color:var(--gold); }
+
+/* XP BAR */
+.xp-bar-wrap { margin-bottom:16px; }
+.xp-bar-header { display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px; }
+.xp-bar-label { font-weight:700; color:var(--text2); }
+.xp-bar-val { font-weight:800; color:var(--red); }
+.xp-bar { height:10px; background:var(--surface); border-radius:10px; overflow:hidden; }
+.xp-bar-fill { height:100%; background:linear-gradient(90deg,var(--red),var(--gold)); border-radius:10px; transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+
+/* LESSON CARDS */
+.lesson-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.lesson-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px 16px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
+}
+.lesson-card:active { transform:scale(0.96); }
+.lesson-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+}
+.lesson-card.hsk1::before { background:linear-gradient(90deg,#06D6A0,#4CC9F0); }
+.lesson-card.hsk2::before { background:linear-gradient(90deg,#FFB800,#FF6B6B); }
+.lesson-card.hsk3::before { background:linear-gradient(90deg,#7B2FBE,#FF3B5C); }
+.lesson-card.review::before { background:linear-gradient(90deg,#FF3B5C,#7B2FBE); }
+.lesson-card.locked { opacity:0.4; cursor:not-allowed; }
+.lesson-icon { font-size:32px; margin-bottom:8px; }
+.lesson-name { font-size:14px; font-weight:700; margin-bottom:4px; }
+.lesson-desc { font-size:11px; color:var(--text2); line-height:1.4; }
+.lesson-progress { margin-top:10px; height:4px; background:var(--bg); border-radius:4px; overflow:hidden; }
+.lesson-progress-fill { height:100%; border-radius:4px; transition:width 0.5s; }
+.lesson-card.hsk1 .lesson-progress-fill { background:var(--green); }
+.lesson-card.hsk2 .lesson-progress-fill { background:var(--gold); }
+.lesson-card.hsk3 .lesson-progress-fill { background:var(--red); }
+
+/* SECTION TITLE */
+.section-title { font-size:12px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:12px; margin-top:8px; }
+
+/* DAILY CHALLENGE */
+.challenge-card {
+  background:linear-gradient(135deg,#0D2137,#0D3720);
+  border:1px solid rgba(6,214,160,0.3); border-radius:var(--radius-lg);
+  padding:20px; display:flex; align-items:center; gap:16px; cursor:pointer;
+  margin-bottom:12px; transition:all 0.2s;
+}
+.challenge-card:active { transform:scale(0.98); }
+.challenge-icon { font-size:48px; }
+.challenge-text h3 { font-size:16px; font-weight:800; color:var(--green); }
+.challenge-text p { font-size:12px; color:var(--text2); margin-top:4px; }
+
+/* FLASHCARD SCREEN */
+#flashcard-screen { background:var(--bg); }
+.fc-header {
+  display:flex; align-items:center; padding:16px 20px; gap:12px; flex-shrink:0;
+}
+.back-btn {
+  width:40px; height:40px; border-radius:12px; background:var(--surface);
+  border:none; color:var(--text); cursor:pointer; font-size:18px;
+  display:flex; align-items:center; justify-content:center; transition:all 0.2s;
+}
+.back-btn:active { transform:scale(0.9); }
+.fc-progress { flex:1; height:8px; background:var(--surface); border-radius:8px; overflow:hidden; }
+.fc-progress-fill { height:100%; background:linear-gradient(90deg,var(--red),var(--gold)); border-radius:8px; transition:width 0.4s; }
+.fc-counter { font-size:13px; font-weight:700; color:var(--text2); white-space:nowrap; }
+
+.fc-area { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+
+.flashcard {
+  width:100%; max-width:360px; aspect-ratio:3/2.2;
+  perspective:1000px; cursor:pointer; margin-bottom:24px;
+}
+.fc-inner {
+  width:100%; height:100%; position:relative;
+  transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.34,1.2,0.64,1);
+}
+.flashcard.flipped .fc-inner { transform:rotateY(180deg); }
+.fc-face {
+  position:absolute; inset:0; backface-visibility:hidden;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-lg); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; padding:24px; gap:8px;
+}
+.fc-back { transform:rotateY(180deg); background:var(--surface2); }
+.fc-char {
+  font-family:var(--font-cn); font-size:80px; font-weight:900; line-height:1;
+  background:linear-gradient(135deg,#fff,var(--text2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.fc-pinyin { font-size:22px; font-weight:600; color:var(--gold); letter-spacing:2px; }
+.fc-tone-badge { display:flex; gap:6px; }
+.tone-dot { width:8px; height:8px; border-radius:50%; }
+.fc-meaning { font-size:28px; font-weight:700; color:var(--text); text-align:center; }
+.fc-meaning-en { font-size:14px; color:var(--text2); }
+.fc-hint { font-size:12px; color:var(--text3); font-weight:500; }
+.fc-hsk-badge {
+  position:absolute; top:14px; right:14px;
+  background:var(--red); color:#fff; font-size:10px; font-weight:800;
+  padding:3px 8px; border-radius:6px; letter-spacing:0.5px;
+}
+
+.fc-actions { display:flex; gap:12px; width:100%; max-width:360px; }
+.fc-btn {
+  flex:1; padding:14px; border-radius:var(--radius); border:none; cursor:pointer;
+  font-family:var(--font-ui); font-size:14px; font-weight:700; transition:all 0.2s;
+}
+.fc-btn:active { transform:scale(0.95); }
+.fc-btn.wrong { background:rgba(255,59,92,0.15); color:var(--red); border:2px solid rgba(255,59,92,0.3); }
+.fc-btn.correct { background:rgba(6,214,160,0.15); color:var(--green); border:2px solid rgba(6,214,160,0.3); }
+.fc-btn.wrong:active { background:rgba(255,59,92,0.3); }
+.fc-btn.correct:active { background:rgba(6,214,160,0.3); }
+
+/* QUIZ SCREEN */
+#quiz-screen { background:var(--bg); }
+.quiz-question-area {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:20px; gap:16px;
+}
+.quiz-char-display {
+  font-family:var(--font-cn); font-size:96px; font-weight:900; line-height:1;
+  text-align:center; background:linear-gradient(135deg,#fff 0%,var(--text2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.quiz-prompt { font-size:13px; color:var(--text2); font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+.quiz-pinyin { font-size:20px; color:var(--gold); font-weight:600; letter-spacing:2px; min-height:28px; }
+.quiz-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:380px; }
+.quiz-opt {
+  background:var(--surface); border:2px solid var(--border);
+  border-radius:var(--radius); padding:14px 12px; cursor:pointer;
+  font-family:var(--font-ui); font-size:14px; font-weight:600; color:var(--text);
+  transition:all 0.2s; text-align:center; min-height:60px;
+  display:flex; align-items:center; justify-content:center; line-height:1.3;
+}
+.quiz-opt:active { transform:scale(0.97); }
+.quiz-opt.correct { background:rgba(6,214,160,0.2); border-color:var(--green); color:var(--green); }
+.quiz-opt.wrong { background:rgba(255,59,92,0.2); border-color:var(--red); color:var(--red); animation:shake 0.4s; }
+.quiz-opt.revealed { background:rgba(6,214,160,0.1); border-color:rgba(6,214,160,0.5); }
+.quiz-opt.disabled { cursor:not-allowed; opacity:0.6; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)} 40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)} 80%{transform:translateX(4px)}
+}
+
+/* RESULT BANNER */
+.result-banner {
+  position:fixed; bottom:80px; left:20px; right:20px; max-width:400px; margin:0 auto;
+  border-radius:var(--radius); padding:14px 16px; display:flex; align-items:center; gap:10px;
+  font-weight:700; font-size:14px; animation:slideUp 0.3s ease; z-index:100;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);
+}
+.result-banner.correct { background:linear-gradient(135deg,rgba(6,214,160,0.95),rgba(54,239,192,0.95)); color:#003322; }
+.result-banner.wrong { background:linear-gradient(135deg,rgba(255,59,92,0.95),rgba(255,107,107,0.95)); color:#fff; }
+@keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+/* VOCABULARY SCREEN */
+#vocab-screen {}
+.vocab-search {
+  margin:0 20px 12px; position:relative;
+}
+.vocab-search input {
+  width:100%; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:12px 16px 12px 44px; color:var(--text);
+  font-family:var(--font-ui); font-size:14px; outline:none; transition:all 0.2s;
+}
+.vocab-search input:focus { border-color:rgba(255,59,92,0.5); }
+.vocab-search input::placeholder { color:var(--text3); }
+.vocab-search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:18px; color:var(--text3); }
+.vocab-filters { display:flex; gap:8px; padding:0 20px 12px; overflow-x:auto; flex-shrink:0; }
+.vocab-filters::-webkit-scrollbar { display:none; }
+.filter-btn {
+  padding:6px 14px; border-radius:20px; border:1px solid var(--border);
+  background:var(--surface); color:var(--text2); font-family:var(--font-ui);
+  font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; transition:all 0.2s;
+}
+.filter-btn.active { background:var(--red); border-color:var(--red); color:#fff; }
+.vocab-list { flex:1; overflow-y:auto; padding:0 20px; }
+.vocab-item {
+  display:flex; align-items:center; gap:12px; padding:14px 0;
+  border-bottom:1px solid var(--border); cursor:pointer; transition:all 0.2s;
+}
+.vocab-item:active { background:rgba(255,255,255,0.02); border-radius:8px; }
+.vocab-char {
+  font-family:var(--font-cn); font-size:32px; font-weight:700;
+  width:52px; text-align:center; flex-shrink:0; line-height:1;
+}
+.vocab-info { flex:1; }
+.vocab-pinyin { font-size:13px; color:var(--gold); font-weight:600; letter-spacing:1px; }
+.vocab-meaning { font-size:15px; font-weight:600; margin-top:2px; }
+.vocab-meta { display:flex; align-items:center; gap:6px; margin-top:4px; }
+.hsk-tag {
+  font-size:10px; font-weight:800; padding:2px 7px; border-radius:5px; letter-spacing:0.5px;
+}
+.hsk1 { background:rgba(6,214,160,0.2); color:var(--green); }
+.hsk2 { background:rgba(255,184,0,0.2); color:var(--gold); }
+.hsk3 { background:rgba(255,59,92,0.2); color:var(--red); }
+.mastery-stars { font-size:12px; color:var(--gold); }
+.vocab-item .learned-check { color:var(--green); font-size:18px; flex-shrink:0; }
+
+/* STATS SCREEN */
+#stats-screen {}
+.stats-hero {
+  background:linear-gradient(135deg,#1A0A2E,#2D1040,#0D2137);
+  margin:0 20px 16px; border-radius:var(--radius-lg); padding:24px;
+  border:1px solid rgba(124,47,190,0.3); position:relative; overflow:hidden;
+}
+.stats-hero::before {
+  content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px;
+  background:radial-gradient(circle,rgba(124,47,190,0.2) 0%,transparent 70%);
+}
+.stats-level { font-size:48px; font-weight:900; color:var(--gold); }
+.stats-level-label { font-size:14px; color:var(--text2); font-weight:500; }
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px; }
+.stats-item { background:rgba(255,255,255,0.06); border-radius:var(--radius-sm); padding:12px; text-align:center; }
+.stats-item-val { font-size:22px; font-weight:800; }
+.stats-item-lbl { font-size:10px; color:var(--text2); font-weight:600; margin-top:2px; text-transform:uppercase; letter-spacing:0.5px; }
+.stats-chart { margin:0 20px 16px; }
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:80px; }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.bar { width:100%; border-radius:4px 4px 0 0; background:var(--red); min-height:4px; transition:height 0.8s cubic-bezier(0.34,1.2,0.64,1); }
+.bar-day { font-size:10px; color:var(--text3); font-weight:600; }
+.achievements { padding:0 20px; }
+.achievement-item {
+  display:flex; align-items:center; gap:14px; padding:14px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  margin-bottom:10px;
+}
+.ach-icon { font-size:36px; width:52px; text-align:center; }
+.ach-name { font-size:14px; font-weight:700; }
+.ach-desc { font-size:12px; color:var(--text2); margin-top:2px; }
+.ach-locked { filter:grayscale(1); opacity:0.4; }
+
+/* TONE COLORS */
+.t1 { color:#4CC9F0; }
+.t2 { color:#06D6A0; }
+.t3 { color:#FFB800; }
+.t4 { color:#FF3B5C; }
+.t5 { color:#A0A0C0; }
+
+/* CONFETTI */
+.confetti-container { position:fixed; inset:0; pointer-events:none; z-index:999; overflow:hidden; }
+.confetti-piece {
+  position:absolute; width:8px; height:8px; border-radius:2px;
+  animation:confettiFall 2s ease-in forwards;
+}
+@keyframes confettiFall {
+  0% { transform:translateY(-20px) rotate(0deg); opacity:1; }
+  100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+}
+
+/* MODAL */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7);
+  z-index:500; align-items:flex-end; justify-content:center;
+  backdrop-filter:blur(4px); padding:20px;
+}
+.modal-overlay.open { display:flex; animation:fadeIn 0.2s ease; }
+.modal {
+  background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:28px; width:100%; max-width:420px; animation:slideUp 0.3s ease;
+  max-height:80vh; overflow-y:auto;
+}
+.modal h2 { font-size:22px; font-weight:800; margin-bottom:16px; }
+.modal .char-big { font-family:var(--font-cn); font-size:80px; text-align:center; display:block; margin:8px 0; }
+.modal-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border); font-size:14px; }
+.modal-row:last-child { border:none; }
+.modal-row-label { color:var(--text2); font-weight:500; }
+.modal-row-val { font-weight:700; }
+.modal-close { width:100%; margin-top:20px; padding:14px; background:var(--red); color:#fff; border:none; border-radius:var(--radius); font-family:var(--font-ui); font-size:15px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+.modal-close:active { transform:scale(0.97); }
+
+/* SESSION COMPLETE */
+.session-complete {
+  position:fixed; inset:0; background:var(--bg); z-index:600;
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 20px; text-align:center; animation:fadeIn 0.4s ease;
+}
+.session-complete.open { display:flex; }
+.complete-emoji { font-size:80px; animation:bounce 0.6s ease; }
+@keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+.complete-title { font-size:32px; font-weight:900; margin-top:16px; }
+.complete-sub { color:var(--text2); font-size:16px; margin-top:8px; }
+.complete-stats { display:flex; gap:16px; margin-top:28px; }
+.complete-stat { text-align:center; }
+.complete-stat-val { font-size:36px; font-weight:900; }
+.complete-stat-lbl { font-size:12px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }
+.complete-btn { margin-top:32px; padding:16px 40px; background:var(--red); color:#fff; border:none; border-radius:var(--radius-lg); font-family:var(--font-ui); font-size:16px; font-weight:800; cursor:pointer; transition:all 0.2s; }
+.complete-btn:active { transform:scale(0.97); }
+
+/* LOADING */
+.loading-overlay {
+  position:fixed; inset:0; background:var(--bg); z-index:1000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+}
+.loading-char { font-family:var(--font-cn); font-size:80px; animation:spin 2s linear infinite; }
+@keyframes spin { 0%,100%{transform:rotateY(0)} 50%{transform:rotateY(180deg)} }
+.loading-text { font-size:14px; color:var(--text2); font-weight:500; }
+
+/* RESPONSIVE */
+@media(min-width:600px) {
+  #app { max-width:480px; margin:0 auto; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loading">
+    <div class="loading-char">汉</div>
+    <div class="loading-text">Загрузка словарей...</div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen" id="home-screen">
+    <div class="header">
+      <div class="header-title"><span>汉</span>字 HànZì</div>
+      <div style="display:flex;gap:8px;">
+        <div class="stat-chip"><span class="icon">🔥</span><span id="h-streak">0</span></div>
+        <div class="stat-chip"><span class="icon">⚡</span><span id="h-xp">0</span></div>
+      </div>
+    </div>
+    <div class="scroll-area">
+      <div class="streak-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div class="streak-number" id="streak-big">0</div>
+            <div class="streak-label">дней подряд 🔥</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:13px;color:var(--text2);">Уровень</div>
+            <div style="font-size:28px;font-weight:900;color:var(--gold);" id="level-display">1</div>
+          </div>
+        </div>
+        <div class="streak-days" id="streak-days"></div>
+      </div>
+
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-header">
+          <span class="xp-bar-label">⚡ Опыт</span>
+          <span class="xp-bar-val" id="xp-text">0 / 200 XP</span>
+        </div>
+        <div class="xp-bar"><div class="xp-bar-fill" id="xp-fill" style="width:0%"></div></div>
+      </div>
+
+      <div class="challenge-card" onclick="startDailyChallenge()">
+        <div class="challenge-icon">🎯</div>
+        <div class="challenge-text">
+          <h3>Дневной вызов</h3>
+          <p id="challenge-status">Пройди 10 карточек сегодня!</p>
+        </div>
+      </div>
+
+      <div class="section-title">Уроки</div>
+      <div class="lesson-grid">
+        <div class="lesson-card hsk1" onclick="startLesson('flashcard','hsk1')">
+          <div class="lesson-icon">🌱</div>
+          <div class="lesson-name">HSK 1</div>
+          <div class="lesson-desc">150 базовых слов</div>
+          <div class="lesson-progress"><div class="lesson-progress-fill" id="prog-hsk1" style="width:0%"></div></div>
+        </div>
+        <div class="lesson-card hsk2" onclick="startLesson('flashcard','hsk2')">
+          <div class="lesson-icon">📚</div>
+          <div class="lesson-name">HSK 2</div>
+          <div class="lesson-desc">150 слов уровень 2</div>
+          <div class="lesson-progress"><div class="lesson-progress-fill" id="prog-hsk2" style="width:0%"></div></div>
+        </div>
+        <div class="lesson-card hsk3" onclick="startLesson('flashcard','hsk3')">
+          <div class="lesson-icon">🏆</div>
+          <div class="lesson-name">HSK 3</div>
+          <div class="lesson-desc">300 слов уровень 3</div>
+          <div class="lesson-progress"><div class="lesson-progress-fill" id="prog-hsk3" style="width:0%"></div></div>
+        </div>
+        <div class="lesson-card review" onclick="startLesson('review','all')">
+          <div class="lesson-icon">🔄</div>
+          <div class="lesson-name">Повторение</div>
+          <div class="lesson-desc">Слова на SRS</div>
+          <div class="lesson-progress"><div class="lesson-progress-fill" style="width:0%;background:var(--red);" id="prog-review"></div></div>
+        </div>
+      </div>
+
+      <div class="section-title">Режимы тренировок</div>
+      <div class="card" onclick="startLesson('quiz','hsk1')" style="cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="font-size:36px;">🧠</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;">Тест — выбор ответа</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:3px;">Угадай перевод иероглифа</div>
+          </div>
+          <div style="margin-left:auto;color:var(--text3);font-size:20px;">›</div>
+        </div>
+      </div>
+      <div class="card" onclick="startLesson('tones','all')" style="cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="font-size:36px;">🎵</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;">Тоны пиньинь</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:3px;">Определи правильный тон</div>
+          </div>
+          <div style="margin-left:auto;color:var(--text3);font-size:20px;">›</div>
+        </div>
+      </div>
+      <div class="card" onclick="startLesson('pinyin','all')" style="cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="font-size:36px;">📝</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;">Пиньинь → Значение</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:3px;">Переведи по произношению</div>
+          </div>
+          <div style="margin-left:auto;color:var(--text3);font-size:20px;">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLASHCARD SCREEN -->
+  <div class="screen" id="flashcard-screen">
+    <div class="fc-header">
+      <button class="back-btn" onclick="goBack()">✕</button>
+      <div class="fc-progress"><div class="fc-progress-fill" id="fc-prog-fill"></div></div>
+      <div class="fc-counter" id="fc-counter">0/0</div>
+    </div>
+    <div class="fc-area" id="fc-area">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="fc-inner">
+          <div class="fc-face fc-front">
+            <div class="fc-hsk-badge" id="fc-hsk-badge">HSK1</div>
+            <div class="fc-char" id="fc-char">你好</div>
+            <div class="fc-pinyin" id="fc-pinyin">nǐ hǎo</div>
+            <div class="fc-hint" id="fc-hint">👆 Нажми, чтобы увидеть перевод</div>
+          </div>
+          <div class="fc-face fc-back">
+            <div class="fc-meaning" id="fc-meaning">Привет</div>
+            <div class="fc-meaning-en" id="fc-meaning-en"></div>
+            <div class="fc-pinyin" id="fc-pinyin-back" style="font-size:16px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="fc-actions" id="fc-actions" style="display:none;">
+        <button class="fc-btn wrong" onclick="markCard(false)">✗ Не знаю</button>
+        <button class="fc-btn correct" onclick="markCard(true)">✓ Знаю!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div class="screen" id="quiz-screen">
+    <div class="fc-header">
+      <button class="back-btn" onclick="goBack()">✕</button>
+      <div class="fc-progress"><div class="fc-progress-fill" id="q-prog-fill"></div></div>
+      <div class="fc-counter" id="q-counter">0/0</div>
+    </div>
+    <div class="quiz-question-area">
+      <div class="quiz-prompt" id="quiz-prompt">Что значит?</div>
+      <div class="quiz-char-display" id="quiz-char">汉字</div>
+      <div class="quiz-pinyin" id="quiz-pinyin"></div>
+      <div class="quiz-options" id="quiz-options"></div>
+    </div>
+  </div>
+
+  <!-- VOCABULARY SCREEN -->
+  <div class="screen" id="vocab-screen">
+    <div class="header">
+      <div class="header-title">Словарь</div>
+      <div class="stat-chip"><span id="vocab-count">0</span> слов</div>
+    </div>
+    <div class="vocab-search">
+      <span class="vocab-search-icon">🔍</span>
+      <input type="text" id="vocab-search-input" placeholder="Поиск по иероглифу или слову..." oninput="filterVocab()">
+    </div>
+    <div class="vocab-filters" id="vocab-filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">Все</button>
+      <button class="filter-btn" onclick="setFilter('hsk1',this)">HSK 1</button>
+      <button class="filter-btn" onclick="setFilter('hsk2',this)">HSK 2</button>
+      <button class="filter-btn" onclick="setFilter('hsk3',this)">HSK 3</button>
+      <button class="filter-btn" onclick="setFilter('learned',this)">Изучены</button>
+      <button class="filter-btn" onclick="setFilter('new',this)">Новые</button>
+    </div>
+    <div class="vocab-list" id="vocab-list"></div>
+  </div>
+
+  <!-- STATS SCREEN -->
+  <div class="screen" id="stats-screen">
+    <div class="header">
+      <div class="header-title">Прогресс</div>
+    </div>
+    <div class="scroll-area">
+      <div class="stats-hero">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div class="stats-level" id="stat-level">1</div>
+            <div class="stats-level-label">Уровень — <span id="stat-level-name">Новичок</span></div>
+          </div>
+          <div style="font-size:48px;" id="stat-level-icon">🐣</div>
+        </div>
+        <div class="stats-grid">
+          <div class="stats-item">
+            <div class="stats-item-val" style="color:var(--red);" id="s-streak">0</div>
+            <div class="stats-item-lbl">Серия 🔥</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-val" style="color:var(--gold);" id="s-xp">0</div>
+            <div class="stats-item-lbl">Всего XP</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-val" style="color:var(--green);" id="s-learned">0</div>
+            <div class="stats-item-lbl">Изучено</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-val" id="s-cards">0</div>
+            <div class="stats-item-lbl">Карточки</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-val" id="s-accuracy">0%</div>
+            <div class="stats-item-lbl">Точность</div>
+          </div>
+          <div class="stats-item">
+            <div class="stats-item-val" id="s-sessions">0</div>
+            <div class="stats-item-lbl">Сессии</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title" style="padding:0 20px;">Активность за неделю</div>
+      <div class="card stats-chart" style="margin:0 20px 16px;">
+        <div class="bar-chart" id="week-chart"></div>
+      </div>
+
+      <div class="section-title" style="padding:0 20px;">HSK Прогресс</div>
+      <div style="padding:0 20px 16px;">
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+            <span style="font-weight:700;color:var(--green);">HSK 1</span>
+            <span style="color:var(--text2);" id="prog-hsk1-text">0/150</span>
+          </div>
+          <div class="xp-bar"><div class="xp-bar-fill" id="s-prog-hsk1" style="width:0%;background:var(--green)"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+            <span style="font-weight:700;color:var(--gold);">HSK 2</span>
+            <span style="color:var(--text2);" id="prog-hsk2-text">0/150</span>
+          </div>
+          <div class="xp-bar"><div class="xp-bar-fill" id="s-prog-hsk2" style="width:0%;background:var(--gold)"></div></div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+            <span style="font-weight:700;color:var(--red);">HSK 3</span>
+            <span style="color:var(--text2);" id="prog-hsk3-text">0/50</span>
+          </div>
+          <div class="xp-bar"><div class="xp-bar-fill" id="s-prog-hsk3" style="width:0%;background:var(--red)"></div></div>
+        </div>
+      </div>
+
+      <div class="section-title" style="padding:0 20px;">Достижения</div>
+      <div class="achievements" id="achievements-list"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav id="nav">
+    <button class="nav-btn active" onclick="showScreen('home-screen',this)">
+      <span class="nav-icon">🏠</span>Главная
+    </button>
+    <button class="nav-btn" onclick="showScreen('flashcard-screen',this);startLesson('flashcard','hsk1')">
+      <span class="nav-icon">📖</span>Карточки
+    </button>
+    <button class="nav-btn" onclick="showScreen('vocab-screen',this);renderVocab()">
+      <span class="nav-icon">📚</span>Словарь
+    </button>
+    <button class="nav-btn" onclick="showScreen('stats-screen',this);renderStats()">
+      <span class="nav-icon">📊</span>Прогресс
+    </button>
+  </nav>
+
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="word-modal" onclick="closeWordModal(event)">
+  <div class="modal">
+    <span class="char-big" id="modal-char"></span>
+    <div class="modal-row"><span class="modal-row-label">Пиньинь</span><span class="modal-row-val" id="modal-pinyin"></span></div>
+    <div class="modal-row"><span class="modal-row-label">Перевод (рус.)</span><span class="modal-row-val" id="modal-meaning"></span></div>
+    <div class="modal-row"><span class="modal-row-label">Значение</span><span class="modal-row-val" id="modal-en"></span></div>
+    <div class="modal-row"><span class="modal-row-label">Уровень HSK</span><span class="modal-row-val" id="modal-hsk"></span></div>
+    <div class="modal-row"><span class="modal-row-label">Тоны</span><span class="modal-row-val" id="modal-tones"></span></div>
+    <div class="modal-row"><span class="modal-row-label">Освоение</span><span class="modal-row-val" id="modal-mastery"></span></div>
+    <button class="modal-close" onclick="closeWordModal()">Закрыть</button>
+  </div>
+</div>
+
+<!-- SESSION COMPLETE -->
+<div class="session-complete" id="session-complete">
+  <div class="complete-emoji" id="complete-emoji">🎉</div>
+  <div class="complete-title" id="complete-title">Отлично!</div>
+  <div class="complete-sub" id="complete-sub">Сессия завершена</div>
+  <div class="complete-stats">
+    <div class="complete-stat">
+      <div class="complete-stat-val" style="color:var(--green);" id="c-correct">0</div>
+      <div class="complete-stat-lbl">Верно</div>
+    </div>
+    <div class="complete-stat">
+      <div class="complete-stat-val" style="color:var(--red);" id="c-wrong">0</div>
+      <div class="complete-stat-lbl">Ошибки</div>
+    </div>
+    <div class="complete-stat">
+      <div class="complete-stat-val" style="color:var(--gold);" id="c-xp">+0</div>
+      <div class="complete-stat-lbl">XP</div>
+    </div>
+  </div>
+  <button class="complete-btn" onclick="finishSession()">Продолжить →</button>
+</div>
+
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+// ============================================================
+// VOCABULARY DATABASE — HSK 1, 2, 3
+// ============================================================
+const VOCAB = [
+  // HSK 1 — Numbers & Time
+  {id:1,char:'一',pinyin:'yī',tones:[1],meaning:'один',en:'one',hsk:1,cat:'numbers'},
+  {id:2,char:'二',pinyin:'èr',tones:[4],meaning:'два',en:'two',hsk:1,cat:'numbers'},
+  {id:3,char:'三',pinyin:'sān',tones:[1],meaning:'три',en:'three',hsk:1,cat:'numbers'},
+  {id:4,char:'四',pinyin:'sì',tones:[4],meaning:'четыре',en:'four',hsk:1,cat:'numbers'},
+  {id:5,char:'五',pinyin:'wǔ',tones:[3],meaning:'пять',en:'five',hsk:1,cat:'numbers'},
+  {id:6,char:'六',pinyin:'liù',tones:[4],meaning:'шесть',en:'six',hsk:1,cat:'numbers'},
+  {id:7,char:'七',pinyin:'qī',tones:[1],meaning:'семь',en:'seven',hsk:1,cat:'numbers'},
+  {id:8,char:'八',pinyin:'bā',tones:[1],meaning:'восемь',en:'eight',hsk:1,cat:'numbers'},
+  {id:9,char:'九',pinyin:'jiǔ',tones:[3],meaning:'девять',en:'nine',hsk:1,cat:'numbers'},
+  {id:10,char:'十',pinyin:'shí',tones:[2],meaning:'десять',en:'ten',hsk:1,cat:'numbers'},
+  {id:11,char:'零',pinyin:'líng',tones:[2],meaning:'ноль',en:'zero',hsk:1,cat:'numbers'},
+  {id:12,char:'百',pinyin:'bǎi',tones:[3],meaning:'сто',en:'hundred',hsk:1,cat:'numbers'},
+  // Greetings & basics
+  {id:13,char:'你好',pinyin:'nǐ hǎo',tones:[3,3],meaning:'Привет',en:'Hello',hsk:1,cat:'greetings'},
+  {id:14,char:'谢谢',pinyin:'xiè xiè',tones:[4,4],meaning:'Спасибо',en:'Thank you',hsk:1,cat:'greetings'},
+  {id:15,char:'再见',pinyin:'zài jiàn',tones:[4,4],meaning:'До свидания',en:'Goodbye',hsk:1,cat:'greetings'},
+  {id:16,char:'对不起',pinyin:'duì bù qǐ',tones:[4,4,3],meaning:'Извините',en:'Sorry',hsk:1,cat:'greetings'},
+  {id:17,char:'不客气',pinyin:'bù kè qì',tones:[4,4,4],meaning:'Пожалуйста',en:"You're welcome",hsk:1,cat:'greetings'},
+  {id:18,char:'请',pinyin:'qǐng',tones:[3],meaning:'пожалуйста',en:'please/invite',hsk:1,cat:'greetings'},
+  {id:19,char:'是',pinyin:'shì',tones:[4],meaning:'да/быть',en:'yes/to be',hsk:1,cat:'basic'},
+  {id:20,char:'不',pinyin:'bù',tones:[4],meaning:'нет/не',en:'no/not',hsk:1,cat:'basic'},
+  {id:21,char:'有',pinyin:'yǒu',tones:[3],meaning:'иметь/есть',en:'to have',hsk:1,cat:'basic'},
+  {id:22,char:'没有',pinyin:'méi yǒu',tones:[2,3],meaning:'нет/не имею',en:'do not have',hsk:1,cat:'basic'},
+  {id:23,char:'的',pinyin:'de',tones:[5],meaning:'(частица)',en:'possessive particle',hsk:1,cat:'grammar'},
+  {id:24,char:'了',pinyin:'le',tones:[5],meaning:'(частица)',en:'completed action',hsk:1,cat:'grammar'},
+  {id:25,char:'吗',pinyin:'ma',tones:[5],meaning:'(вопрос)',en:'question particle',hsk:1,cat:'grammar'},
+  // People
+  {id:26,char:'我',pinyin:'wǒ',tones:[3],meaning:'я',en:'I/me',hsk:1,cat:'pronouns'},
+  {id:27,char:'你',pinyin:'nǐ',tones:[3],meaning:'ты',en:'you',hsk:1,cat:'pronouns'},
+  {id:28,char:'他',pinyin:'tā',tones:[1],meaning:'он',en:'he/him',hsk:1,cat:'pronouns'},
+  {id:29,char:'她',pinyin:'tā',tones:[1],meaning:'она',en:'she/her',hsk:1,cat:'pronouns'},
+  {id:30,char:'我们',pinyin:'wǒ men',tones:[3,5],meaning:'мы',en:'we/us',hsk:1,cat:'pronouns'},
+  {id:31,char:'你们',pinyin:'nǐ men',tones:[3,5],meaning:'вы',en:'you (plural)',hsk:1,cat:'pronouns'},
+  {id:32,char:'他们',pinyin:'tā men',tones:[1,5],meaning:'они',en:'they/them',hsk:1,cat:'pronouns'},
+  {id:33,char:'人',pinyin:'rén',tones:[2],meaning:'человек',en:'person',hsk:1,cat:'people'},
+  {id:34,char:'朋友',pinyin:'péng yǒu',tones:[2,3],meaning:'друг',en:'friend',hsk:1,cat:'people'},
+  {id:35,char:'老师',pinyin:'lǎo shī',tones:[3,1],meaning:'учитель',en:'teacher',hsk:1,cat:'people'},
+  {id:36,char:'学生',pinyin:'xué shēng',tones:[2,1],meaning:'студент',en:'student',hsk:1,cat:'people'},
+  {id:37,char:'爸爸',pinyin:'bà ba',tones:[4,5],meaning:'папа',en:'father',hsk:1,cat:'family'},
+  {id:38,char:'妈妈',pinyin:'mā ma',tones:[1,5],meaning:'мама',en:'mother',hsk:1,cat:'family'},
+  {id:39,char:'哥哥',pinyin:'gē ge',tones:[1,5],meaning:'старший брат',en:'older brother',hsk:1,cat:'family'},
+  {id:40,char:'姐姐',pinyin:'jiě jie',tones:[3,5],meaning:'старшая сестра',en:'older sister',hsk:1,cat:'family'},
+  // Time
+  {id:41,char:'今天',pinyin:'jīn tiān',tones:[1,1],meaning:'сегодня',en:'today',hsk:1,cat:'time'},
+  {id:42,char:'明天',pinyin:'míng tiān',tones:[2,1],meaning:'завтра',en:'tomorrow',hsk:1,cat:'time'},
+  {id:43,char:'昨天',pinyin:'zuó tiān',tones:[2,1],meaning:'вчера',en:'yesterday',hsk:1,cat:'time'},
+  {id:44,char:'现在',pinyin:'xiàn zài',tones:[4,4],meaning:'сейчас',en:'now',hsk:1,cat:'time'},
+  {id:45,char:'年',pinyin:'nián',tones:[2],meaning:'год',en:'year',hsk:1,cat:'time'},
+  {id:46,char:'月',pinyin:'yuè',tones:[4],meaning:'месяц/луна',en:'month/moon',hsk:1,cat:'time'},
+  {id:47,char:'日',pinyin:'rì',tones:[4],meaning:'день/солнце',en:'day/sun',hsk:1,cat:'time'},
+  {id:48,char:'星期',pinyin:'xīng qī',tones:[1,1],meaning:'неделя',en:'week',hsk:1,cat:'time'},
+  {id:49,char:'上午',pinyin:'shàng wǔ',tones:[4,3],meaning:'утро',en:'morning (AM)',hsk:1,cat:'time'},
+  {id:50,char:'下午',pinyin:'xià wǔ',tones:[4,3],meaning:'после полудня',en:'afternoon (PM)',hsk:1,cat:'time'},
+  // Verbs
+  {id:51,char:'是',pinyin:'shì',tones:[4],meaning:'быть',en:'to be',hsk:1,cat:'verbs'},
+  {id:52,char:'吃',pinyin:'chī',tones:[1],meaning:'есть/кушать',en:'to eat',hsk:1,cat:'verbs'},
+  {id:53,char:'喝',pinyin:'hē',tones:[1],meaning:'пить',en:'to drink',hsk:1,cat:'verbs'},
+  {id:54,char:'去',pinyin:'qù',tones:[4],meaning:'идти/ехать',en:'to go',hsk:1,cat:'verbs'},
+  {id:55,char:'来',pinyin:'lái',tones:[2],meaning:'приходить',en:'to come',hsk:1,cat:'verbs'},
+  {id:56,char:'看',pinyin:'kàn',tones:[4],meaning:'смотреть/читать',en:'to look/read',hsk:1,cat:'verbs'},
+  {id:57,char:'听',pinyin:'tīng',tones:[1],meaning:'слушать',en:'to listen',hsk:1,cat:'verbs'},
+  {id:58,char:'说',pinyin:'shuō',tones:[1],meaning:'говорить',en:'to speak',hsk:1,cat:'verbs'},
+  {id:59,char:'写',pinyin:'xiě',tones:[3],meaning:'писать',en:'to write',hsk:1,cat:'verbs'},
+  {id:60,char:'读',pinyin:'dú',tones:[2],meaning:'читать',en:'to read aloud',hsk:1,cat:'verbs'},
+  {id:61,char:'买',pinyin:'mǎi',tones:[3],meaning:'покупать',en:'to buy',hsk:1,cat:'verbs'},
+  {id:62,char:'叫',pinyin:'jiào',tones:[4],meaning:'называться/звать',en:'to be called',hsk:1,cat:'verbs'},
+  {id:63,char:'住',pinyin:'zhù',tones:[4],meaning:'жить/проживать',en:'to live',hsk:1,cat:'verbs'},
+  {id:64,char:'学习',pinyin:'xué xí',tones:[2,2],meaning:'учиться',en:'to study',hsk:1,cat:'verbs'},
+  {id:65,char:'工作',pinyin:'gōng zuò',tones:[1,4],meaning:'работать',en:'to work',hsk:1,cat:'verbs'},
+  // Places & objects
+  {id:66,char:'中国',pinyin:'zhōng guó',tones:[1,2],meaning:'Китай',en:'China',hsk:1,cat:'places'},
+  {id:67,char:'北京',pinyin:'běi jīng',tones:[3,1],meaning:'Пекин',en:'Beijing',hsk:1,cat:'places'},
+  {id:68,char:'学校',pinyin:'xué xiào',tones:[2,4],meaning:'школа',en:'school',hsk:1,cat:'places'},
+  {id:69,char:'家',pinyin:'jiā',tones:[1],meaning:'дом/семья',en:'home/family',hsk:1,cat:'places'},
+  {id:70,char:'饭店',pinyin:'fàn diàn',tones:[4,4],meaning:'ресторан/отель',en:'restaurant/hotel',hsk:1,cat:'places'},
+  {id:71,char:'书',pinyin:'shū',tones:[1],meaning:'книга',en:'book',hsk:1,cat:'objects'},
+  {id:72,char:'水',pinyin:'shuǐ',tones:[3],meaning:'вода',en:'water',hsk:1,cat:'objects'},
+  {id:73,char:'饭',pinyin:'fàn',tones:[4],meaning:'еда/рис',en:'rice/meal',hsk:1,cat:'food'},
+  {id:74,char:'茶',pinyin:'chá',tones:[2],meaning:'чай',en:'tea',hsk:1,cat:'food'},
+  {id:75,char:'苹果',pinyin:'píng guǒ',tones:[2,3],meaning:'яблоко',en:'apple',hsk:1,cat:'food'},
+  // Adjectives
+  {id:76,char:'大',pinyin:'dà',tones:[4],meaning:'большой',en:'big/large',hsk:1,cat:'adjectives'},
+  {id:77,char:'小',pinyin:'xiǎo',tones:[3],meaning:'маленький',en:'small/little',hsk:1,cat:'adjectives'},
+  {id:78,char:'多',pinyin:'duō',tones:[1],meaning:'много',en:'many/much',hsk:1,cat:'adjectives'},
+  {id:79,char:'少',pinyin:'shǎo',tones:[3],meaning:'мало',en:'few/little',hsk:1,cat:'adjectives'},
+  {id:80,char:'好',pinyin:'hǎo',tones:[3],meaning:'хороший',en:'good/well',hsk:1,cat:'adjectives'},
+  {id:81,char:'热',pinyin:'rè',tones:[4],meaning:'горячий/жарко',en:'hot',hsk:1,cat:'adjectives'},
+  {id:82,char:'冷',pinyin:'lěng',tones:[3],meaning:'холодный',en:'cold',hsk:1,cat:'adjectives'},
+  {id:83,char:'漂亮',pinyin:'piào liang',tones:[4,5],meaning:'красивый',en:'beautiful/pretty',hsk:1,cat:'adjectives'},
+  {id:84,char:'高兴',pinyin:'gāo xìng',tones:[1,4],meaning:'рад/счастлив',en:'happy/glad',hsk:1,cat:'adjectives'},
+  // Questions
+  {id:85,char:'什么',pinyin:'shén me',tones:[2,5],meaning:'что/какой',en:'what',hsk:1,cat:'questions'},
+  {id:86,char:'哪',pinyin:'nǎ',tones:[3],meaning:'который/где',en:'which/where',hsk:1,cat:'questions'},
+  {id:87,char:'哪儿',pinyin:'nǎr',tones:[3],meaning:'где',en:'where',hsk:1,cat:'questions'},
+  {id:88,char:'谁',pinyin:'shéi',tones:[2],meaning:'кто',en:'who',hsk:1,cat:'questions'},
+  {id:89,char:'多少',pinyin:'duō shao',tones:[1,5],meaning:'сколько',en:'how many/much',hsk:1,cat:'questions'},
+  {id:90,char:'怎么',pinyin:'zěn me',tones:[3,5],meaning:'как',en:'how',hsk:1,cat:'questions'},
+
+  // HSK 2 — 91-180
+  {id:91,char:'但是',pinyin:'dàn shì',tones:[4,4],meaning:'но/однако',en:'but/however',hsk:2,cat:'conjunctions'},
+  {id:92,char:'因为',pinyin:'yīn wèi',tones:[1,4],meaning:'потому что',en:'because',hsk:2,cat:'conjunctions'},
+  {id:93,char:'所以',pinyin:'suǒ yǐ',tones:[3,3],meaning:'поэтому',en:'therefore',hsk:2,cat:'conjunctions'},
+  {id:94,char:'虽然',pinyin:'suī rán',tones:[1,2],meaning:'хотя',en:'although',hsk:2,cat:'conjunctions'},
+  {id:95,char:'如果',pinyin:'rú guǒ',tones:[2,3],meaning:'если',en:'if',hsk:2,cat:'conjunctions'},
+  {id:96,char:'还是',pinyin:'hái shì',tones:[2,4],meaning:'или/всё ещё',en:'or/still',hsk:2,cat:'conjunctions'},
+  {id:97,char:'或者',pinyin:'huò zhě',tones:[4,3],meaning:'или',en:'or',hsk:2,cat:'conjunctions'},
+  {id:98,char:'一起',pinyin:'yī qǐ',tones:[1,3],meaning:'вместе',en:'together',hsk:2,cat:'adverbs'},
+  {id:99,char:'已经',pinyin:'yǐ jīng',tones:[3,1],meaning:'уже',en:'already',hsk:2,cat:'adverbs'},
+  {id:100,char:'还',pinyin:'hái',tones:[2],meaning:'ещё',en:'still/also',hsk:2,cat:'adverbs'},
+  {id:101,char:'再',pinyin:'zài',tones:[4],meaning:'снова/ещё раз',en:'again',hsk:2,cat:'adverbs'},
+  {id:102,char:'很',pinyin:'hěn',tones:[3],meaning:'очень',en:'very',hsk:2,cat:'adverbs'},
+  {id:103,char:'非常',pinyin:'fēi cháng',tones:[1,2],meaning:'очень/чрезвычайно',en:'very/extremely',hsk:2,cat:'adverbs'},
+  {id:104,char:'太',pinyin:'tài',tones:[4],meaning:'слишком',en:'too/so',hsk:2,cat:'adverbs'},
+  {id:105,char:'最',pinyin:'zuì',tones:[4],meaning:'самый',en:'most',hsk:2,cat:'adverbs'},
+  {id:106,char:'比较',pinyin:'bǐ jiào',tones:[3,4],meaning:'сравнительно',en:'comparatively',hsk:2,cat:'adverbs'},
+  {id:107,char:'都',pinyin:'dōu',tones:[1],meaning:'все/всё',en:'all/both',hsk:2,cat:'adverbs'},
+  {id:108,char:'也',pinyin:'yě',tones:[3],meaning:'тоже/также',en:'also/too',hsk:2,cat:'adverbs'},
+  {id:109,char:'只',pinyin:'zhǐ',tones:[3],meaning:'только',en:'only',hsk:2,cat:'adverbs'},
+  {id:110,char:'就',pinyin:'jiù',tones:[4],meaning:'тогда/именно',en:'then/just',hsk:2,cat:'adverbs'},
+  // Body
+  {id:111,char:'眼睛',pinyin:'yǎn jīng',tones:[3,1],meaning:'глаз',en:'eye',hsk:2,cat:'body'},
+  {id:112,char:'耳朵',pinyin:'ěr duǒ',tones:[3,3],meaning:'ухо',en:'ear',hsk:2,cat:'body'},
+  {id:113,char:'鼻子',pinyin:'bí zi',tones:[2,5],meaning:'нос',en:'nose',hsk:2,cat:'body'},
+  {id:114,char:'嘴',pinyin:'zuǐ',tones:[3],meaning:'рот',en:'mouth',hsk:2,cat:'body'},
+  {id:115,char:'手',pinyin:'shǒu',tones:[3],meaning:'рука (кисть)',en:'hand',hsk:2,cat:'body'},
+  {id:116,char:'脚',pinyin:'jiǎo',tones:[3],meaning:'нога (ступня)',en:'foot',hsk:2,cat:'body'},
+  {id:117,char:'头',pinyin:'tóu',tones:[2],meaning:'голова',en:'head',hsk:2,cat:'body'},
+  // Verbs 2
+  {id:118,char:'知道',pinyin:'zhī dào',tones:[1,4],meaning:'знать',en:'to know',hsk:2,cat:'verbs'},
+  {id:119,char:'认识',pinyin:'rèn shi',tones:[4,5],meaning:'знать/познакомиться',en:'to know/recognize',hsk:2,cat:'verbs'},
+  {id:120,char:'觉得',pinyin:'jué dé',tones:[2,2],meaning:'думать/чувствовать',en:'to feel/think',hsk:2,cat:'verbs'},
+  {id:121,char:'喜欢',pinyin:'xǐ huān',tones:[3,1],meaning:'любить/нравится',en:'to like',hsk:2,cat:'verbs'},
+  {id:122,char:'爱',pinyin:'ài',tones:[4],meaning:'любить',en:'to love',hsk:2,cat:'verbs'},
+  {id:123,char:'想',pinyin:'xiǎng',tones:[3],meaning:'думать/хотеть',en:'to think/want',hsk:2,cat:'verbs'},
+  {id:124,char:'希望',pinyin:'xī wàng',tones:[1,4],meaning:'надеяться',en:'to hope',hsk:2,cat:'verbs'},
+  {id:125,char:'需要',pinyin:'xū yào',tones:[1,4],meaning:'нуждаться',en:'to need',hsk:2,cat:'verbs'},
+  {id:126,char:'可以',pinyin:'kě yǐ',tones:[3,3],meaning:'можно/мочь',en:'can/may',hsk:2,cat:'verbs'},
+  {id:127,char:'能',pinyin:'néng',tones:[2],meaning:'уметь/мочь',en:'can/able to',hsk:2,cat:'verbs'},
+  {id:128,char:'应该',pinyin:'yīng gāi',tones:[1,1],meaning:'должен/следует',en:'should',hsk:2,cat:'verbs'},
+  {id:129,char:'开始',pinyin:'kāi shǐ',tones:[1,3],meaning:'начинать',en:'to start',hsk:2,cat:'verbs'},
+  {id:130,char:'结束',pinyin:'jié shù',tones:[2,4],meaning:'заканчивать',en:'to end/finish',hsk:2,cat:'verbs'},
+  {id:131,char:'问',pinyin:'wèn',tones:[4],meaning:'спрашивать',en:'to ask',hsk:2,cat:'verbs'},
+  {id:132,char:'回答',pinyin:'huí dá',tones:[2,2],meaning:'отвечать',en:'to answer',hsk:2,cat:'verbs'},
+  {id:133,char:'帮助',pinyin:'bāng zhù',tones:[1,4],meaning:'помогать',en:'to help',hsk:2,cat:'verbs'},
+  {id:134,char:'告诉',pinyin:'gào su',tones:[4,5],meaning:'сказать/рассказать',en:'to tell',hsk:2,cat:'verbs'},
+  {id:135,char:'打电话',pinyin:'dǎ diàn huà',tones:[3,4,4],meaning:'звонить по телефону',en:'make a phone call',hsk:2,cat:'verbs'},
+  {id:136,char:'骑',pinyin:'qí',tones:[2],meaning:'ездить верхом',en:'to ride',hsk:2,cat:'verbs'},
+  {id:137,char:'跑步',pinyin:'pǎo bù',tones:[3,4],meaning:'бежать/бег',en:'to run',hsk:2,cat:'verbs'},
+  {id:138,char:'游泳',pinyin:'yóu yǒng',tones:[2,3],meaning:'плавать',en:'to swim',hsk:2,cat:'verbs'},
+  {id:139,char:'唱歌',pinyin:'chàng gē',tones:[4,1],meaning:'петь',en:'to sing',hsk:2,cat:'verbs'},
+  {id:140,char:'跳舞',pinyin:'tiào wǔ',tones:[4,3],meaning:'танцевать',en:'to dance',hsk:2,cat:'verbs'},
+  // Weather & nature
+  {id:141,char:'天气',pinyin:'tiān qì',tones:[1,4],meaning:'погода',en:'weather',hsk:2,cat:'nature'},
+  {id:142,char:'下雨',pinyin:'xià yǔ',tones:[4,3],meaning:'дождь идёт',en:'it rains',hsk:2,cat:'nature'},
+  {id:143,char:'下雪',pinyin:'xià xuě',tones:[4,3],meaning:'снег идёт',en:'it snows',hsk:2,cat:'nature'},
+  {id:144,char:'风',pinyin:'fēng',tones:[1],meaning:'ветер',en:'wind',hsk:2,cat:'nature'},
+  {id:145,char:'太阳',pinyin:'tài yáng',tones:[4,2],meaning:'солнце',en:'sun',hsk:2,cat:'nature'},
+  // Colors
+  {id:146,char:'红色',pinyin:'hóng sè',tones:[2,4],meaning:'красный',en:'red',hsk:2,cat:'colors'},
+  {id:147,char:'绿色',pinyin:'lǜ sè',tones:[4,4],meaning:'зелёный',en:'green',hsk:2,cat:'colors'},
+  {id:148,char:'蓝色',pinyin:'lán sè',tones:[2,4],meaning:'синий',en:'blue',hsk:2,cat:'colors'},
+  {id:149,char:'白色',pinyin:'bái sè',tones:[2,4],meaning:'белый',en:'white',hsk:2,cat:'colors'},
+  {id:150,char:'黑色',pinyin:'hēi sè',tones:[1,4],meaning:'чёрный',en:'black',hsk:2,cat:'colors'},
+  // Transport & places
+  {id:151,char:'火车',pinyin:'huǒ chē',tones:[3,1],meaning:'поезд',en:'train',hsk:2,cat:'transport'},
+  {id:152,char:'飞机',pinyin:'fēi jī',tones:[1,1],meaning:'самолёт',en:'airplane',hsk:2,cat:'transport'},
+  {id:153,char:'公共汽车',pinyin:'gōng gòng qì chē',tones:[1,4,4,1],meaning:'автобус',en:'bus',hsk:2,cat:'transport'},
+  {id:154,char:'出租车',pinyin:'chū zū chē',tones:[1,1,1],meaning:'такси',en:'taxi',hsk:2,cat:'transport'},
+  {id:155,char:'地铁',pinyin:'dì tiě',tones:[4,3],meaning:'метро',en:'subway/metro',hsk:2,cat:'transport'},
+  {id:156,char:'医院',pinyin:'yī yuàn',tones:[1,4],meaning:'больница',en:'hospital',hsk:2,cat:'places'},
+  {id:157,char:'商店',pinyin:'shāng diàn',tones:[1,4],meaning:'магазин',en:'shop/store',hsk:2,cat:'places'},
+  {id:158,char:'银行',pinyin:'yín háng',tones:[2,2],meaning:'банк',en:'bank',hsk:2,cat:'places'},
+  {id:159,char:'邮局',pinyin:'yóu jú',tones:[2,2],meaning:'почта',en:'post office',hsk:2,cat:'places'},
+  {id:160,char:'公司',pinyin:'gōng sī',tones:[1,1],meaning:'компания',en:'company',hsk:2,cat:'places'},
+  // Family
+  {id:161,char:'弟弟',pinyin:'dì di',tones:[4,5],meaning:'младший брат',en:'younger brother',hsk:2,cat:'family'},
+  {id:162,char:'妹妹',pinyin:'mèi mei',tones:[4,5],meaning:'младшая сестра',en:'younger sister',hsk:2,cat:'family'},
+  {id:163,char:'爷爷',pinyin:'yé ye',tones:[2,5],meaning:'дедушка',en:'grandfather (pat.)',hsk:2,cat:'family'},
+  {id:164,char:'奶奶',pinyin:'nǎi nai',tones:[3,5],meaning:'бабушка',en:'grandmother (pat.)',hsk:2,cat:'family'},
+  {id:165,char:'儿子',pinyin:'ér zi',tones:[2,5],meaning:'сын',en:'son',hsk:2,cat:'family'},
+  {id:166,char:'女儿',pinyin:'nǚ ér',tones:[3,2],meaning:'дочь',en:'daughter',hsk:2,cat:'family'},
+  {id:167,char:'丈夫',pinyin:'zhàng fu',tones:[4,5],meaning:'муж',en:'husband',hsk:2,cat:'family'},
+  {id:168,char:'妻子',pinyin:'qī zi',tones:[1,5],meaning:'жена',en:'wife',hsk:2,cat:'family'},
+  // Adjectives 2
+  {id:169,char:'快',pinyin:'kuài',tones:[4],meaning:'быстро/быстрый',en:'fast/quick',hsk:2,cat:'adjectives'},
+  {id:170,char:'慢',pinyin:'màn',tones:[4],meaning:'медленный',en:'slow',hsk:2,cat:'adjectives'},
+  {id:171,char:'长',pinyin:'cháng',tones:[2],meaning:'длинный',en:'long',hsk:2,cat:'adjectives'},
+  {id:172,char:'短',pinyin:'duǎn',tones:[3],meaning:'короткий',en:'short',hsk:2,cat:'adjectives'},
+  {id:173,char:'新',pinyin:'xīn',tones:[1],meaning:'новый',en:'new',hsk:2,cat:'adjectives'},
+  {id:174,char:'旧',pinyin:'jiù',tones:[4],meaning:'старый',en:'old (things)',hsk:2,cat:'adjectives'},
+  {id:175,char:'贵',pinyin:'guì',tones:[4],meaning:'дорогой',en:'expensive',hsk:2,cat:'adjectives'},
+  {id:176,char:'便宜',pinyin:'pián yi',tones:[2,5],meaning:'дешёвый',en:'cheap',hsk:2,cat:'adjectives'},
+  {id:177,char:'难',pinyin:'nán',tones:[2],meaning:'трудный',en:'difficult',hsk:2,cat:'adjectives'},
+  {id:178,char:'容易',pinyin:'róng yì',tones:[2,4],meaning:'лёгкий',en:'easy',hsk:2,cat:'adjectives'},
+  {id:179,char:'忙',pinyin:'máng',tones:[2],meaning:'занятой',en:'busy',hsk:2,cat:'adjectives'},
+  {id:180,char:'累',pinyin:'lèi',tones:[4],meaning:'устал',en:'tired',hsk:2,cat:'adjectives'},
+
+  // HSK 3 — 181-230
+  {id:181,char:'经济',pinyin:'jīng jì',tones:[1,4],meaning:'экономика',en:'economy',hsk:3,cat:'society'},
+  {id:182,char:'政治',pinyin:'zhèng zhì',tones:[4,4],meaning:'политика',en:'politics',hsk:3,cat:'society'},
+  {id:183,char:'文化',pinyin:'wén huà',tones:[2,4],meaning:'культура',en:'culture',hsk:3,cat:'society'},
+  {id:184,char:'历史',pinyin:'lì shǐ',tones:[4,3],meaning:'история',en:'history',hsk:3,cat:'society'},
+  {id:185,char:'科学',pinyin:'kē xué',tones:[1,2],meaning:'наука',en:'science',hsk:3,cat:'society'},
+  {id:186,char:'技术',pinyin:'jì shù',tones:[4,4],meaning:'технология',en:'technology',hsk:3,cat:'society'},
+  {id:187,char:'环境',pinyin:'huán jìng',tones:[2,4],meaning:'окружающая среда',en:'environment',hsk:3,cat:'society'},
+  {id:188,char:'社会',pinyin:'shè huì',tones:[4,4],meaning:'общество',en:'society',hsk:3,cat:'society'},
+  {id:189,char:'发展',pinyin:'fā zhǎn',tones:[1,3],meaning:'развитие',en:'development',hsk:3,cat:'society'},
+  {id:190,char:'改变',pinyin:'gǎi biàn',tones:[3,4],meaning:'изменять',en:'to change',hsk:3,cat:'verbs'},
+  {id:191,char:'发现',pinyin:'fā xiàn',tones:[1,4],meaning:'обнаруживать',en:'to discover',hsk:3,cat:'verbs'},
+  {id:192,char:'解决',pinyin:'jiě jué',tones:[3,2],meaning:'решать (проблему)',en:'to solve',hsk:3,cat:'verbs'},
+  {id:193,char:'表示',pinyin:'biǎo shì',tones:[3,4],meaning:'выражать',en:'to express',hsk:3,cat:'verbs'},
+  {id:194,char:'理解',pinyin:'lǐ jiě',tones:[3,3],meaning:'понимать',en:'to understand',hsk:3,cat:'verbs'},
+  {id:195,char:'关心',pinyin:'guān xīn',tones:[1,1],meaning:'заботиться',en:'to care about',hsk:3,cat:'verbs'},
+  {id:196,char:'注意',pinyin:'zhù yì',tones:[4,4],meaning:'обращать внимание',en:'to pay attention',hsk:3,cat:'verbs'},
+  {id:197,char:'参加',pinyin:'cān jiā',tones:[1,1],meaning:'участвовать',en:'to participate',hsk:3,cat:'verbs'},
+  {id:198,char:'选择',pinyin:'xuǎn zé',tones:[3,2],meaning:'выбирать',en:'to choose',hsk:3,cat:'verbs'},
+  {id:199,char:'保护',pinyin:'bǎo hù',tones:[3,4],meaning:'защищать',en:'to protect',hsk:3,cat:'verbs'},
+  {id:200,char:'影响',pinyin:'yǐng xiǎng',tones:[3,3],meaning:'влиять',en:'to influence',hsk:3,cat:'verbs'},
+  {id:201,char:'方法',pinyin:'fāng fǎ',tones:[1,3],meaning:'метод/способ',en:'method',hsk:3,cat:'concepts'},
+  {id:202,char:'问题',pinyin:'wèn tí',tones:[4,2],meaning:'вопрос/проблема',en:'question/problem',hsk:3,cat:'concepts'},
+  {id:203,char:'原因',pinyin:'yuán yīn',tones:[2,1],meaning:'причина',en:'reason/cause',hsk:3,cat:'concepts'},
+  {id:204,char:'结果',pinyin:'jié guǒ',tones:[2,3],meaning:'результат',en:'result',hsk:3,cat:'concepts'},
+  {id:205,char:'目的',pinyin:'mù dì',tones:[4,4],meaning:'цель',en:'purpose/goal',hsk:3,cat:'concepts'},
+  {id:206,char:'机会',pinyin:'jī huì',tones:[1,4],meaning:'возможность',en:'opportunity',hsk:3,cat:'concepts'},
+  {id:207,char:'条件',pinyin:'tiáo jiàn',tones:[2,4],meaning:'условие',en:'condition',hsk:3,cat:'concepts'},
+  {id:208,char:'特别',pinyin:'tè bié',tones:[4,2],meaning:'особенный/особо',en:'special/especially',hsk:3,cat:'adjectives'},
+  {id:209,char:'重要',pinyin:'zhòng yào',tones:[4,4],meaning:'важный',en:'important',hsk:3,cat:'adjectives'},
+  {id:210,char:'主要',pinyin:'zhǔ yào',tones:[3,4],meaning:'главный/основной',en:'main/primary',hsk:3,cat:'adjectives'},
+  {id:211,char:'认真',pinyin:'rèn zhēn',tones:[4,1],meaning:'серьёзный/добросовестный',en:'serious/earnest',hsk:3,cat:'adjectives'},
+  {id:212,char:'努力',pinyin:'nǔ lì',tones:[3,4],meaning:'усердный/стараться',en:'hardworking/to strive',hsk:3,cat:'adjectives'},
+  {id:213,char:'成功',pinyin:'chéng gōng',tones:[2,1],meaning:'успешный/успех',en:'success/successful',hsk:3,cat:'adjectives'},
+  {id:214,char:'健康',pinyin:'jiàn kāng',tones:[4,1],meaning:'здоровый/здоровье',en:'healthy/health',hsk:3,cat:'adjectives'},
+  {id:215,char:'安全',pinyin:'ān quán',tones:[1,2],meaning:'безопасный',en:'safe/security',hsk:3,cat:'adjectives'},
+  {id:216,char:'危险',pinyin:'wēi xiǎn',tones:[1,3],meaning:'опасный',en:'dangerous',hsk:3,cat:'adjectives'},
+  {id:217,char:'有趣',pinyin:'yǒu qù',tones:[3,4],meaning:'интересный',en:'interesting',hsk:3,cat:'adjectives'},
+  {id:218,char:'有名',pinyin:'yǒu míng',tones:[3,2],meaning:'знаменитый',en:'famous',hsk:3,cat:'adjectives'},
+  {id:219,char:'现代',pinyin:'xiàn dài',tones:[4,4],meaning:'современный',en:'modern',hsk:3,cat:'adjectives'},
+  {id:220,char:'传统',pinyin:'chuán tǒng',tones:[2,3],meaning:'традиционный',en:'traditional',hsk:3,cat:'adjectives'},
+  {id:221,char:'自然',pinyin:'zì rán',tones:[4,2],meaning:'природа/естественный',en:'nature/natural',hsk:3,cat:'nature'},
+  {id:222,char:'山',pinyin:'shān',tones:[1],meaning:'гора',en:'mountain',hsk:3,cat:'nature'},
+  {id:223,char:'河',pinyin:'hé',tones:[2],meaning:'река',en:'river',hsk:3,cat:'nature'},
+  {id:224,char:'海',pinyin:'hǎi',tones:[3],meaning:'море',en:'sea/ocean',hsk:3,cat:'nature'},
+  {id:225,char:'树',pinyin:'shù',tones:[4],meaning:'дерево',en:'tree',hsk:3,cat:'nature'},
+  {id:226,char:'花',pinyin:'huā',tones:[1],meaning:'цветок',en:'flower',hsk:3,cat:'nature'},
+  {id:227,char:'草',pinyin:'cǎo',tones:[3],meaning:'трава',en:'grass',hsk:3,cat:'nature'},
+  {id:228,char:'鸟',pinyin:'niǎo',tones:[3],meaning:'птица',en:'bird',hsk:3,cat:'nature'},
+  {id:229,char:'鱼',pinyin:'yú',tones:[2],meaning:'рыба',en:'fish',hsk:3,cat:'nature'},
+  {id:230,char:'狗',pinyin:'gǒu',tones:[3],meaning:'собака',en:'dog',hsk:3,cat:'animals'},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {
+  xp: 0, totalXp: 0, streak: 0, level: 1,
+  lastPlayDate: null,
+  wordData: {}, // id -> {mastery, nextReview, correct, wrong}
+  dailyCards: 0, dailyGoal: 10,
+  weekActivity: [0,0,0,0,0,0,0],
+  sessions: 0, totalCards: 0, totalCorrect: 0, totalWrong: 0,
+};
+let currentSession = { type:'', level:'', cards:[], index:0, correct:0, wrong:0, xpEarned:0 };
+let currentFilter = 'all';
+let isFlipped = false;
+
+// ============================================================
+// PERSISTENCE
+// ============================================================
+function saveState() {
+  try { localStorage.setItem('hanzhi_state', JSON.stringify(state)); } catch(e) {}
+}
+function loadState() {
+  try {
+    const s = localStorage.getItem('hanzhi_state');
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+  // Init word data
+  VOCAB.forEach(w => {
+    if (!state.wordData[w.id]) state.wordData[w.id] = { mastery:0, correct:0, wrong:0, nextReview:0 };
+  });
+  checkStreak();
+}
+function checkStreak() {
+  const today = new Date().toDateString();
+  const last = state.lastPlayDate;
+  if (last !== today) {
+    const yesterday = new Date(Date.now()-86400000).toDateString();
+    if (last !== yesterday && last !== null) { state.streak = 0; }
+    state.dailyCards = 0;
+    state.weekActivity = state.weekActivity || [0,0,0,0,0,0,0];
+    const dow = new Date().getDay();
+    state.weekActivity[dow] = 0;
+  }
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function showScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (id === 'home-screen') updateHome();
+}
+
+function goBack() {
+  showScreen('home-screen', document.querySelector('.nav-btn'));
+  document.querySelector('.nav-btn').classList.add('active');
+}
+
+function updateHome() {
+  document.getElementById('h-streak').textContent = state.streak;
+  document.getElementById('h-xp').textContent = state.totalXp;
+  document.getElementById('streak-big').textContent = state.streak;
+  document.getElementById('level-display').textContent = state.level;
+
+  const xpPerLevel = 200 * state.level;
+  const xpFraction = (state.xp / xpPerLevel) * 100;
+  document.getElementById('xp-fill').style.width = Math.min(xpFraction,100) + '%';
+  document.getElementById('xp-text').textContent = `${state.xp} / ${xpPerLevel} XP`;
+
+  // Streak days
+  const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const daysEl = document.getElementById('streak-days');
+  daysEl.innerHTML = '';
+  const today = new Date().getDay();
+  const todayIdx = today === 0 ? 6 : today - 1;
+  days.forEach((d, i) => {
+    const div = document.createElement('div');
+    div.className = 'streak-day' + (i < todayIdx ? ' done' : '') + (i === todayIdx ? ' today' : '');
+    div.textContent = d;
+    daysEl.appendChild(div);
+  });
+
+  // Progress bars
+  const hsk1Learned = VOCAB.filter(w=>w.hsk===1&&(state.wordData[w.id]?.mastery||0)>=2).length;
+  const hsk2Learned = VOCAB.filter(w=>w.hsk===2&&(state.wordData[w.id]?.mastery||0)>=2).length;
+  const hsk3Learned = VOCAB.filter(w=>w.hsk===3&&(state.wordData[w.id]?.mastery||0)>=2).length;
+  document.getElementById('prog-hsk1').style.width = (hsk1Learned/90*100)+'%';
+  document.getElementById('prog-hsk2').style.width = (hsk2Learned/90*100)+'%';
+  document.getElementById('prog-hsk3').style.width = (hsk3Learned/50*100)+'%';
+
+  const reviewDue = VOCAB.filter(w=>(state.wordData[w.id]?.nextReview||0)<=Date.now()&&(state.wordData[w.id]?.mastery||0)>0).length;
+  document.getElementById('prog-review').style.width = Math.min(reviewDue/20*100,100)+'%';
+
+  const done = state.dailyCards >= state.dailyGoal;
+  document.getElementById('challenge-status').textContent = done
+    ? `✅ Выполнено! ${state.dailyCards}/${state.dailyGoal} карточек`
+    : `Пройди ещё ${state.dailyGoal - state.dailyCards} карточек!`;
+}
+
+// ============================================================
+// LESSON SYSTEM
+// ============================================================
+function startLesson(type, level) {
+  showScreen(type==='quiz'||type==='pinyin'||type==='tones' ? 'quiz-screen' : 'flashcard-screen', null);
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+
+  let cards = [];
+  if (level === 'all') {
+    cards = [...VOCAB];
+  } else if (level === 'hsk1') {
+    cards = VOCAB.filter(w=>w.hsk===1);
+  } else if (level === 'hsk2') {
+    cards = VOCAB.filter(w=>w.hsk===2);
+  } else if (level === 'hsk3') {
+    cards = VOCAB.filter(w=>w.hsk===3);
+  }
+
+  if (type === 'review') {
+    cards = VOCAB.filter(w=>(state.wordData[w.id]?.nextReview||0)<=Date.now()&&(state.wordData[w.id]?.mastery||0)>0);
+    if (cards.length === 0) cards = VOCAB.filter(w=>(state.wordData[w.id]?.mastery||0)<2).slice(0,20);
+  }
+
+  // Shuffle & limit
+  cards = shuffle(cards).slice(0,20);
+
+  currentSession = { type, level, cards, index:0, correct:0, wrong:0, xpEarned:0 };
+
+  if (type === 'flashcard' || type === 'review') {
+    initFlashcards();
+  } else {
+    initQuiz(type);
+  }
+}
+
+function startDailyChallenge() {
+  startLesson('flashcard', 'hsk1');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i=a.length-1;i>0;i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+// ============================================================
+// FLASHCARDS
+// ============================================================
+function initFlashcards() {
+  isFlipped = false;
+  updateFlashcardUI();
+}
+
+function updateFlashcardUI() {
+  const { cards, index } = currentSession;
+  if (index >= cards.length) { showSessionComplete(); return; }
+  const w = cards[index];
+
+  document.getElementById('fc-counter').textContent = `${index+1}/${cards.length}`;
+  document.getElementById('fc-prog-fill').style.width = ((index/cards.length)*100)+'%';
+  document.getElementById('fc-hsk-badge').textContent = `HSK${w.hsk}`;
+  document.getElementById('fc-char').textContent = w.char;
+  document.getElementById('fc-pinyin').textContent = w.pinyin;
+  document.getElementById('fc-meaning').textContent = w.meaning;
+  document.getElementById('fc-meaning-en').textContent = w.en;
+  document.getElementById('fc-pinyin-back').textContent = w.pinyin;
+  document.getElementById('fc-hint').textContent = '👆 Нажми, чтобы увидеть перевод';
+
+  const card = document.getElementById('flashcard');
+  card.classList.remove('flipped');
+  document.getElementById('fc-actions').style.display = 'none';
+  isFlipped = false;
+}
+
+function flipCard() {
+  if (isFlipped) return;
+  isFlipped = true;
+  document.getElementById('flashcard').classList.add('flipped');
+  document.getElementById('fc-hint').textContent = '';
+  document.getElementById('fc-actions').style.display = 'flex';
+}
+
+function markCard(known) {
+  const { cards, index } = currentSession;
+  const w = cards[index];
+  const wd = state.wordData[w.id];
+
+  if (known) {
+    wd.mastery = Math.min((wd.mastery||0) + 1, 5);
+    wd.correct = (wd.correct||0) + 1;
+    const intervals = [1,3,7,14,30];
+    wd.nextReview = Date.now() + (intervals[Math.min(wd.mastery-1,4)]*86400000);
+    currentSession.correct++;
+    currentSession.xpEarned += 10;
+    addXP(10);
+  } else {
+    wd.mastery = Math.max((wd.mastery||0) - 1, 0);
+    wd.wrong = (wd.wrong||0) + 1;
+    wd.nextReview = Date.now() + 3600000;
+    currentSession.wrong++;
+  }
+
+  state.totalCards++;
+  state.dailyCards++;
+  if (known) state.totalCorrect++; else state.totalWrong++;
+  const today = new Date().toDateString();
+  state.lastPlayDate = today;
+  const dow = new Date().getDay();
+  state.weekActivity[dow === 0 ? 6 : dow-1]++;
+  saveState();
+
+  currentSession.index++;
+  setTimeout(updateFlashcardUI, 300);
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+function initQuiz(type) {
+  currentSession.quizType = type;
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const { cards, index, quizType } = currentSession;
+  if (index >= cards.length) { showSessionComplete(); return; }
+  const w = cards[index];
+
+  document.getElementById('q-counter').textContent = `${index+1}/${cards.length}`;
+  document.getElementById('q-prog-fill').style.width = ((index/cards.length)*100)+'%';
+
+  if (quizType === 'quiz') {
+    document.getElementById('quiz-prompt').textContent = 'Что значит этот иероглиф?';
+    document.getElementById('quiz-char').textContent = w.char;
+    document.getElementById('quiz-char').style.fontSize = '80px';
+    document.getElementById('quiz-char').style.fontFamily = 'var(--font-cn)';
+    document.getElementById('quiz-pinyin').textContent = '';
+  } else if (quizType === 'pinyin') {
+    document.getElementById('quiz-prompt').textContent = 'Что значит?';
+    document.getElementById('quiz-char').textContent = w.pinyin;
+    document.getElementById('quiz-char').style.fontSize = '32px';
+    document.getElementById('quiz-char').style.fontFamily = 'var(--font-ui)';
+    document.getElementById('quiz-pinyin').textContent = '';
+  } else if (quizType === 'tones') {
+    document.getElementById('quiz-prompt').textContent = 'Выбери правильный тон';
+    document.getElementById('quiz-char').textContent = w.char;
+    document.getElementById('quiz-char').style.fontSize = '72px';
+    document.getElementById('quiz-char').style.fontFamily = 'var(--font-cn)';
+    document.getElementById('quiz-pinyin').textContent = w.pinyin.replace(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/g,'_');
+  }
+
+  // Generate options
+  const others = shuffle(VOCAB.filter(v=>v.id!==w.id)).slice(0,3);
+  const options = shuffle([w,...others]);
+  const container = document.getElementById('quiz-options');
+  container.innerHTML = '';
+
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    if (quizType === 'tones') {
+      btn.textContent = opt.pinyin;
+    } else {
+      btn.textContent = opt.meaning;
+    }
+    btn.onclick = () => handleQuizAnswer(btn, opt.id === w.id, w);
+    container.appendChild(btn);
+  });
+}
+
+function handleQuizAnswer(btn, correct, word) {
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(o => { o.classList.add('disabled'); o.onclick=null; });
+
+  const wd = state.wordData[word.id];
+  if (correct) {
+    btn.classList.add('correct');
+    wd.mastery = Math.min((wd.mastery||0)+1,5);
+    wd.correct = (wd.correct||0)+1;
+    currentSession.correct++;
+    currentSession.xpEarned += 15;
+    addXP(15);
+    showResultBanner(true, word);
+    triggerConfetti();
+  } else {
+    btn.classList.add('wrong');
+    wd.mastery = Math.max((wd.mastery||0)-1,0);
+    wd.wrong = (wd.wrong||0)+1;
+    currentSession.wrong++;
+    // Show correct
+    opts.forEach(o => {
+      const txt = o.textContent;
+      const quizType = currentSession.quizType;
+      const isCorrect = quizType==='tones' ? word.pinyin===txt : word.meaning===txt;
+      if (isCorrect) o.classList.add('revealed');
+    });
+    showResultBanner(false, word);
+  }
+
+  state.totalCards++;
+  state.dailyCards++;
+  if (correct) state.totalCorrect++; else state.totalWrong++;
+  const today = new Date().toDateString();
+  state.lastPlayDate = today;
+  const dow = new Date().getDay();
+  state.weekActivity[dow===0?6:dow-1]++;
+  wd.nextReview = Date.now() + (correct ? [1,3,7,14,30][Math.min((wd.mastery||0)-1,4)]*86400000 : 3600000);
+  saveState();
+
+  currentSession.index++;
+  setTimeout(() => {
+    removeResultBanner();
+    renderQuizQuestion();
+  }, 1800);
+}
+
+let resultBannerTimeout;
+function showResultBanner(correct, word) {
+  removeResultBanner();
+  const div = document.createElement('div');
+  div.className = 'result-banner ' + (correct ? 'correct' : 'wrong');
+  div.innerHTML = correct
+    ? `<span>🎉</span><span>Верно! <b>${word.char}</b> = ${word.meaning}</span>`
+    : `<span>💡</span><span><b>${word.char}</b> — ${word.meaning} (${word.pinyin})</span>`;
+  div.id = 'result-banner';
+  document.body.appendChild(div);
+}
+function removeResultBanner() {
+  const el = document.getElementById('result-banner');
+  if (el) el.remove();
+}
+
+// ============================================================
+// XP & LEVELS
+// ============================================================
+function addXP(amount) {
+  state.xp += amount;
+  state.totalXp += amount;
+  const xpNeeded = 200 * state.level;
+  if (state.xp >= xpNeeded) {
+    state.xp -= xpNeeded;
+    state.level++;
+  }
+  if (state.dailyCards >= state.dailyGoal && state.streak === 0 ||
+      (state.lastPlayDate === new Date().toDateString() && state.streak === 0)) {
+    state.streak = Math.max(state.streak, 1);
+  }
+}
+
+// ============================================================
+// SESSION COMPLETE
+// ============================================================
+function showSessionComplete() {
+  const { correct, wrong, xpEarned } = currentSession;
+  const total = correct + wrong;
+  state.sessions++;
+
+  document.getElementById('c-correct').textContent = correct;
+  document.getElementById('c-wrong').textContent = wrong;
+  document.getElementById('c-xp').textContent = '+' + xpEarned;
+
+  const accuracy = total > 0 ? Math.round(correct/total*100) : 0;
+  let emoji = '🎉', title = 'Отлично!';
+  if (accuracy >= 90) { emoji='🏆'; title='Превосходно!'; }
+  else if (accuracy >= 70) { emoji='🎉'; title='Молодец!'; }
+  else if (accuracy >= 50) { emoji='💪'; title='Хороший старт!'; }
+  else { emoji='📚'; title='Продолжай учиться!'; }
+
+  document.getElementById('complete-emoji').textContent = emoji;
+  document.getElementById('complete-title').textContent = title;
+  document.getElementById('complete-sub').textContent = `Точность: ${accuracy}% | +${xpEarned} XP`;
+
+  document.getElementById('session-complete').classList.add('open');
+  saveState();
+  triggerConfetti();
+}
+
+function finishSession() {
+  document.getElementById('session-complete').classList.remove('open');
+  showScreen('home-screen', document.querySelector('.nav-btn'));
+  document.querySelector('.nav-btn').classList.add('active');
+}
+
+// ============================================================
+// VOCABULARY
+// ============================================================
+function renderVocab() {
+  const query = (document.getElementById('vocab-search-input').value||'').toLowerCase();
+  let list = VOCAB;
+  if (currentFilter === 'hsk1') list = list.filter(w=>w.hsk===1);
+  else if (currentFilter === 'hsk2') list = list.filter(w=>w.hsk===2);
+  else if (currentFilter === 'hsk3') list = list.filter(w=>w.hsk===3);
+  else if (currentFilter === 'learned') list = list.filter(w=>(state.wordData[w.id]?.mastery||0)>=2);
+  else if (currentFilter === 'new') list = list.filter(w=>(state.wordData[w.id]?.mastery||0)===0);
+
+  if (query) {
+    list = list.filter(w => w.char.includes(query)||w.pinyin.includes(query)||w.meaning.toLowerCase().includes(query)||w.en.toLowerCase().includes(query));
+  }
+
+  document.getElementById('vocab-count').textContent = list.length;
+  const container = document.getElementById('vocab-list');
+  container.innerHTML = '';
+
+  list.forEach(w => {
+    const wd = state.wordData[w.id] || {};
+    const mastery = wd.mastery || 0;
+    const stars = '★'.repeat(mastery) + '☆'.repeat(5-mastery);
+    const item = document.createElement('div');
+    item.className = 'vocab-item';
+    item.innerHTML = `
+      <div class="vocab-char">${w.char}</div>
+      <div class="vocab-info">
+        <div class="vocab-pinyin">${w.pinyin}</div>
+        <div class="vocab-meaning">${w.meaning}</div>
+        <div class="vocab-meta">
+          <span class="hsk-tag hsk${w.hsk}">HSK${w.hsk}</span>
+          <span class="mastery-stars" title="Освоение">${stars}</span>
+        </div>
+      </div>
+      ${mastery>=3?'<span class="learned-check">✓</span>':''}
+    `;
+    item.onclick = () => showWordModal(w);
+    container.appendChild(item);
+  });
+}
+
+function filterVocab() { renderVocab(); }
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVocab();
+}
+
+function showWordModal(w) {
+  const wd = state.wordData[w.id] || {};
+  document.getElementById('modal-char').textContent = w.char;
+  document.getElementById('modal-pinyin').textContent = w.pinyin;
+  document.getElementById('modal-meaning').textContent = w.meaning;
+  document.getElementById('modal-en').textContent = w.en;
+  document.getElementById('modal-hsk').textContent = `HSK ${w.hsk}`;
+  const toneNames = {1:'первый (—)',2:'второй (╱)',3:'третий (∨)',4:'четвёртый (╲)',5:'нейтральный'};
+  document.getElementById('modal-tones').textContent = w.tones.map(t=>toneNames[t]).join(', ');
+  const mastery = wd.mastery || 0;
+  document.getElementById('modal-mastery').textContent = '★'.repeat(mastery)+'☆'.repeat(5-mastery) + ` (${mastery}/5)`;
+  document.getElementById('word-modal').classList.add('open');
+}
+
+function closeWordModal(e) {
+  if (!e || e.target.id==='word-modal' || e.target.classList.contains('modal-close')) {
+    document.getElementById('word-modal').classList.remove('open');
+  }
+}
+
+// ============================================================
+// STATS
+// ============================================================
+const levelNames = ['Новичок','Ученик','Знаток','Мастер','Эксперт','Гуру'];
+const levelIcons = ['🐣','📖','🧠','⚔️','🎓','🐉'];
+
+function renderStats() {
+  const lv = Math.min(state.level-1, 5);
+  document.getElementById('stat-level').textContent = state.level;
+  document.getElementById('stat-level-name').textContent = levelNames[lv];
+  document.getElementById('stat-level-icon').textContent = levelIcons[lv];
+  document.getElementById('s-streak').textContent = state.streak;
+  document.getElementById('s-xp').textContent = state.totalXp;
+  const learned = VOCAB.filter(w=>(state.wordData[w.id]?.mastery||0)>=2).length;
+  document.getElementById('s-learned').textContent = learned;
+  document.getElementById('s-cards').textContent = state.totalCards;
+  const acc = state.totalCards>0 ? Math.round(state.totalCorrect/state.totalCards*100) : 0;
+  document.getElementById('s-accuracy').textContent = acc+'%';
+  document.getElementById('s-sessions').textContent = state.sessions;
+
+  // Week chart
+  const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const maxVal = Math.max(...state.weekActivity, 1);
+  const chart = document.getElementById('week-chart');
+  chart.innerHTML = '';
+  state.weekActivity.forEach((val,i) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const pct = Math.max((val/maxVal)*60,val>0?6:0);
+    col.innerHTML = `<div class="bar" style="height:${pct}px;opacity:${val>0?1:0.2}"></div><div class="bar-day">${days[i]}</div>`;
+    chart.appendChild(col);
+  });
+
+  // HSK progress
+  const h1l=VOCAB.filter(w=>w.hsk===1&&(state.wordData[w.id]?.mastery||0)>=2).length;
+  const h2l=VOCAB.filter(w=>w.hsk===2&&(state.wordData[w.id]?.mastery||0)>=2).length;
+  const h3l=VOCAB.filter(w=>w.hsk===3&&(state.wordData[w.id]?.mastery||0)>=2).length;
+  const h1t=VOCAB.filter(w=>w.hsk===1).length;
+  const h2t=VOCAB.filter(w=>w.hsk===2).length;
+  const h3t=VOCAB.filter(w=>w.hsk===3).length;
+  document.getElementById('s-prog-hsk1').style.width=(h1l/h1t*100)+'%';
+  document.getElementById('s-prog-hsk2').style.width=(h2l/h2t*100)+'%';
+  document.getElementById('s-prog-hsk3').style.width=(h3l/h3t*100)+'%';
+  document.getElementById('prog-hsk1-text').textContent=`${h1l}/${h1t}`;
+  document.getElementById('prog-hsk2-text').textContent=`${h2l}/${h2t}`;
+  document.getElementById('prog-hsk3-text').textContent=`${h3l}/${h3t}`;
+
+  // Achievements
+  const achs = [
+    { icon:'🌱', name:'Первый шаг', desc:'Завершить первую сессию', done: state.sessions>=1 },
+    { icon:'🔥', name:'Серия 3 дня', desc:'Заниматься 3 дня подряд', done: state.streak>=3 },
+    { icon:'🔥', name:'Неделя подряд', desc:'7 дней без пропусков', done: state.streak>=7 },
+    { icon:'📚', name:'10 слов', desc:'Выучить 10 слов', done: learned>=10 },
+    { icon:'🎓', name:'50 слов', desc:'Выучить 50 слов', done: learned>=50 },
+    { icon:'🏆', name:'100 слов', desc:'Выучить 100 слов', done: learned>=100 },
+    { icon:'⚡', name:'1000 XP', desc:'Набрать 1000 XP', done: state.totalXp>=1000 },
+    { icon:'🧠', name:'Мастер карточек', desc:'Пройти 500 карточек', done: state.totalCards>=500 },
+    { icon:'🎯', name:'Снайпер', desc:'Точность 90%+ за 20 карточек', done: acc>=90&&state.totalCards>=20 },
+    { icon:'🐉', name:'Уровень 10', desc:'Достичь 10 уровня', done: state.level>=10 },
+  ];
+  const container = document.getElementById('achievements-list');
+  container.innerHTML = '';
+  achs.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'achievement-item' + (a.done?'':' ach-locked');
+    div.innerHTML = `<div class="ach-icon">${a.icon}</div><div><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>${a.done?'<div style="margin-left:auto;color:var(--green);font-size:20px;">✓</div>':''}`;
+    container.appendChild(div);
+  });
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function triggerConfetti() {
+  const container = document.getElementById('confetti');
+  container.innerHTML = '';
+  const colors = ['#FF3B5C','#FFB800','#06D6A0','#4CC9F0','#7B2FBE','#FF6B6B'];
+  for (let i=0;i<40;i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${1.5+Math.random()}s;
+      width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+    `;
+    container.appendChild(p);
+  }
+  setTimeout(()=>{container.innerHTML=''},3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  loadState();
+  updateHome();
+  document.getElementById('loading').style.opacity='0';
+  document.getElementById('loading').style.transition='opacity 0.5s';
+  setTimeout(()=>{document.getElementById('loading').style.display='none';},500);
+  document.getElementById('home-screen').classList.add('active');
+});
+
+// Swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+</script>
+</body>
+</html>
