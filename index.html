@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#ffffff" id="tcmeta">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="default" id="status-bar-meta">
 <title>汉字 HànZì</title>
 <link rel="manifest" href="manifest.json">
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
@@ -27,12 +27,18 @@
   --f:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;--fc:'Noto Serif SC',serif;
 }
 [data-dark]{
-  --bg:#000;--surface:#1C1C1E;--s2:rgba(28,28,30,.94);--s3:#2C2C2E;
-  --label:#fff;--l2:rgba(235,235,245,.58);--l3:rgba(235,235,245,.28);--l4:rgba(235,235,245,.12);
-  --sep:rgba(84,84,88,.62);--sep2:rgba(84,84,88,.3);
-  --sh:0 2px 14px rgba(0,0,0,.42);--sh2:0 8px 36px rgba(0,0,0,.52);
-  --rl:rgba(255,69,58,.17);--gl:rgba(48,209,88,.17);--bl:rgba(10,132,255,.17);--ol:rgba(255,159,10,.17);--pl:rgba(191,90,242,.17);
+  --bg:#000000;--surface:#1C1C1E;--s2:rgba(28,28,30,.95);--s3:#2C2C2E;
+  --label:#FFFFFF;--l2:rgba(235,235,245,.60);--l3:rgba(235,235,245,.30);--l4:rgba(235,235,245,.13);
+  --sep:rgba(84,84,88,.65);--sep2:rgba(84,84,88,.32);
+  --sh:0 2px 16px rgba(0,0,0,.5);--sh2:0 8px 36px rgba(0,0,0,.6);
+  --rl:rgba(255,69,58,.18);--gl:rgba(48,209,88,.18);--bl:rgba(10,132,255,.18);--ol:rgba(255,159,10,.18);--pl:rgba(191,90,242,.18);--tl:rgba(90,200,250,.18);
 }
+/* Smooth theme transitions */
+*{transition:background-color .25s ease,border-color .25s ease,color .08s ease,box-shadow .25s ease}
+.fcch,.voch,.qch,.pron-char,.write-char,.mchar{transition:none!important}
+.xpf,.lcpf,.crf,.aprogf{transition:none!important}
+/* Theme transition override - only on theme toggle */
+html.theme-anim *{transition:background-color .35s ease,border-color .35s ease,color .12s ease!important}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);font-family:var(--f);-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:0}
@@ -359,7 +365,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 <body>
 <div id="app">
 
-<div id="loading"><div class="ldch">汉</div><div class="lddots"><div class="ldd"></div><div class="ldd"></div><div class="ldd"></div></div></div>
+<div id="loading" style="position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+  <div style="font-family:var(--fc);font-size:80px;color:var(--red);animation:ldsp 2s linear infinite">汉</div>
+  <div style="font-size:16px;font-weight:700;color:var(--l2)" id="loading-tip">Загрузка...</div>
+  <div style="display:flex;gap:8px"><div class="ldd" style="background:var(--red)"></div><div class="ldd" style="background:var(--orange)"></div><div class="ldd" style="background:var(--green)"></div></div>
+</div>
 
 <!-- ONBOARDING -->
 <div class="ob" id="ob">
@@ -404,6 +414,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
     <div class="card xpc">
       <div class="xph"><div class="xpl">⚡ <span id="h-xp">0</span> XP</div><div class="xps" id="h-xpn">0 / 200 XP</div></div>
       <div class="xptr"><div class="xpf" id="h-xpf" style="width:0%"></div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px" id="quick-stats">
+      <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:12px;text-align:center;box-shadow:var(--sh)">
+        <div style="font-size:22px;font-weight:900;color:var(--green)" id="qs-learned">0</div>
+        <div style="font-size:10px;font-weight:700;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Изучено</div>
+      </div>
+      <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:12px;text-align:center;box-shadow:var(--sh)">
+        <div style="font-size:22px;font-weight:900;color:var(--blue)" id="qs-total">0</div>
+        <div style="font-size:10px;font-weight:700;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Карточек</div>
+      </div>
+      <div style="flex:1;background:var(--surface);border-radius:var(--r);padding:12px;text-align:center;box-shadow:var(--sh)">
+        <div style="font-size:22px;font-weight:900;color:var(--orange)" id="qs-acc">—</div>
+        <div style="font-size:10px;font-weight:700;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Точность</div>
+      </div>
     </div>
     <div class="card gc" onclick="startLesson('flash','hsk1')">
       <div class="gr">
@@ -545,7 +569,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
     <button class="pill off" onclick="setVf('fav',this)">⭐</button>
     <button class="pill off" onclick="setVf('learned',this)">✓ Изучены</button>
   </div>
-  <div style="padding:0 16px 6px;font-size:13px;color:var(--l2);font-weight:600;flex-shrink:0" id="vcnt">0 слов</div>
+  <div style="padding:0 16px 6px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+  <div style="font-size:13px;color:var(--l2);font-weight:600" id="vcnt">0 слов</div>
+  <select id="vsort" onchange="renderV()" style="background:var(--s3);border:none;border-radius:8px;padding:4px 10px;font-family:var(--f);font-size:12px;font-weight:700;color:var(--l2);cursor:pointer">
+    <option value="default">По порядку</option>
+    <option value="mastery">По освоению ↑</option>
+    <option value="hsk">По HSK</option>
+    <option value="alpha">По алфавиту</option>
+  </select>
+</div>
   <div style="flex:1;overflow-y:auto;padding:0 16px" id="vlist"></div>
 </div>
 
@@ -663,7 +695,26 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
     </div>
     <div class="sl">🎨 Интерфейс</div>
     <div class="lcard">
-      <div class="swrow"><div class="swi"><div class="swt">Тёмная тема</div><div class="sws">Тёмный режим</div></div><button class="tgl" id="tog-darkMode" onclick="togDark(this)"></button></div>
+      <div class="swrow" style="align-items:flex-start;flex-direction:column;gap:10px;padding:16px">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <div class="swt">Оформление</div>
+          <div id="theme-current" style="font-size:12px;font-weight:700;color:var(--l2)">Авто</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%">
+          <button class="theme-btn" id="tbtn-auto" onclick="setTheme('auto')" style="padding:12px 8px;border-radius:var(--r);border:2px solid var(--sep);background:var(--s3);font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+            <span style="font-size:24px">🔄</span>
+            <span style="color:var(--l2)">Авто</span>
+          </button>
+          <button class="theme-btn" id="tbtn-light" onclick="setTheme('light')" style="padding:12px 8px;border-radius:var(--r);border:2px solid var(--sep);background:var(--s3);font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+            <span style="font-size:24px">☀️</span>
+            <span style="color:var(--l2)">Светлая</span>
+          </button>
+          <button class="theme-btn" id="tbtn-dark" onclick="setTheme('dark')" style="padding:12px 8px;border-radius:var(--r);border:2px solid var(--sep);background:var(--s3);font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+            <span style="font-size:24px">🌙</span>
+            <span style="color:var(--l2)">Тёмная</span>
+          </button>
+        </div>
+      </div>
     </div>
     <div class="sl">📱 О приложении</div>
     <div class="lcard">
@@ -717,16 +768,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
     <div class="mrow"><span class="mrl">Тоны</span><span class="mrv" id="mtones"></span></div>
     <div class="mrow"><span class="mrl">Освоение</span><span class="mrv" id="mmast"></span></div>
     <div class="mrow"><span class="mrl">Повтор</span><span class="mrv" id="mnext"></span></div>
-    <div class="mact">
-      <button class="mbtn s" id="mfavbtn" onclick="togFavModal()">☆ В избранное</button>
-      <button class="mbtn p" onclick="closeModal()">Закрыть</button>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <button class="mbtn s" id="mfavbtn" onclick="togFavModal()" style="flex:1;min-width:120px">☆ Избранное</button>
+      <button class="mbtn p" onclick="practiceWord()" style="flex:1;min-width:120px">🎯 Учить</button>
     </div>
+    <button onclick="closeModal()" style="width:100%;margin-top:8px;padding:12px;border-radius:var(--rlg);border:none;background:var(--s3);font-family:var(--f);font-size:15px;font-weight:700;color:var(--l2);cursor:pointer">Закрыть</button>
   </div></div>
 </div>
 
 <!-- COMPLETE -->
 <div class="comp" id="comp">
   <div class="cemo" id="cemo">🎉</div><div class="ctit" id="ctit">Отлично!</div><div class="csub" id="csub"></div>
+  <div style="font-size:13px;color:var(--l2);margin-top:4px;font-weight:600" id="comp-detail"></div>
   <div class="cring">
     <svg width="130" height="130" viewBox="0 0 130 130"><circle class="crbg" cx="65" cy="65" r="52"/><circle class="crf" cx="65" cy="65" r="52" id="cring" style="stroke:var(--green)"/></svg>
     <div class="cri"><div class="crp" id="cpct" style="color:var(--green)">0%</div><div class="crl">ТОЧНОСТЬ</div></div>
@@ -1207,7 +1260,7 @@ let ST={
   sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,
   difficulty:1,
   profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},
-  settings:{autoplay:false,voiceInput:false,slowSpeech:false,darkMode:false,notif:false,notifTime:'09:00'},
+  settings:{autoplay:false,voiceInput:false,slowSpeech:false,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},
   onboarded:false,
 };
 let SES={type:'',cards:[],dialogs:[],idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,diaStep:0};
@@ -1225,7 +1278,10 @@ function lv(){
   if(!ST.heatmap)ST.heatmap={};
   if(!ST.startDate)ST.startDate=new Date().toISOString().split('T')[0];
   if(!ST.profile)ST.profile={name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'};
-  checkStreak();applyDark();
+  checkStreak();
+  // Set theme from saved or use auto
+  if(!ST.settings.theme)ST.settings.theme=ST.settings.darkMode?'dark':'auto';
+  applyTheme(false);
 }
 function todayS(){return new Date().toISOString().split('T')[0];}
 function checkStreak(){
@@ -1250,6 +1306,8 @@ function tick(){
 function addXP(n){
   ST.xp+=n;ST.totalXp+=n;const need=200*ST.level;
   if(ST.xp>=need){ST.xp-=need;ST.level++;toast(`🎊 Уровень ${ST.level}! ${LVI[Math.min(ST.level-1,6)]}`);confetti();}
+  // Pulse XP display
+  const xpEl=g('h-xp');if(xpEl){xpEl.style.transform='scale(1.3)';xpEl.style.color='var(--orange)';setTimeout(()=>{xpEl.style.transform='';xpEl.style.color='';},400);}
 }
 
 // TTS
@@ -1305,6 +1363,10 @@ function updateHome(){
   for(let i=0;i<Math.min(ST.dailyGoal,10);i++){const d=document.createElement('div');d.className='gdot'+(i<done?' done':'');dots.appendChild(d);}
   const h1t=VOCAB.filter(w=>w.hsk===1).length,h2t=VOCAB.filter(w=>w.hsk===2).length,h3t=VOCAB.filter(w=>w.hsk===3).length;
   g('lp1').style.width=(lc(1)/h1t*100)+'%';g('lp2').style.width=(lc(2)/h2t*100)+'%';g('lp3').style.width=(lc(3)/h3t*100)+'%';
+  const _learned=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
+  const _acc=ST.totalCards>0?Math.round(ST.totalCorrect/ST.totalCards*100):0;
+  const ql=g('qs-learned'),qt=g('qs-total'),qa=g('qs-acc');
+  if(ql)ql.textContent=_learned;if(qt)qt.textContent=ST.totalCards;if(qa)qa.textContent=ST.totalCards>0?_acc+'%':'—';
   const due=getDue().length,dot=g('revdot');if(dot)dot.classList.toggle('v',due>0);
   g('duecount').textContent=due>0?`${due} к повтору`:'SRS';
   const rb=g('revbadge');if(rb)rb.innerHTML=due>0?`<span class="lcbadge">${due}</span>`:'';
@@ -1540,7 +1602,9 @@ function showComp(){
   const ring=g('cring');ring.style.stroke=acc>=80?'var(--green)':acc>=50?'var(--orange)':'var(--red)';g('cpct').style.color=acc>=80?'var(--green)':acc>=50?'var(--orange)':'var(--red)';
   setTimeout(()=>{ring.style.strokeDashoffset=327-(327*acc/100);},200);
   let emoji,title;if(tot===0){emoji='🤔';title='Пусто';}else if(acc>=90){emoji='🏆';title='Блестяще!';confetti();}else if(acc>=70){emoji='🎉';title='Отлично!';confetti();}else if(acc>=50){emoji='💪';title='Неплохо!';}else{emoji='📚';title='Продолжай!';}
-  g('cemo').textContent=emoji;g('ctit').textContent=title;g('csub').textContent=`${tot} слов • Серия: ${ST.streak} 🔥`;
+  g('cemo').textContent=emoji;g('ctit').textContent=title;const _mot=acc>=90?'Фантастика! 🚀':acc>=70?'Молодец! Продолжай 💪':acc>=50?'Хороший прогресс! 📈':'Не сдавайся! 📚';
+  g('csub').textContent=_mot;
+  const _det=g('comp-detail');if(_det)_det.textContent=`${tot} слов • Серия: ${ST.streak} дней 🔥`;
   g('retryn').textContent=mistakes.length;g('retrybtn').style.display=mistakes.length?'block':'none';
   g('comp').classList.add('open');sv();
 }
@@ -1561,6 +1625,10 @@ function renderV(){
   else if(vf==='fav')list=list.filter(w=>ST.favorites.includes(w.id));
   else if(vf==='learned')list=list.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2);
   if(q)list=list.filter(w=>w.char.includes(q)||w.pinyin.toLowerCase().includes(q)||w.meaning.toLowerCase().includes(q)||w.en.toLowerCase().includes(q));
+  const sort=(g('vsort')?.value)||'default';
+  if(sort==='mastery')list.sort((a,b)=>(ST.wordData[b.id]?.mastery||0)-(ST.wordData[a.id]?.mastery||0));
+  else if(sort==='hsk')list.sort((a,b)=>a.hsk-b.hsk);
+  else if(sort==='alpha')list.sort((a,b)=>a.pinyin.localeCompare(b.pinyin));
   g('vcnt').textContent=list.length+' слов';
   const cont=g('vlist');
   if(!list.length){cont.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--l2)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div>Ничего не найдено</div></div>';return;}
@@ -1588,6 +1656,11 @@ function openModal(w){
   g('wmodal').classList.add('open');
 }
 function closeModal(){g('wmodal').classList.remove('open');activeWord=null;}
+function practiceWord(){
+  if(!activeWord)return;closeModal();
+  SES={type:'flash',cards:[activeWord,...shuf(VOCAB.filter(v=>v.id!==activeWord.id&&v.hsk===activeWord.hsk)).slice(0,4)],idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99};
+  showLesson();showV('v-flash');initFlash();
+}
 function togFavModal(){if(!activeWord)return;const i=ST.favorites.indexOf(activeWord.id);if(i===-1){ST.favorites.push(activeWord.id);toast('⭐ В избранное');}else{ST.favorites.splice(i,1);toast('Убрано');}sv();openModal(activeWord);}
 
 // STATS
@@ -1691,7 +1764,7 @@ function saveProfile(){
 function renderSet(){
   document.querySelectorAll('#diffbtns .dopt').forEach((b,i)=>b.classList.toggle('on',i+1===ST.difficulty));
   const gs=g('goalsel');if(gs)gs.value=ST.dailyGoal;
-  ['autoplay','voiceInput','slowSpeech','darkMode'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});
+  ['autoplay','voiceInput','slowSpeech'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});updateThemeBtns();
   const nt=g('tog-notif');if(nt)nt.classList.toggle('on',!!ST.settings.notif);
   const nr=g('ntirow');if(nr)nr.style.display=ST.settings.notif?'flex':'none';
   const ni=g('ntiinp');if(ni)ni.value=ST.settings.notifTime||'09:00';
@@ -1699,8 +1772,35 @@ function renderSet(){
 function chDiff(d,btn){ST.difficulty=d;document.querySelectorAll('#diffbtns .dopt').forEach((b,i)=>b.classList.toggle('on',i+1===d));ST.dailyGoal=[5,10,15,20][d-1];const gs=g('goalsel');if(gs)gs.value=ST.dailyGoal;sv();toast('Сложность изменена!');}
 function chGoal(v){ST.dailyGoal=parseInt(v);sv();}
 function togSet(key,btn){const k=key==='voiceInput'?'voiceInput':key==='slowSpeech'?'slowSpeech':key;ST.settings[k]=!ST.settings[k];btn.classList.toggle('on',ST.settings[k]);sv();}
-function togDark(btn){ST.settings.darkMode=!ST.settings.darkMode;btn.classList.toggle('on',ST.settings.darkMode);applyDark();sv();}
-function applyDark(){if(ST.settings.darkMode){document.documentElement.setAttribute('data-dark','');g('tcmeta').content='#000';}else{document.documentElement.removeAttribute('data-dark');g('tcmeta').content='#fff';}}
+// ── THEME SYSTEM ──────────────────────────────────────────
+const mq=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(animate){
+  const mode=ST.settings.theme||'auto';
+  const dark=mode==='dark'||(mode==='auto'&&mq&&mq.matches);
+  if(animate){document.documentElement.classList.add('theme-anim');setTimeout(()=>document.documentElement.classList.remove('theme-anim'),400);}
+  if(dark){document.documentElement.setAttribute('data-dark','');g('tcmeta').content='#000000';document.getElementById('status-bar-meta')&&(document.getElementById('status-bar-meta').content='black-translucent');}
+  else{document.documentElement.removeAttribute('data-dark');g('tcmeta').content='#ffffff';document.getElementById('status-bar-meta')&&(document.getElementById('status-bar-meta').content='default');}
+  updateThemeBtns();
+}
+function updateThemeBtns(){
+  const mode=ST.settings.theme||'auto';
+  const labels={auto:'Авто ☀️🌙',light:'Светлая ☀️',dark:'Тёмная 🌙'};
+  const el=g('theme-current');if(el)el.textContent=labels[mode]||'Авто';
+  document.querySelectorAll('.theme-btn').forEach(b=>b.style.borderColor='var(--sep)');
+  const active=g('tbtn-'+mode);
+  if(active)active.style.borderColor='var(--red)';
+}
+function setTheme(mode){
+  ST.settings.theme=mode;
+  // Backward compat
+  ST.settings.darkMode=(mode==='dark');
+  sv();applyTheme(true);
+}
+// System theme change listener
+if(mq)mq.addEventListener('change',()=>{if((ST.settings.theme||'auto')==='auto')applyTheme(true);});
+// Legacy
+function togDark(btn){setTheme(ST.settings.darkMode?'light':'dark');}
+function applyDark(){applyTheme(false);}
 function togNotif(btn){
   if(!('Notification'in window)){toast('Уведомления не поддерживаются');return;}
   if(ST.settings.notif){ST.settings.notif=false;btn.classList.remove('on');const r=g('ntirow');if(r)r.style.display='none';sv();return;}
@@ -1894,7 +1994,7 @@ function confetti(){
 let tT=null;
 function toast(msg,dur=2500){const t=g('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),dur);}
 function showCbox(){g('cbox').classList.add('open');}
-function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,darkMode:false,notif:false,notifTime:'09:00'},onboarded:false};VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
+function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
 
 // SWIPE
 let swX=0;
@@ -1904,12 +2004,16 @@ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sw
 // INIT
 window.addEventListener('load',()=>{
   lv();
+  const _tips=['Разговорный китайский ждёт!','Загружаем 230 слов…','Готовим диалоги…','Почти готово!'];
+  let _ti=0;const _tiv=setInterval(()=>{const el=g('loading-tip');if(el&&_ti<_tips.length)el.textContent=_tips[_ti++];},300);
   setTimeout(()=>{
+    clearInterval(_tiv);
     const lo=g('loading');lo.style.transition='opacity .5s';lo.style.opacity='0';
     setTimeout(()=>lo.style.display='none',500);
     if(!ST.onboarded){g('ob').style.display='flex';}
-    else{g('s-home').classList.add('on');updateHome();initPotd();}if(ST.settings.notif&&Notification.permission==='granted')scheduleNotif();
-  },1000);
+    else{g('s-home').classList.add('on');updateHome();initPotd();}
+    if(ST.settings.notif&&Notification.permission==='granted')scheduleNotif();
+  },1200);
 });
 window.addEventListener('popstate',()=>{
   if(g('s-lesson').classList.contains('on'))exitLesson();
