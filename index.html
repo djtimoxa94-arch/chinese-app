@@ -360,6 +360,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 .cbb.r{background:var(--red);color:#fff}.cbb.g{background:var(--s3);color:var(--label)}
 
 @media(min-width:600px){#app{max-width:480px;margin:0 auto;box-shadow:var(--sh3)}}
+
+/* BOSS BAR */
+@keyframes bossBar{0%{background-position:0%}100%{background-position:200%}}
+.combo-pop{animation:comboPop .15s cubic-bezier(.34,1.56,.64,1)}
+@keyframes comboPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
@@ -686,6 +691,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
     <div class="lcard">
       <div class="swrow"><div class="swi"><div class="swt">Автовоспроизведение</div><div class="sws">Озвучивать каждую карточку</div></div><button class="tgl" id="tog-autoplay" onclick="togSet('autoplay',this)"></button></div>
       <div class="swrow"><div class="swi"><div class="swt">Голосовые ответы</div><div class="sws">Микрофон в тестах</div></div><button class="tgl" id="tog-voiceInput" onclick="togSet('voiceInput',this)"></button></div>
+      <div class="swrow"><div class="swi"><div class="swt">Звуковые эффекты</div><div class="sws">Звуки при ответах (как в Duolingo)</div></div><button class="tgl" id="tog-sounds" onclick="togSet('sounds',this)"></button></div>
       <div class="swrow"><div class="swi"><div class="swt">Медленная речь</div><div class="sws">Произносить медленнее</div></div><button class="tgl" id="tog-slowSpeech" onclick="togSet('slowSpeech',this)"></button></div>
     </div>
     <div class="sl">🔔 Уведомления</div>
@@ -1260,7 +1266,7 @@ let ST={
   sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,
   difficulty:1,
   profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},
-  settings:{autoplay:false,voiceInput:false,slowSpeech:false,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},
+  settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},
   onboarded:false,
 };
 let SES={type:'',cards:[],dialogs:[],idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,diaStep:0};
@@ -1278,7 +1284,7 @@ function lv(){
   if(!ST.heatmap)ST.heatmap={};
   if(!ST.startDate)ST.startDate=new Date().toISOString().split('T')[0];
   if(!ST.profile)ST.profile={name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'};
-  checkStreak();
+  checkStreak();setTimeout(checkStreakShield,2500);
   // Set theme from saved or use auto
   if(!ST.settings.theme)ST.settings.theme=ST.settings.darkMode?'dark':'auto';
   applyTheme(false);
@@ -1305,7 +1311,7 @@ function tick(){
 }
 function addXP(n){
   ST.xp+=n;ST.totalXp+=n;const need=200*ST.level;
-  if(ST.xp>=need){ST.xp-=need;ST.level++;toast(`🎊 Уровень ${ST.level}! ${LVI[Math.min(ST.level-1,6)]}`);confetti();}
+  if(ST.xp>=need){ST.xp-=need;ST.level++;toast(`🎊 Уровень ${ST.level}! ${LVI[Math.min(ST.level-1,6)]}`);confetti();sndLevelUp();}
   // Pulse XP display
   const xpEl=g('h-xp');if(xpEl){xpEl.style.transform='scale(1.3)';xpEl.style.color='var(--orange)';setTimeout(()=>{xpEl.style.transform='';xpEl.style.color='';},400);}
 }
@@ -1381,7 +1387,7 @@ function getDue(){return VOCAB.filter(w=>(ST.wordData[w.id]?.nextReview||0)<=Dat
 function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 
 // LESSON START
-function startLesson(type,level){
+function startLesson(type,level){resumeAC();sndStartLesson();
   synth.cancel();stopMic();
   let cards=[];
   if(level==='hsk1')cards=VOCAB.filter(w=>w.hsk===1);
@@ -1443,11 +1449,11 @@ function renderFlash(){
   g('twave').style.display='none';isFlipped=false;
   if(ST.settings.autoplay)setTimeout(()=>speakWord(w),400);
 }
-function flipCard(){if(isFlipped)return;isFlipped=true;g('fcw').classList.add('flipped');g('fchint').textContent='';g('fcact').style.display='flex';if(ST.difficulty>1&&!ST.settings.autoplay)speakWord(SES.cards[SES.idx]);}
+function flipCard(){if(isFlipped)return;isFlipped=true;sndFlip();g('fcw').classList.add('flipped');g('fchint').textContent='';g('fcact').style.display='flex';if(ST.difficulty>1&&!ST.settings.autoplay)speakWord(SES.cards[SES.idx]);}
 function mark(ok){
   const w=SES.cards[SES.idx],wd=ST.wordData[w.id];
-  if(ok){wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;SES.correct++;SES.xp+=10;addXP(10);ST.totalCorrect++;}
-  else{wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;SES.wrong++;SES.mistakes.push(w);ST.totalWrong++;if(SES.lives<99){SES.lives--;g('lhrt').innerHTML='❤️'.repeat(Math.max(0,SES.lives))+'🖤'.repeat(Math.max(0,3-SES.lives));}}
+  if(ok){wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;SES.correct++;const mult=SES.bossXPMult||getComboMult();const xpGain=Math.round(10*mult);SES.xp+=xpGain;addXP(xpGain);ST.totalCorrect++;addCombo();sndCorrect();checkBossTrigger();}
+  else{wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;SES.wrong++;SES.mistakes.push(w);ST.totalWrong++;resetCombo();sndWrong();if(SES.lives<99){SES.lives--;g('lhrt').innerHTML='❤️'.repeat(Math.max(0,SES.lives))+'🖤'.repeat(Math.max(0,3-SES.lives));}}
   tick();SES.idx++;if(SES.lives<=0){showComp();return;}setTimeout(renderFlash,250);
 }
 function togFav(){const w=SES.cards[SES.idx];if(!w)return;const i=ST.favorites.indexOf(w.id);if(i===-1){ST.favorites.push(w.id);toast('⭐ В избранное');}else{ST.favorites.splice(i,1);toast('Убрано');}g('fcfav').textContent=ST.favorites.includes(w.id)?'★':'☆';g('fcfav').style.color=ST.favorites.includes(w.id)?'var(--orange)':'var(--l3)';sv();}
@@ -1472,8 +1478,8 @@ function showHint(){const w=SES.cards[SES.idx];g('qpy').textContent=w.pinyin;g('
 function handleQ(btn,ok,word){
   document.querySelectorAll('.qo').forEach(b=>{b.classList.add('off');b.onclick=null;});
   const wd=ST.wordData[word.id];
-  if(ok){btn.classList.add('ok');wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;SES.correct++;SES.xp+=15;addXP(15);ST.totalCorrect++;showBan(true,word);if(SES.correct%5===0)confetti();}
-  else{btn.classList.add('bad');wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;SES.wrong++;SES.mistakes.push(word);ST.totalWrong++;document.querySelectorAll('.qo').forEach(b=>{const m=SES.type==='reverse'?b.textContent===word.char:b.textContent===word.meaning;if(m)b.classList.add('show');});showBan(false,word);}
+  if(ok){btn.classList.add('ok');wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;SES.correct++;const _mult=SES.bossXPMult||getComboMult();const _xg=Math.round(15*_mult);SES.xp+=_xg;addXP(_xg);ST.totalCorrect++;addCombo();sndCorrect();showBan(true,word);if(SES.correct%5===0){confetti();if(_combo>=5)sndPerfect();}checkBossTrigger();}
+  else{btn.classList.add('bad');wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;SES.wrong++;SES.mistakes.push(word);ST.totalWrong++;resetCombo();sndWrong();document.querySelectorAll('.qo').forEach(b=>{const m=SES.type==='reverse'?b.textContent===word.char:b.textContent===word.meaning;if(m)b.classList.add('show');});showBan(false,word);}
   tick();SES.idx++;setTimeout(()=>{rmBan();if(SES.lives<=0){showComp();}else renderQuiz();},1800);
 }
 
@@ -1513,7 +1519,7 @@ function renderDia(){
 function handleDiaOpt(btn,correct,meMsg,msgArea,optsArea,dia){
   document.querySelectorAll('.dia-opt').forEach(b=>{b.style.pointerEvents='none';b.style.opacity='.6';});
   if(correct){
-    btn.classList.add('ok');btn.style.opacity='1';SES.correct++;SES.xp+=20;addXP(20);ST.totalCorrect++;
+    btn.classList.add('ok');btn.style.opacity='1';SES.correct++;SES.xp+=20;addXP(20);ST.totalCorrect++;addCombo();sndDialogueSuccess();
     if(SES.correct%3===0)confetti();
     // Show the response in chat
     const myMsg=document.createElement('div');myMsg.className='msg me';
@@ -1764,7 +1770,7 @@ function saveProfile(){
 function renderSet(){
   document.querySelectorAll('#diffbtns .dopt').forEach((b,i)=>b.classList.toggle('on',i+1===ST.difficulty));
   const gs=g('goalsel');if(gs)gs.value=ST.dailyGoal;
-  ['autoplay','voiceInput','slowSpeech'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});updateThemeBtns();
+  ['autoplay','voiceInput','slowSpeech','sounds'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});updateThemeBtns();
   const nt=g('tog-notif');if(nt)nt.classList.toggle('on',!!ST.settings.notif);
   const nr=g('ntirow');if(nr)nr.style.display=ST.settings.notif?'flex':'none';
   const ni=g('ntiinp');if(ni)ni.value=ST.settings.notifTime||'09:00';
@@ -1984,6 +1990,185 @@ function reqNotif(btn){
   });
 }
 
+
+// ============================================================
+// SOUND ENGINE — Web Audio API (Duolingo-style, no files)
+// ============================================================
+let _AC = null;
+function getAC(){
+  if(!_AC){try{_AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  return _AC;
+}
+function resumeAC(){const ac=getAC();if(ac&&ac.state==='suspended')ac.resume();}
+
+function playTone(opts){
+  if(!ST.settings.sounds)return;
+  const ac=getAC();if(!ac)return;
+  resumeAC();
+  const{freq=440,freq2=freq,dur=0.15,vol=0.3,type='sine',attack=0.005,decay=0.05,env='exp'}=opts;
+  const osc=ac.createOscillator();
+  const gain=ac.createGain();
+  osc.connect(gain);gain.connect(ac.destination);
+  osc.type=type;osc.frequency.setValueAtTime(freq,ac.currentTime);
+  if(freq2!==freq)osc.frequency.exponentialRampToValueAtTime(freq2,ac.currentTime+dur);
+  gain.gain.setValueAtTime(0,ac.currentTime);
+  gain.gain.linearRampToValueAtTime(vol,ac.currentTime+attack);
+  if(env==='exp'){gain.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+attack+dur);}
+  else{gain.gain.linearRampToValueAtTime(0,ac.currentTime+attack+decay);}
+  osc.start(ac.currentTime);osc.stop(ac.currentTime+attack+dur+0.01);
+}
+
+function sndCorrect(){
+  // Duolingo-style bright ding-dong
+  playTone({freq:523,dur:.08,vol:.25,type:'triangle',attack:.003});
+  setTimeout(()=>playTone({freq:659,dur:.1,vol:.28,type:'triangle',attack:.003}),80);
+  setTimeout(()=>playTone({freq:784,dur:.18,vol:.3,type:'triangle',attack:.003}),170);
+}
+function sndWrong(){
+  // Low dull buzz
+  playTone({freq:220,freq2:150,dur:.22,vol:.2,type:'sawtooth',attack:.01});
+  setTimeout(()=>playTone({freq:180,freq2:120,dur:.18,vol:.15,type:'sawtooth',attack:.01}),120);
+}
+function sndFlip(){
+  // Card flip whoosh
+  playTone({freq:800,freq2:400,dur:.08,vol:.1,type:'sine',attack:.002});
+}
+function sndTap(){
+  // Subtle tap
+  playTone({freq:1000,dur:.04,vol:.08,type:'sine',attack:.001});
+}
+function sndStreak(){
+  // Streak milestone — fire!
+  [0,60,120,180,240].forEach((d,i)=>{
+    setTimeout(()=>playTone({freq:392+i*80,dur:.12,vol:.22,type:'triangle',attack:.005}),d);
+  });
+}
+function sndLevelUp(){
+  // Level up fanfare — ascending arpeggio
+  const notes=[262,330,392,523,659,784];
+  notes.forEach((f,i)=>setTimeout(()=>playTone({freq:f,dur:.15,vol:.28,type:'triangle',attack:.005}),i*80));
+}
+function sndCombo(n){
+  // Higher pitch for higher combos
+  const f=440+Math.min(n,10)*40;
+  playTone({freq:f,freq2:f*1.2,dur:.1,vol:.22,type:'triangle',attack:.005});
+}
+function sndPerfect(){
+  // Perfect score — sparkle
+  [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>{
+    playTone({freq:f,dur:.12,vol:.2,type:'sine',attack:.002});
+    playTone({freq:f*2,dur:.08,vol:.08,type:'triangle',attack:.002});
+  },i*60));
+}
+function sndStartLesson(){
+  playTone({freq:440,freq2:660,dur:.12,vol:.18,type:'sine',attack:.01});
+}
+function sndDialogueSuccess(){
+  playTone({freq:523,dur:.06,vol:.2,type:'triangle',attack:.003});
+  setTimeout(()=>playTone({freq:659,dur:.06,vol:.22,type:'triangle',attack:.003}),70);
+  setTimeout(()=>playTone({freq:880,dur:.14,vol:.24,type:'triangle',attack:.003}),140);
+}
+
+
+// ============================================================
+// COMBO SYSTEM — consecutive correct answers multiply XP
+// ============================================================
+let _combo = 0;
+let _comboTimer = null;
+function addCombo(){
+  _combo++;
+  clearTimeout(_comboTimer);
+  // Reset combo after 4 seconds of inactivity
+  _comboTimer=setTimeout(()=>{_combo=0;hideCombo();},4000);
+  showCombo(_combo);
+  sndCombo(_combo);
+  if(_combo===3)toast('🔥 Серия 3! ×1.5 XP');
+  if(_combo===5)toast('⚡ Серия 5! ×2 XP');
+  if(_combo===10)toast('💥 СЕРИЯ 10! ×3 XP');
+}
+function resetCombo(){_combo=0;clearTimeout(_comboTimer);hideCombo();}
+function getComboMult(){if(_combo>=10)return 3;if(_combo>=5)return 2;if(_combo>=3)return 1.5;return 1;}
+function showCombo(n){
+  let el=g('combo-badge');
+  if(!el){el=document.createElement('div');el.id='combo-badge';
+    el.style.cssText='position:fixed;top:calc(max(20px,env(safe-area-inset-top))+8px);right:16px;z-index:300;font-family:var(--f);font-weight:900;font-size:20px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.4);transition:all .2s;pointer-events:none;display:flex;align-items:center;gap:4px';
+    document.body.appendChild(el);}
+  const color=n>=10?'#FF3B30':n>=5?'#FF9500':n>=3?'#34C759':'#007AFF';
+  el.innerHTML=`<span style="background:${color};border-radius:999px;padding:4px 12px;font-size:16px">🔥 ×${n}</span>`;
+  el.style.transform='scale(1.2)';el.style.opacity='1';
+  setTimeout(()=>{if(el)el.style.transform='scale(1)';},150);
+}
+function hideCombo(){const el=g('combo-badge');if(el){el.style.opacity='0';setTimeout(()=>el.remove(),300);}}
+
+
+// ============================================================
+// 🐉 BOSS CHALLENGE — special round every 20 correct answers
+// ============================================================
+let _bossThreshold = 20;
+function checkBossTrigger(){
+  if(ST.totalCorrect>0&&ST.totalCorrect%_bossThreshold===0){
+    setTimeout(()=>launchBoss(),500);
+  }
+}
+function launchBoss(){
+  const bossWords=shuf(VOCAB.filter(w=>w.hsk===3)).slice(0,3);
+  if(!bossWords.length)return;
+  // Show boss intro
+  const overlay=document.createElement('div');
+  overlay.id='boss-overlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;animation:fadeovl .3s';
+  overlay.innerHTML=`
+    <div style="font-size:80px;animation:epop .6s cubic-bezier(.34,1.56,.64,1)">🐉</div>
+    <div style="font-size:28px;font-weight:900;color:#fff;margin-top:16px;letter-spacing:-.5px">Босс появился!</div>
+    <div style="font-size:15px;color:rgba(255,255,255,.7);margin-top:8px;line-height:1.5">3 сложных слова стоят на твоём пути.<br>Победи — получи ×3 XP!</div>
+    <div style="display:flex;gap:16px;margin-top:28px">
+      ${bossWords.map(w=>`<div style="background:rgba(255,255,255,.1);border-radius:var(--r);padding:14px 18px"><div style="font-family:var(--fc);font-size:28px;color:#fff;font-weight:900">${w.char}</div></div>`).join('')}
+    </div>
+    <button onclick="startBoss()" style="margin-top:28px;padding:16px 40px;background:var(--red);color:#fff;border:none;border-radius:var(--rxl);font-family:var(--f);font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(255,59,48,.4)">⚔️ Принять вызов!</button>
+    <button onclick="skipBoss()" style="margin-top:10px;background:none;border:none;color:rgba(255,255,255,.4);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;padding:8px">Пропустить</button>
+  `;
+  overlay._bossWords=bossWords;
+  document.body.appendChild(overlay);
+  sndStreak();
+}
+function startBoss(){
+  const overlay=g('boss-overlay');
+  if(!overlay)return;
+  const bossWords=overlay._bossWords||shuf(VOCAB.filter(w=>w.hsk===3)).slice(0,3);
+  overlay.remove();
+  SES={type:'boss',cards:bossWords,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:3,bossXPMult:3};
+  showLesson();showV('v-quiz');renderQuiz();
+  // Visual indicator
+  const indicator=document.createElement('div');
+  indicator.style.cssText='position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#FF3B30,#FF9500,#FF3B30);background-size:200%;animation:bossBar 1.5s linear infinite;z-index:5';
+  const ltop=g('s-lesson').querySelector('.ltop');
+  if(ltop){ltop.style.position='relative';ltop.appendChild(indicator);}
+  toast('🐉 Победи босса за ×3 XP!');
+}
+function skipBoss(){const o=g('boss-overlay');if(o)o.remove();}
+
+
+// ============================================================
+// 🛡 STREAK SHIELD — protect streak once per week
+// ============================================================
+function checkStreakShield(){
+  const today=new Date().toDateString();
+  if(ST.streak>0&&ST.lastPlay&&ST.lastPlay!==today&&ST.lastPlay!==new Date(Date.now()-86400000).toDateString()){
+    if(ST.streakShieldUsed!==new Date().getFullYear()+'W'+getWeek()){
+      // Offer shield
+      setTimeout(()=>{
+        const msg=`Ой! Ты пропустил день. Использовать 🛡 Щит серии? (1 раз в неделю)`;
+        if(confirm(msg)){
+          ST.streakShieldUsed=new Date().getFullYear()+'W'+getWeek();
+          ST.lastPlay=today;sv();
+          toast('🛡 Щит серии активирован! Серия сохранена.');
+        }
+      },2000);
+    }
+  }
+}
+function getWeek(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+3-(d.getDay()+6)%7);const w=new Date(d.getFullYear(),0,4);return 1+Math.round(((d-w)/86400000-3+(w.getDay()+6)%7)/7);}
+
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
@@ -1994,7 +2179,7 @@ function confetti(){
 let tT=null;
 function toast(msg,dur=2500){const t=g('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),dur);}
 function showCbox(){g('cbox').classList.add('open');}
-function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
+function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
 
 // SWIPE
 let swX=0;
