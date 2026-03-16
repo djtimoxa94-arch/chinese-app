@@ -414,6 +414,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 .ai-sug{padding:7px 14px;border-radius:999px;background:var(--surface);border:1.5px solid var(--sep);font-size:13px;font-weight:600;color:var(--label);cursor:pointer;white-space:nowrap;box-shadow:var(--sh);flex-shrink:0;font-family:var(--f)}
 .ai-sug:active{background:var(--s3)}
 
+
+@keyframes xpFloat{0%{opacity:0;transform:translateX(-50%) translateY(20px)}20%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1;transform:translateX(-50%) translateY(-30px)}100%{opacity:0;transform:translateX(-50%) translateY(-60px)}}
 </style>
 </head>
 <body>
@@ -429,6 +431,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 <div class="ob" id="ob">
   <div class="oblogo">汉</div>
   <div class="obtit">汉字 HànZì</div>
+  <input id="ob-name" class="inp" placeholder="Как тебя зовут? (необязательно)" style="width:100%;max-width:340px;margin:16px auto 0;display:block;text-align:center">
   <div class="obsub">Разговорный китайский по реальным ситуациям — путешествия, еда, покупки</div>
   <div class="oblvs">
     <div class="oblv on" onclick="selDiff(1,this)"><div class="obico">🐣</div><div><div class="oblvt">Абсолютный новичок</div><div class="oblvd">Первые фразы, подсказки пиньинь, 5 карточек/день</div></div></div>
@@ -441,10 +444,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 
 <!-- HOME -->
 <div class="scr" id="s-home">
-  <div class="ph"><div class="pt"><span>汉</span>字 HànZì</div></div>
+  <div class="ph"><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 14px">
+    <div><div style="font-size:13px;color:var(--l2);font-weight:600" id="home-greeting">Добро пожаловать!</div>
+    <div style="font-size:28px;font-weight:900;letter-spacing:-.5px;color:var(--label)"><span style="color:var(--red)">汉</span>字 HànZì</div></div>
+    <div onclick="goTab('s-prof',5);renderProf()" style="cursor:pointer;flex-shrink:0" id="home-avatar"></div>
+  </div></div>
   <div class="scroll"><div class="si">
     <div id="notifbanner"></div>
-    <div class="card cp" id="potd-card" onclick="potdSpeak()" style="background:linear-gradient(135deg,#1A1A2E,#0F3460);border-radius:var(--rxl);margin-bottom:12px;padding:18px 20px;box-shadow:var(--sh2)">
+    <div class="card cp" id="potd-card" onclick="potdSpeak()" style="background:linear-gradient(135deg,#1A1A2E,#0F3460);border-radius:var(--rxl);margin-bottom:12px;padding:18px 20px;box-shadow:var(--sh2);cursor:pointer">
       <div style="font-size:11px;font-weight:800;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">🌟 Фраза дня</div>
       <div id="potd-cn" style="font-family:var(--fc);font-size:26px;font-weight:900;color:#fff;line-height:1.3"></div>
       <div id="potd-py" style="font-size:13px;color:rgba(255,184,0,.9);font-weight:600;letter-spacing:.8px;margin-top:6px"></div>
@@ -542,12 +549,19 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
     <div class="card" id="culture-tip" style="padding:16px;cursor:pointer;margin-bottom:4px" onclick="showNextCulture()">
       <div style="font-size:11px;font-weight:800;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">🐉 Культура Китая</div>
     </div>
+    <div class="card" id="grammar-tip-card" style="padding:16px;margin-bottom:4px" onclick="grammarTipIdx++;renderGrammarTip()"></div>
     <div class="sl">📖 Уроки HSK</div>
     <div class="lgrid">
       <div class="lc" onclick="startLesson('flash','hsk1')"><div class="lcbar" style="background:linear-gradient(90deg,#34C759,#30D158)"></div><div class="lco">🌱</div><div class="lcn">HSK 1</div><div class="lcs">90 слов</div><div class="lcp"><div class="lcpf" id="lp1" style="width:0%;background:#34C759"></div></div></div>
       <div class="lc" onclick="startLesson('flash','hsk2')"><div class="lcbar" style="background:linear-gradient(90deg,#FF9500,#FF6B00)"></div><div class="lco">📚</div><div class="lcn">HSK 2</div><div class="lcs">90 слов</div><div class="lcp"><div class="lcpf" id="lp2" style="width:0%;background:#FF9500"></div></div></div>
       <div class="lc" onclick="startLesson('flash','hsk3')"><div class="lcbar" style="background:linear-gradient(90deg,#FF3B30,#FF6B6B)"></div><div class="lco">🏆</div><div class="lcn">HSK 3</div><div class="lcs">50 слов</div><div class="lcp"><div class="lcpf" id="lp3" style="width:0%;background:#FF3B30"></div></div></div>
       <div class="lc" onclick="startLesson('review','all')"><div class="lcbar" style="background:linear-gradient(90deg,#007AFF,#34C759)"></div><div class="lco">🔄</div><div class="lcn">Повторение</div><div class="lcs" id="duecount">SRS</div><div id="revbadge"></div></div>
+    </div>
+    <div id="recent-section" style="display:none">
+      <div class="sl">✅ Недавно выучено</div>
+      <div style="overflow-x:auto;padding-bottom:4px">
+        <div style="display:flex;gap:8px;width:max-content;padding:0 0 4px" id="recent-words"></div>
+      </div>
     </div>
     <div class="sl">🎯 Тренировки</div>
     <div class="lcard">
@@ -811,6 +825,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
       <div class="pst"><div class="pstn" style="color:var(--green)" id="plearn">0</div><div class="pstl">Изучено</div></div>
       <div class="pst"><div class="pstn" style="color:var(--blue)" id="pdays">0</div><div class="pstl">Дней</div></div>
     </div>
+    <div style="margin-bottom:12px">
+      <button onclick="shareProgress()" style="width:100%;padding:13px;background:linear-gradient(135deg,#007AFF,#5AC8FA);color:#fff;border:none;border-radius:var(--rlg);font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+        📤 Поделиться прогрессом
+      </button>
+    </div>
     <div class="sl">Рекорды</div>
     <div class="sbrec">
       <div class="sb"><div class="sbn" style="color:var(--red)" id="pbstr">0</div><div class="sbl">Лучшая серия</div></div>
@@ -818,7 +837,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
       <div class="sb"><div class="sbn" style="color:var(--green)" id="pbcards">0</div><div class="sbl">Карточек</div></div>
       <div class="sb"><div class="sbn" style="color:var(--blue)" id="pbsess">0</div><div class="sbl">Сессий</div></div>
     </div>
-    <div class="sl">Активность</div>
+    <div class="sl">Активность этого месяца</div>
+    <div class="card" style="padding:16px">
+      <div id="month-cal"></div>
+    </div>
+    <div class="sl">За последние 12 недель</div>
     <div class="card" style="padding:16px;overflow-x:auto">
       <div class="hmap" id="profhmap"></div>
     </div>
@@ -972,7 +995,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
   </div>
   <div class="cbtns">
     <button class="cbtn cbprim" onclick="finishSes()">Продолжить →</button>
-    <button class="cbtn cbsec" id="retrybtn" onclick="retryMis()" style="display:none">🔁 Ошибки (<span id="retryn">0</span>)</button>
+    <button class="cbtn cbsec" id="retrybtn" onclick="retryMis()" style="display:none">🔁 Повторить ошибки (<span id="retryn">0</span>)</button>
+    <button class="cbtn cbsec" onclick="startLesson('review','all')" style="margin-top:-4px;font-size:13px;padding:12px">🔄 Повторение SRS</button>
   </div>
 </div>
 
@@ -1527,11 +1551,29 @@ function exitLesson(){stopMic();synth.cancel();goTab('s-home',0);updateHome();}
 
 // ONBOARDING
 function selDiff(d,el){selDiffVal=d;document.querySelectorAll('.oblv').forEach(e=>e.classList.remove('on'));el.classList.add('on');}
-function finishOb(){ST.difficulty=selDiffVal;ST.onboarded=true;ST.dailyGoal=[5,10,15,20][selDiffVal-1];g('ob').style.display='none';g('s-home').classList.add('on');sv();updateHome();initPotd();}
+function finishOb(){
+  const nameEl=g('ob-name');
+  if(nameEl&&nameEl.value.trim()){
+    ST.profile.name=nameEl.value.trim();
+  }
+  ST.difficulty=selDiffVal;ST.onboarded=true;ST.dailyGoal=[5,10,15,20][selDiffVal-1];
+  g('ob').style.display='none';g('s-home').classList.add('on');sv();updateHome();initPotd();
+  // Welcome toast with name
+  const name=ST.profile.name||'';
+  setTimeout(()=>toast(name?`欢迎，${name}！让我们开始学习吧 🎉`:'欢迎！让我们开始学习吧 🎉'),600);
+}
 
 // HOME
 function updateHome(){
-  g('h-str').textContent=ST.streak;g('h-xp').textContent=ST.totalXp;
+  g('h-str').textContent=ST.streak;
+  // Personalized greeting
+  const hr=new Date().getHours();
+  const greet=hr<5?'Ночная учёба 🌙':hr<12?'Доброе утро ☀️':hr<17?'Добрый день 🌤':hr<21?'Добрый вечер 🌆':'Ночная учёба 🌙';
+  const nameG=ST.profile.name?`, ${ST.profile.name}`:'';
+  const grEl=g('home-greeting');if(grEl)grEl.textContent=greet+nameG+'!';
+  // Mini avatar in header
+  const haEl=g('home-avatar');
+  if(haEl){haEl.innerHTML=`<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid var(--sep)">${generateAvatar(ST.profile.avaStyle,ST.profile.avaColor,ST.profile.avaAccent,38)}</div>`;}g('h-xp').textContent=ST.totalXp;
   const lv=Math.min(ST.level-1,6);g('h-lv').textContent=ST.level;g('h-lvn').textContent=LVN[lv];
   const need=200*ST.level;g('h-xpf').style.width=Math.min(ST.xp/need*100,100)+'%';g('h-xpn').textContent=`${ST.xp} / ${need} XP`;
   const DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],td=new Date().getDay(),tdi=td===0?6:td-1;
@@ -1620,7 +1662,8 @@ function renderFlash(){
   g('fctag').textContent=`HSK${w.hsk}`;
   g('fctag').style.cssText=`background:${w.hsk===1?'var(--gl)':w.hsk===2?'var(--ol)':'var(--rl)'};color:${w.hsk===1?'var(--green)':w.hsk===2?'var(--orange)':'var(--red)'}`;
   g('fcch').textContent=w.char;g('fcpy').textContent=ST.difficulty===1?w.pinyin:'';
-  g('fchint').textContent=ST.difficulty===1?'Нажми чтобы увидеть перевод':'👆 Нажми чтобы перевернуть';
+  const _swHint=ST.sessions<=3?' (свайп ←→ тоже работает)':'';
+  g('fchint').textContent=(ST.difficulty===1?'Нажми чтобы увидеть перевод':'👆 Нажми чтобы перевернуть')+_swHint;
   g('fcmean').textContent=w.meaning;g('fcen').textContent=w.en;g('fcpysm').textContent=w.pinyin;
   // Tone badges
   const tr=g('tonerow');tr.innerHTML='';
@@ -1700,7 +1743,7 @@ function renderDia(){
       optsArea.appendChild(btn);
     });
   }
-  msgArea.scrollTop=msgArea.scrollHeight;
+  setTimeout(()=>{msgArea.scrollTop=msgArea.scrollHeight;},50);
 }
 function handleDiaOpt(btn,correct,meMsg,msgArea,optsArea,dia){
   document.querySelectorAll('.dia-opt').forEach(b=>{b.style.pointerEvents='none';b.style.opacity='.6';});
@@ -1720,7 +1763,7 @@ function handleDiaOpt(btn,correct,meMsg,msgArea,optsArea,dia){
     document.querySelectorAll('.dia-opt').forEach(b=>{if(b.querySelector('.dia-opt-cn')?.textContent===meMsg.opts.find(o=>o.correct)?.cn){b.classList.add('ok');b.style.opacity='1';}});
     setTimeout(()=>{SES.diaStep++;renderDia();},2500);
   }
-  msgArea.scrollTop=msgArea.scrollHeight;
+  setTimeout(()=>{msgArea.scrollTop=msgArea.scrollHeight;},50);
 }
 
 // TONES
@@ -1796,6 +1839,13 @@ function showComp(){
   if(_bonus&&g('comp-detail'))g('comp-detail').textContent=(g('comp-detail').textContent||'')+_bonus;g('cpct').textContent=acc+'%';
   const ring=g('cring');ring.style.stroke=acc>=80?'var(--green)':acc>=50?'var(--orange)':'var(--red)';g('cpct').style.color=acc>=80?'var(--green)':acc>=50?'var(--orange)':'var(--red)';
   setTimeout(()=>{ring.style.strokeDashoffset=327-(327*acc/100);},200);
+  // Flash XP gain
+  const xpFlash=document.createElement('div');
+  xpFlash.style.cssText='position:fixed;top:30%;left:50%;transform:translateX(-50%);font-size:28px;font-weight:900;color:var(--orange);z-index:700;animation:xpFloat 1.8s ease forwards;pointer-events:none';
+  xpFlash.textContent='+'+xp+' XP';
+  xpFlash.id='xp-flash';
+  document.body.appendChild(xpFlash);
+  setTimeout(()=>{const e=g('xp-flash');if(e)e.remove();},2000);
   let emoji,title;if(tot===0){emoji='🤔';title='Пусто';}else if(acc>=90){emoji='🏆';title='Блестяще!';confetti();}else if(acc>=70){emoji='🎉';title='Отлично!';confetti();}else if(acc>=50){emoji='💪';title='Неплохо!';}else{emoji='📚';title='Продолжай!';}
   g('cemo').textContent=emoji;g('ctit').textContent=title;const _mot=acc>=90?'Фантастика! 🚀':acc>=70?'Молодец! Продолжай 💪':acc>=50?'Хороший прогресс! 📈':'Не сдавайся! 📚';
   g('csub').textContent=_mot;
@@ -1831,7 +1881,7 @@ function renderV(){
   list.forEach(w=>{
     const wd=ST.wordData[w.id]||{},m=wd.mastery||0,fav=ST.favorites.includes(w.id);
     const row=document.createElement('div');row.className='vi';
-    const tonesCls=w.tones&&w.tones[0]?`t${Math.min(w.tones[0],4)}`:'t1';
+    const tonesCls=w.hsk===1?'t1':w.hsk===2?'t2':'t3';
     row.innerHTML=`<div class="vich">${w.char}</div><div class="vii"><div class="vipy">${w.pinyin}${getRuPinyin(w.pinyin)?`<span style="color:var(--teal);font-weight:700;margin-left:8px;font-size:11px">${getRuPinyin(w.pinyin)}</span>`:''}
 </div><div class="vim">${w.meaning}</div><div class="vimt"><span class="vitag ${tonesCls}">HSK${w.hsk}</span>${w.conv?'<span style="font-size:10px;background:var(--bl);color:var(--blue);padding:2px 7px;border-radius:999px;font-weight:800">💬</span>':''}<span class="vistr">${'★'.repeat(m)}${'☆'.repeat(5-m)}</span></div></div><button class="vitts" onclick="event.stopPropagation();speakTxt('${w.char.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">🔊</button>${fav?'<span style="font-size:18px;color:var(--orange);flex-shrink:0">⭐</span>':''}`;
     row.onclick=()=>openModal(w);card.appendChild(row);
@@ -1924,6 +1974,7 @@ function renderProf(){
   g('pstr').textContent=ST.streak;g('pxp').textContent=ST.totalXp;g('plearn').textContent=learned;g('pdays').textContent=daysActive;
   g('pbstr').textContent=ST.bestStreak||ST.streak;g('pbxp').textContent=ST.totalXp;g('pbcards').textContent=ST.totalCards;g('pbsess').textContent=ST.sessions;
   renderHmap('profhmap');
+  renderMonthCalendar('month-cal');
   renderRoadmap();
   // Favs
   const fl=g('pfavlist');fl.innerHTML='';
@@ -2742,6 +2793,7 @@ const ROADMAP_LEVELS=[
   {lv:50,name:'Легенда',icon:'👑',desc:'Полное владение',goal:330},
 ];
 function renderRoadmap(){
+  try{
   const cont=g('roadmap-content');if(!cont)return;
   const lv=ST.level;const learned=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
   const curStage=ROADMAP_LEVELS.filter(s=>lv>=s.lv).pop()||ROADMAP_LEVELS[0];
@@ -2862,32 +2914,8 @@ const AI_WELCOME = {
   culture:    '你好！中国文化很有趣！(Zhōngguó wénhuà hěn yǒuqù!) — Китайская культура очень интересна! 🐉\n\nО чём хочешь узнать? Праздники, традиции, история, современный Китай?',
 };
 
-async function callAiApi(userMsg) {
-  const systemPrompt = AI_SYSTEM[aiScenario] || AI_SYSTEM.free;
-  const messages = [
-    ...aiHistory.slice(-12), // last 6 turns
-    { role: 'user', content: userMsg }
-  ];
-  
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: messages,
-      })
-    });
-    if (!resp.ok) throw new Error('API error ' + resp.status);
-    const data = await resp.json();
-    return data.content?.[0]?.text || '对不起，произошла ошибка.';
-  } catch(e) {
-    console.error('AI error:', e);
-    return '对不起 (duìbuqǐ) 😔\n\nПроизошла ошибка соединения. Попробуй ещё раз!';
-  }
-}
+// callAiApi replaced by offline engine below
+
 
 function initAiTeacher() {
   if (aiInitDone) return;
@@ -3023,6 +3051,11 @@ async function sendAiMsg(text) {
     hideAiTyping();
     appendAiBubble('ai', reply);
     aiHistory.push({ role: 'assistant', content: reply });
+    // Auto-speak Chinese parts
+    if(ST.settings.autoplay){
+      const cnMatch=reply.match(/\[CN:([^\|]+)\|/);
+      if(cnMatch)setTimeout(()=>speakTxt(cnMatch[1]),500);
+    }
 
     // Auto-speak Chinese parts if autoplay enabled
     if (ST.settings.autoplay) {
@@ -3084,6 +3117,282 @@ function toggleAiMic() {
 
 function showScenarioPicker() {
   toast('Выбери тему в полоске выше 👆');
+}
+
+
+// ============================================================
+// 🤖 OFFLINE AI TEACHER — Smart rule-based, no API needed
+// Works 100% offline in the standalone PWA
+// ============================================================
+
+const AI_TEACHER_BRAIN = {
+  // Pattern matching: [regex, response(s)]
+  free: [
+    [/你好|привет|здравствуй|hello/i, [
+      '你好！(Nǐ hǎo!) 😊 Привет! Рад тебя видеть!\n\n💡 В китайском есть и более формальное приветствие:\n[CN:您好|nín hǎo|Здравствуйте (вежливо)]\n\nПопробуй сказать: 你好！',
+      '你好！😊 Отлично, что ты практикуешь! Как дела?\n[CN:你好吗？|nǐ hǎo ma?|Как дела?]\n[CN:我很好！|wǒ hěn hǎo!|Я хорошо!]',
+    ]],
+    [/спасибо|谢谢|xie xie/i, [
+      '谢谢 (xiè xiè) — отлично! ✅\n\nА знаешь как ответить?\n[CN:不客气！|bù kè qì!|Пожалуйста! / Не за что!]\n\nЕщё вариант:\n[CN:没关系！|méi guān xi!|Ничего страшного!]',
+    ]],
+    [/пока|до свидания|再见/i, [
+      '再见！(Zài jiàn!) 👋\n\nОтличная практика! Ещё варианты прощания:\n[CN:拜拜！|bāi bāi!|Пока-пока!]\n[CN:明天见！|míng tiān jiàn!|Увидимся завтра!]',
+    ]],
+    [/меня зовут|я .{1,20}|my name|叫/i, [
+      '很高兴认识你！(Hěn gāo xìng rèn shi nǐ!) — Приятно познакомиться! 😄\n\nТак говорят при знакомстве:\n[CN:我叫...|wǒ jiào...|Меня зовут...]\n[CN:你叫什么名字？|nǐ jiào shén me míng zi?|Как тебя зовут?]',
+    ]],
+    [/не понимаю|不懂|不明白/i, [
+      'Не волнуйся! 😊 В Китае всегда можно сказать:\n[CN:我不明白|wǒ bù míng bái|Я не понимаю]\n[CN:请再说一次|qǐng zài shuō yī cì|Повторите пожалуйста]\n[CN:请说慢点|qǐng shuō màn diǎn|Говорите медленнее]\n\n💡 Китайцы очень терпеливы к иностранцам!',
+    ]],
+    [/тон|声调|произношени/i, [
+      'Тоны — это основа китайского! 🎵\n\n[CN:mā|1-й тон|高, ровный — «мама»]\n[CN:má|2-й тон|восходящий — «пенька»]\n[CN:mǎ|3-й тон|нисходяще-восходящий — «лошадь»]\n[CN:mà|4-й тон|нисходящий — «ругать»]\n\nПрактикуй с: 妈麻马骂 (mā má mǎ mà)',
+    ]],
+    [/как сказать|как будет|перевод|translate/i, [
+      'Отличный вопрос! 🤔 Попробуй описать что именно хочешь сказать — переведу и объясню!\n\nПолезные фразы для разговора:\n[CN:这是什么？|zhè shì shén me?|Что это?]\n[CN:怎么说？|zěn me shuō?|Как сказать?]',
+    ]],
+    [/россия|русск|russia/i, [
+      '俄罗斯！(Éluósī) 🇷🇺 Китайцы очень уважают Россию!\n\n[CN:我是俄罗斯人|wǒ shì éluósī rén|Я из России]\n[CN:俄罗斯很大|éluósī hěn dà|Россия очень большая]\n\n💡 Русских в Китае часто называют 老毛子 (lǎo máo zi) — в народе, не обидно.',
+    ]],
+    [/китай|中国|beijing|пекин/i, [
+      '中国 (Zhōngguó) — Китай, буквально «Срединное государство» 🐉\n\n[CN:北京|Běijīng|Пекин — столица]\n[CN:上海|Shànghǎi|Шанхай — крупнейший город]\n[CN:我想去中国|wǒ xiǎng qù zhōngguó|Хочу поехать в Китай]\n\nКогда планируешь поездку?',
+    ]],
+    [/加油|давай|удачи|вперёд/i, [
+      '加油！(Jiā yóu!) — дословно «добавь масла в огонь»! 🔥\n\nЭто китайский эквивалент «давай!» и «удачи!»:\n[CN:加油！|jiā yóu!|Давай! Не сдавайся!]\n[CN:你可以的！|nǐ kě yǐ de!|Ты можешь!]\n[CN:棒极了！|bàng jí le!|Отлично! Молодец!]',
+    ]],
+    [/деньги|цена|стоим|сколько|钱|多少/i, [
+      'Деньги — важная тема! 💰\n\n[CN:多少钱？|duō shǎo qián?|Сколько стоит?]\n[CN:太贵了！|tài guì le!|Слишком дорого!]\n[CN:便宜一点|pián yi yī diǎn|Немного дешевле]\n[CN:我买了|wǒ mǎi le|Беру!]\n\n💡 На рынках в Китае всегда торгуйся — это нормально!',
+    ]],
+    [/еда|ресторан|кушать|есть|吃|好吃/i, [
+      '中国菜 (Zhōngguó cài) — китайская кухня очень разнообразна! 🍜\n\n[CN:好吃！|hǎo chī!|Вкусно!]\n[CN:我要这个|wǒ yào zhè ge|Я хочу это]\n[CN:不辣|bù là|Без остроты]\n[CN:买单！|mǎi dān!|Счёт!]\n\nЧто любишь есть?',
+    ]],
+    [/привет|как дел|что нов/i, [
+      '你好！😊\n\n[CN:你好吗？|nǐ hǎo ma?|Как дела?]\n[CN:我很好，谢谢！|wǒ hěn hǎo, xiè xiè!|Я хорошо, спасибо!]\n[CN:你呢？|nǐ ne?|А ты?]\n\nПопробуй ответить по-китайски!',
+    ]],
+  ],
+
+  greet: [
+    [/.*/, [
+      '你好！(Nǐ hǎo!) 👋\n\nЯ рад познакомиться! Давай начнём:\n[CN:你叫什么名字？|nǐ jiào shén me míng zi?|Как тебя зовут?]\n\nОтветь: 我叫... (wǒ jiào...) + своё имя!',
+      '很高兴认识你！(Hěn gāo xìng rèn shi nǐ!) 😊\n\nТеперь спроси меня откуда я:\n[CN:你是哪国人？|nǐ shì nǎ guó rén?|Ты откуда?]\n\nЯ отвечу: 我是中国人 (wǒ shì zhōngguó rén) — Я китаец!',
+      '你多大了？(Nǐ duō dà le?) — Сколько тебе лет? 🎂\n\nОтвечают так:\n[CN:我...岁|wǒ...suì|Мне ... лет]\n\nНапример: 我二十五岁 (wǒ èrshíwǔ suì) — Мне 25 лет.',
+    ]],
+  ],
+
+  restaurant: [
+    [/меню|menu|菜单|что есть/i, [
+      '好的！(Hǎo de!) Вот наше меню! 📋\n\n[CN:北京烤鸭|Běijīng kǎoyā|Утка по-пекински — 128元]\n[CN:饺子|jiǎozi|Пельмени — 38元]\n[CN:炒饭|chǎofàn|Жареный рис — 28元]\n[CN:米饭|mǐfàn|Варёный рис — 5元]\n\nЧто будете заказывать? Скажи: 我要... (wǒ yào...) + блюдо!',
+    ]],
+    [/я хочу|want|要|заказ/i, [
+      '好的！(Hǎo de!) Отличный выбор! ✅\n\nПолезные фразы:\n[CN:我要这个|wǒ yào zhè ge|Я хочу это]\n[CN:不辣|bù là|Без остроты]\n[CN:少放盐|shǎo fàng yán|Меньше соли]\n[CN:加一杯水|jiā yī bēi shuǐ|Добавьте воды]\n\nЧто-нибудь ещё?',
+    ]],
+    [/счёт|bill|买单|платить/i, [
+      '好的！(Hǎo de!) Счёт сейчас принесу! 🧾\n\n[CN:买单！|mǎi dān!|Счёт!]\n[CN:一共多少钱？|yīgòng duō shǎo qián?|Сколько всего?]\n[CN:可以用支付宝吗？|kěyǐ yòng Zhīfùbǎo ma?|Можно Alipay?]\n[CN:有发票吗？|yǒu fāpiào ma?|Есть чек?]\n\n💡 В Китае часто платят WeChat Pay или Alipay!',
+    ]],
+    [/вкусно|好吃|delicious/i, [
+      '谢谢您！(Xièxiè nín!) Очень рады! 😊\n\n[CN:好吃极了！|hǎo chī jí le!|Очень вкусно!]\n[CN:再来一碗！|zài lái yī wǎn!|Ещё тарелочку!]\n[CN:下次还来！|xià cì hái lái!|Придём ещё раз!]\n\nСпасибо за визит!',
+    ]],
+    [/.*/, [
+      '欢迎光临！(Huānyíng guānglín!) 🍜 Добро пожаловать!\n\nМожете попросить:\n[CN:菜单|càidān|меню]\n[CN:推荐什么？|tuījiàn shén me?|Что посоветуете?]\n[CN:有素食吗？|yǒu sùshí ma?|Есть вегетарианское?]\n\nЧто желаете?',
+    ]],
+  ],
+
+  shopping: [
+    [/сколько|цена|多少钱|price/i, [
+      '一百块！(Yī bǎi kuài!) — 100 юаней!\n\n[CN:太贵了！|tài guì le!|Слишком дорого!]\n[CN:便宜一点|pián yi yī diǎn|Немного дешевле]\n[CN:五十块行吗？|wǔshí kuài xíng ma?|50 юаней — нормально?]\n\n💡 На рынке всегда торгуйся! Обычно цену снижают на 30-50%.',
+    ]],
+    [/куплю|беру|хочу|要|买/i, [
+      '好！(Hǎo!) Отличный выбор! 👍\n\n[CN:我买了！|wǒ mǎi le!|Беру!]\n[CN:能便宜点吗？|néng pián yi diǎn ma?|Можно дешевле?]\n[CN:打包|dǎbāo|Упакуйте]\n[CN:有袋子吗？|yǒu dàizi ma?|Есть пакет?]\n\nПлатить: 可以用微信吗？(kěyǐ yòng Wēixìn ma?) — Можно WeChat?',
+    ]],
+    [/.*/, [
+      '你好！🛍️ Что ищете?\n\n[CN:我想看看|wǒ xiǎng kànkan|Просто смотрю]\n[CN:有没有...？|yǒu méi yǒu...?|Есть ли у вас...?]\n[CN:多少钱？|duō shǎo qián?|Сколько стоит?]\n[CN:太贵了！|tài guì le!|Слишком дорого!]\n\nПробуй торговаться!',
+    ]],
+  ],
+
+  travel: [
+    [/метро|地铁|subway|станция/i, [
+      '地铁 (dìtiě) — метро! 🚇\n\n[CN:地铁站在哪里？|dìtiě zhàn zài nǎlǐ?|Где станция метро?]\n[CN:坐几号线？|zuò jǐ hào xiàn?|Какая линия?]\n[CN:在哪里换乘？|zài nǎlǐ huànchéng?|Где пересадка?]\n\n💡 В Пекине 27 линий метро! Билет стоит 3-10元.',
+    ]],
+    [/такси|出租车|дорога|куда|去/i, [
+      '打车！(Dǎ chē!) — Взять такси! 🚕\n\n[CN:我要去...|wǒ yào qù...|Мне нужно в...]\n[CN:去北京站|qù Běijīng zhàn|На Пекинский вокзал]\n[CN:多少钱？|duō shǎo qián?|Сколько стоит?]\n[CN:请打表|qǐng dǎ biǎo|Включите счётчик]\n\n💡 Используй Didi (如 DiDi) — это китайский Uber!',
+    ]],
+    [/помоги|заблудил|迷路|help/i, [
+      'Не беспокойся! 😊\n\n[CN:我迷路了|wǒ mí lù le|Я заблудился]\n[CN:能帮我吗？|néng bāng wǒ ma?|Можете помочь?]\n[CN:我找...|wǒ zhǎo...|Я ищу...]\n[CN:怎么走？|zěn me zǒu?|Как пройти?]\n\nКитайцы очень отзывчивы к иностранцам!',
+    ]],
+    [/.*/, [
+      '欢迎来中国！(Huānyíng lái Zhōngguó!) — Добро пожаловать в Китай! ✈️\n\n[CN:我是游客|wǒ shì yóukè|Я турист]\n[CN:我来自俄罗斯|wǒ lái zì éluósī|Я из России]\n[CN:请问...|qǐngwèn...|Простите...]\n\nЧто нужно найти или спросить?',
+    ]],
+  ],
+
+  grammar: [
+    [/тон|声调|произношен/i, [
+      'Тоны — важнейшая часть китайского! 🎵\n\n4 тона на примере "ma":\n[CN:妈 (mā)|1-й тон|Высокий ровный — мама]\n[CN:麻 (má)|2-й тон|Восходящий — лён]\n[CN:马 (mǎ)|3-й тон|Нисходяще-восходящий — лошадь]\n[CN:骂 (mà)|4-й тон|Резко нисходящий — ругать]\n\n💡 Тон меняет смысл слова полностью!',
+    ]],
+    [/частиц|了|的|吗|particle/i, [
+      'Частицы — это душа китайского! ✨\n\n[CN:了 (le)|завершение действия|Я поел — 我吃了]\n[CN:的 (de)|принадлежность|Моя книга — 我的书]\n[CN:吗 (ma)|вопрос да/нет|Ты ел? — 你吃了吗？]\n[CN:呢 (ne)|мягкий вопрос|А ты? — 你呢？]\n\nПопробуй составить предложение с 了!',
+    ]],
+    [/порядок|слов|order|структур/i, [
+      'Порядок слов в китайском! 📐\n\nОсновная структура: Подлеж. + Обстоят. + Сказуем. + Доп.\n\nПример:\n[CN:我今天在北京吃饺子|wǒ jīntiān zài Běijīng chī jiǎozi|Я сегодня в Пекине ем пельмени]\n\n💡 Время и место ставятся ПЕРЕД глаголом — в отличие от русского!',
+    ]],
+    [/числ|счёт|как считать/i, [
+      'Счёт в китайском! 🔢\n\n[CN:一二三四五|yī èr sān sì wǔ|1 2 3 4 5]\n[CN:六七八九十|liù qī bā jiǔ shí|6 7 8 9 10]\n[CN:百/千/万|bǎi/qiān/wàn|100/1000/10000]\n\n💡 10 000 = 一万 (yī wàn) — отдельное слово!\n\nПрактика: как сказать 2024? → 二零二四 (èr líng èr sì)',
+    ]],
+    [/.*/, [
+      'Какой аспект грамматики интересует? 📚\n\nМогу объяснить:\n• 4 тона и их произношение\n• Частицы 了/的/吗/呢\n• Порядок слов в предложении\n• Счётные слова (量词)\n• Отрицание с 不/没\n• Вопросительные слова\n\nНапиши что хочешь изучить!',
+    ]],
+  ],
+
+  culture: [
+    [/праздник|春节|новый год|new year/i, [
+      '春节 (Chūnjié) — Китайский Новый год! 🧧🐉\n\n[CN:春节快乐！|Chūnjié kuàilè!|С Китайским Новым Годом!]\n\n💡 Это самый важный праздник! Все едут домой (春运 — великое переселение), дарят красные конверты с деньгами 红包 (hóng bāo), запускают фейерверки!\n\nДата меняется каждый год — по лунному календарю.',
+    ]],
+    [/еда|кухн|food|блюд/i, [
+      'Китайская кухня очень разнообразна! 🍜\n\n[CN:北京烤鸭|Běijīng kǎoyā|Утка по-пекински]\n[CN:饺子|jiǎozi|Пельмени (по праздникам!)]\n[CN:火锅|huǒguō|Хот-пот (варишь сам)]\n[CN:包子|bāozi|Паровые пирожки]\n\n💡 В Китае 8 главных кулинарных традиций! Самая острая — сычуаньская (四川 Sìchuān).',
+    ]],
+    [/дракон|龙|zodiac|гороскоп/i, [
+      '龙 (Lóng) — Дракон! 🐉\n\nКитайский зодиак — 12 животных:\n[CN:鼠牛虎兔龙蛇|Shǔ Niú Hǔ Tù Lóng Shé|Крыса Бык Тигр Кролик Дракон Змея]\n[CN:马羊猴鸡狗猪|Mǎ Yáng Hóu Jī Gǒu Zhū|Лошадь Баран Обезьяна Петух Собака Свинья]\n\n💡 Дракон — самый счастливый год! Родители стараются, чтобы дети родились в год Дракона.',
+    ]],
+    [/чай|茶|tea/i, [
+      '茶 (chá) — чай! ☕ Китай — родина чая!\n\n[CN:绿茶|lǜchá|Зелёный чай]\n[CN:红茶|hóngchá|Красный чай (то что мы зовём чёрным!)]\n[CN:普洱茶|Pǔ\'ěr chá|Пуэр — прессованный]\n[CN:功夫茶|gōngfū chá|Гунфу-чай — чайная церемония]\n\n💡 Когда тебе наливают чай — стучи двумя пальцами по столу в знак благодарности!',
+    ]],
+    [/.*/, [
+      'Китайская культура невероятно богата! 🐉\n\nЧто тебя интересует?\n• 🧧 Праздники (春节, 中秋节...)\n• 🍜 Кухня и еда\n• 🎋 Философия (Конфуций, Даосизм)\n• 🐲 Зодиак и суеверия\n• 🀄 Маджонг и традиционные игры\n• ☕ Чайная культура\n• 📱 Современный Китай (WeChat, TikTok...)\n\nНапиши тему!',
+    ]],
+  ],
+};
+
+// Smart offline response engine
+function getOfflineResponse(userMsg, scenario) {
+  const patterns = AI_TEACHER_BRAIN[scenario] || AI_TEACHER_BRAIN.free;
+  const msg = userMsg.toLowerCase();
+  
+  for (const [pattern, responses] of patterns) {
+    if (pattern.test(msg)) {
+      const arr = Array.isArray(responses) ? responses : [responses];
+      // Pick response based on history length for variety
+      return arr[aiHistory.length % arr.length];
+    }
+  }
+  
+  // Fallback: generic encouraging response
+  const fallbacks = [
+    `好！(Hǎo!) Интересно! 😊\n\nПопробуй сказать это по-китайски:\n[CN:我想说...|wǒ xiǎng shuō...|Я хочу сказать...]\n\nИли спроси меня о чём-нибудь!`,
+    `很好！(Hěn hǎo!) Продолжаем! 💪\n\nПолезная фраза:\n[CN:我不太明白|wǒ bù tài míngbái|Я не совсем понимаю]\n[CN:能解释一下吗？|néng jiěshì yīxià ma?|Можете объяснить?]`,
+    `加油！(Jiā yóu!) Ты хорошо справляешься! 🌟\n\nЗапомни:\n[CN:熟能生巧|shú néng shēng qiǎo|Практика ведёт к совершенству]\n\nПродолжай практиковаться каждый день!`,
+  ];
+  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+}
+
+// Replace API call with offline engine
+async function callAiApi(userMsg) {
+  // Simulate thinking delay for realism
+  await new Promise(r => setTimeout(r, 600 + Math.random() * 800));
+  return getOfflineResponse(userMsg, aiScenario);
+}
+
+
+// ── ГРАММАТИЧЕСКИЕ СОВЕТЫ ─────────────────────────────────────
+const GRAMMAR_TIPS=[
+  {title:'Порядок слов',cn:'我今天在北京吃饺子',py:'Wǒ jīntiān zài Běijīng chī jiǎozi',ru:'Я сегодня в Пекине ем пельмени',tip:'Время и место — ПЕРЕД глаголом'},
+  {title:'Частица 了 (le)',cn:'我吃了',py:'Wǒ chī le',ru:'Я поел (действие завершено)',tip:'了 ставится после глагола для завершённого действия'},
+  {title:'Частица 的 (de)',cn:'我的书',py:'Wǒ de shū',ru:'Моя книга',tip:'的 между владельцем и объектом'},
+  {title:'Вопрос с 吗 (ma)',cn:'你吃了吗？',py:'Nǐ chī le ma?',ru:'Ты поел?',tip:'Добавь 吗 в конец для вопроса да/нет'},
+  {title:'Отрицание 不 (bù)',cn:'我不吃辣',py:'Wǒ bù chī là',ru:'Я не ем острое',tip:'不 ставится перед глаголом или прилагательным'},
+  {title:'Отрицание 没 (méi)',cn:'我没去',py:'Wǒ méi qù',ru:'Я не ходил (в прошлом)',tip:'没 используется для отрицания прошедших действий'},
+  {title:'Счётные слова',cn:'一本书',py:'Yī běn shū',ru:'Одна книга (本 — для книг)',tip:'Между числом и существительным ВСЕГДА счётное слово'},
+  {title:'Степени сравнения',cn:'我比你高',py:'Wǒ bǐ nǐ gāo',ru:'Я выше тебя (比 = чем)',tip:'比 используется для сравнения'},
+  {title:'Длительность действия',cn:'我学了两年',py:'Wǒ xué le liǎng nián',ru:'Я учился два года',tip:'Время после глагола показывает длительность'},
+  {title:'Структура 是...的',cn:'我是坐飞机来的',py:'Wǒ shì zuò fēijī lái de',ru:'Я приехал на самолёте',tip:'是...的 выделяет способ/время/место прошлого действия'},
+];
+let grammarTipIdx=0;
+function renderGrammarTip(){
+  const el=g('grammar-tip-card');if(!el)return;
+  const t=GRAMMAR_TIPS[grammarTipIdx%GRAMMAR_TIPS.length];
+  el.innerHTML=`
+    <div style="font-size:11px;font-weight:700;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📐 Грамматика — ${grammarTipIdx+1}/${GRAMMAR_TIPS.length}</div>
+    <div style="font-size:15px;font-weight:800;color:var(--label);margin-bottom:8px">${t.title}</div>
+    <div style="background:var(--s3);border-radius:var(--r);padding:12px;margin-bottom:8px">
+      <div style="font-family:var(--fc);font-size:20px;font-weight:700;color:var(--label)">${t.cn}</div>
+      <div style="font-size:12px;color:var(--red);font-weight:600;margin-top:3px;letter-spacing:.5px">${t.py}</div>
+      <div style="font-size:13px;color:var(--l2);margin-top:2px">${t.ru}</div>
+    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--blue);background:var(--bl);padding:8px 10px;border-radius:var(--rsm)">💡 ${t.tip}</div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button onclick="speakTxt('${t.cn.replace(/'/g,"\'")}');event.stopPropagation()" style="padding:7px 14px;background:var(--rl);color:var(--red);border:none;border-radius:999px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer">🔊 Послушать</button>
+      <button onclick="grammarTipIdx++;renderGrammarTip();event.stopPropagation()" style="padding:7px 14px;background:var(--s3);color:var(--l2);border:none;border-radius:999px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer">Следующий →</button>
+    </div>
+  `;
+}
+
+
+// ── ПОДЕЛИТЬСЯ ПРОГРЕССОМ ─────────────────────────────────────
+function shareProgress(){
+  const learned=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
+  const acc=ST.totalCards>0?Math.round(ST.totalCorrect/ST.totalCards*100):0;
+  const lv=Math.min(ST.level-1,6);
+  const text=`🀄 Учу китайский с 汉字 HànZì!\n`+
+    `${LVI[lv]} Уровень ${ST.level} — ${LVN[lv]}\n`+
+    `📚 Изучено слов: ${learned}/280\n`+
+    `🔥 Серия: ${ST.streak} дней\n`+
+    `⚡ XP: ${ST.totalXp}\n`+
+    `🎯 Точность: ${acc}%\n\n`+
+    `加油！Учи китайский вместе со мной!`;
+  if(navigator.share){
+    navigator.share({title:'Мой прогресс в китайском',text}).catch(()=>{});
+  } else {
+    navigator.clipboard?.writeText(text).then(()=>toast('📋 Скопировано в буфер!'));
+  }
+}
+
+
+// ── КАЛЕНДАРЬ АКТИВНОСТИ ─────────────────────────────────────
+function renderMonthCalendar(containerId){
+  const cont=g(containerId);if(!cont)return;
+  const now=new Date();
+  const year=now.getFullYear(),month=now.getMonth();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const firstDay=(new Date(year,month,1).getDay()+6)%7; // Mon=0
+  const monthNames=['Январь','Февраль','Март','Апрель','Май','Июнь',
+    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  
+  let html=`<div style="font-size:14px;font-weight:700;color:var(--label);margin-bottom:10px;text-align:center">${monthNames[month]} ${year}</div>`;
+  html+=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center">`;
+  const days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  days.forEach(d=>html+=`<div style="font-size:10px;font-weight:700;color:var(--l3);padding:2px">${d}</div>`);
+  // Empty cells
+  for(let i=0;i<firstDay;i++) html+=`<div></div>`;
+  // Days
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const count=ST.heatmap[dateStr]||0;
+    const isToday=d===now.getDate();
+    const bg=count>0?(count>=10?'var(--green)':count>=5?'rgba(52,199,89,.6)':'rgba(52,199,89,.3)'):'var(--s3)';
+    const border=isToday?'2px solid var(--red)':'2px solid transparent';
+    html+=`<div style="aspect-ratio:1;border-radius:6px;background:${bg};border:${border};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:${count>0?'#fff':'var(--l3)'}">${d}</div>`;
+  }
+  html+='</div>';
+  cont.innerHTML=html;
+}
+
+
+// ── НЕДАВНО ИЗУЧЕННЫЕ ─────────────────────────────────────────
+function renderRecentWords(){
+  const cont=g('recent-words');if(!cont)return;
+  // Get words learned recently (high mastery, sorted by nextReview)
+  const recent=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=3)
+    .sort((a,b)=>(ST.wordData[b.id]?.nextReview||0)-(ST.wordData[a.id]?.nextReview||0))
+    .slice(0,6);
+  if(!recent.length){cont.parentElement.style.display='none';return;}
+  cont.parentElement.style.display='';
+  cont.innerHTML='';
+  recent.forEach(w=>{
+    const chip=document.createElement('div');
+    chip.style.cssText='display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border-radius:var(--rlg);box-shadow:var(--sh);cursor:pointer;flex-shrink:0;transition:transform .14s';
+    chip.innerHTML=`<span style="font-family:var(--fc);font-size:20px;font-weight:700">${w.char}</span><div><div style="font-size:11px;color:var(--red);font-weight:600">${w.pinyin}</div><div style="font-size:12px;color:var(--l2)">${w.meaning}</div></div>`;
+    chip.addEventListener('touchstart',()=>chip.style.transform='scale(.96)',{passive:true});
+    chip.addEventListener('touchend',()=>chip.style.transform='',{passive:true});
+    chip.onclick=()=>{openModal(w);goTab('s-vocab',3);renderV();};
+    cont.appendChild(chip);
+  });
 }
 
 // EFFECTS
