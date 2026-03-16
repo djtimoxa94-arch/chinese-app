@@ -365,6 +365,55 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 @keyframes bossBar{0%{background-position:0%}100%{background-position:200%}}
 .combo-pop{animation:comboPop .15s cubic-bezier(.34,1.56,.64,1)}
 @keyframes comboPop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* ── AI TEACHER ──────────────────────────────────────────── */
+.aiteacher-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ai-header{padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--sep2)}
+.ai-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#FF3B30,#FF6B30);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative}
+.ai-avatar::after{content:'';position:absolute;bottom:0;right:0;width:12px;height:12px;background:var(--green);border-radius:50%;border:2px solid var(--bg)}
+.ai-name{font-size:16px;font-weight:800}.ai-status{font-size:12px;color:var(--l2);margin-top:1px}
+.ai-scenario-btn{margin-left:auto;background:var(--bl);color:var(--blue);border:none;border-radius:999px;padding:6px 12px;font-family:var(--f);font-size:12px;font-weight:700;cursor:pointer}
+
+.ai-chat{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.ai-bubble{max-width:82%;padding:12px 14px;border-radius:18px;font-size:15px;line-height:1.45;position:relative;animation:bubbleIn .25s cubic-bezier(.34,1.1,.64,1)}
+@keyframes bubbleIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.ai-bubble.ai{background:var(--surface);border-radius:18px 18px 18px 4px;box-shadow:var(--sh);align-self:flex-start}
+.ai-bubble.user{background:var(--red);color:#fff;border-radius:18px 18px 4px 18px;align-self:flex-end}
+.ai-bubble.user .bubble-py{color:rgba(255,255,255,.75)}
+.bubble-cn{font-family:var(--fc);font-size:17px;font-weight:700;margin-bottom:3px}
+.bubble-py{font-size:12px;color:var(--red);font-weight:600;letter-spacing:.5px;margin-bottom:2px}
+.bubble-ru{font-size:13px;color:var(--l2)}
+.bubble-tts{background:none;border:none;font-size:16px;cursor:pointer;padding:4px;position:absolute;top:8px;right:8px;opacity:.5}
+.bubble-correction{margin-top:8px;padding:8px 10px;background:var(--ol);border-radius:var(--rsm);font-size:12px;font-weight:600;color:var(--orange)}
+.bubble-tip{margin-top:6px;padding:7px 10px;background:var(--bl);border-radius:var(--rsm);font-size:12px;font-weight:600;color:var(--blue)}
+
+.ai-typing{display:flex;align-items:center;gap:4px;padding:12px 14px;background:var(--surface);border-radius:18px 18px 18px 4px;box-shadow:var(--sh);align-self:flex-start;width:60px}
+.ai-typing span{width:7px;height:7px;background:var(--l3);border-radius:50%;animation:aiDot 1.2s ease-in-out infinite}
+.ai-typing span:nth-child(2){animation-delay:.2s}.ai-typing span:nth-child(3){animation-delay:.4s}
+@keyframes aiDot{0%,60%,100%{transform:scale(1);opacity:.4}30%{transform:scale(1.3);opacity:1}}
+
+.ai-footer{padding:10px 12px;background:var(--bg);border-top:1px solid var(--sep2);flex-shrink:0}
+.ai-input-row{display:flex;align-items:center;gap:8px}
+.ai-input{flex:1;background:var(--surface);border:1.5px solid var(--sep);border-radius:999px;padding:11px 16px;font-family:var(--f);font-size:15px;color:var(--label);outline:none;transition:border-color .2s}
+.ai-input:focus{border-color:var(--red)}
+.ai-send{width:42px;height:42px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;box-shadow:0 4px 12px rgba(255,59,48,.35)}
+.ai-send:active{transform:scale(.92)}
+.ai-send:disabled{background:var(--l4);box-shadow:none}
+.ai-mic{width:42px;height:42px;border-radius:50%;background:var(--s3);border:none;color:var(--l2);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ai-mic.on{background:var(--red);color:#fff;box-shadow:0 4px 12px rgba(255,59,48,.35);animation:micPulse .8s ease-in-out infinite alternate}
+@keyframes micPulse{from{box-shadow:0 4px 12px rgba(255,59,48,.35)}to{box-shadow:0 4px 24px rgba(255,59,48,.6)}}
+
+.ai-scenarios{display:flex;gap:8px;overflow-x:auto;padding:6px 0;flex-shrink:0}
+.ai-scenarios::-webkit-scrollbar{display:none}
+.ai-scenario-chip{padding:7px 14px;border-radius:999px;background:var(--s3);border:1.5px solid var(--sep);font-family:var(--f);font-size:12px;font-weight:700;color:var(--l2);cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.ai-scenario-chip.on{background:var(--rl);border-color:var(--red);color:var(--red)}
+.ai-scenario-chip:active{transform:scale(.95)}
+
+.ai-suggestions{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px;flex-shrink:0}
+.ai-suggestions::-webkit-scrollbar{display:none}
+.ai-sug{padding:7px 14px;border-radius:999px;background:var(--surface);border:1.5px solid var(--sep);font-size:13px;font-weight:600;color:var(--label);cursor:pointer;white-space:nowrap;box-shadow:var(--sh);flex-shrink:0;font-family:var(--f)}
+.ai-sug:active{background:var(--s3)}
+
 </style>
 </head>
 <body>
@@ -511,6 +560,46 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
       <div class="lr" onclick="startLesson('fav','all')"><div class="li" style="background:var(--ol)">⭐</div><div><div class="lt">Избранное</div><div class="ls">Твои сохранённые слова</div></div><div class="la">›</div></div>
     </div>
   </div></div>
+</div>
+
+
+<!-- AI TEACHER SCREEN -->
+<div class="scr" id="s-ai">
+  <div class="ai-header">
+    <div class="ai-avatar">🤖</div>
+    <div>
+      <div class="ai-name">Мин Лаоши</div>
+      <div class="ai-status" id="ai-status">Готов к занятию ✦</div>
+    </div>
+    <button class="ai-scenario-btn" onclick="showScenarioPicker()">📋 Тема</button>
+  </div>
+
+  <!-- Scenario chips -->
+  <div class="ai-scenarios" id="ai-scenarios" style="padding:8px 16px 0;background:var(--bg)">
+    <div class="ai-scenario-chip on" onclick="setScenario('free',this)">💬 Свободный</div>
+    <div class="ai-scenario-chip" onclick="setScenario('greet',this)">👋 Знакомство</div>
+    <div class="ai-scenario-chip" onclick="setScenario('restaurant',this)">🍜 Ресторан</div>
+    <div class="ai-scenario-chip" onclick="setScenario('shopping',this)">🛍️ Покупки</div>
+    <div class="ai-scenario-chip" onclick="setScenario('travel',this)">✈️ Путешествие</div>
+    <div class="ai-scenario-chip" onclick="setScenario('grammar',this)">📚 Грамматика</div>
+    <div class="ai-scenario-chip" onclick="setScenario('culture',this)">🐉 Культура</div>
+  </div>
+
+  <!-- Chat area -->
+  <div class="ai-chat" id="ai-chat"></div>
+
+  <!-- Footer -->
+  <div class="ai-footer">
+    <!-- Suggested phrases -->
+    <div class="ai-suggestions" id="ai-suggestions"></div>
+    <div class="ai-input-row">
+      <button class="ai-mic" id="ai-mic-btn" onclick="toggleAiMic()">🎤</button>
+      <input class="ai-input" id="ai-input" placeholder="Напиши или скажи по-русски / по-китайски..."
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAiMsg();}"
+        oninput="aiTyping()">
+      <button class="ai-send" id="ai-send-btn" onclick="sendAiMsg()">➤</button>
+    </div>
+  </div>
 </div>
 
 <!-- LESSON -->
@@ -818,9 +907,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 <nav id="nav">
   <button class="nb on" id="nb0" onclick="goTab('s-home',0)"><span class="ni">🏠</span>Главная</button>
   <button class="nb" id="nb1" onclick="goTab('s-course',1);renderCourse()"><span class="ni">🗺️</span>Курс</button>
-  <button class="nb" id="nb2" onclick="goTab('s-vocab',2);renderV()"><span class="ni">📚</span>Словарь</button>
-  <button class="nb" id="nb3" onclick="goTab('s-stats',3);renderStats()"><span class="ni">📊</span>Прогресс</button>
-  <button class="nb" id="nb4" onclick="goTab('s-prof',4);renderProf()"><span class="ni">👤</span>Профиль</button>
+  <button class="nb" id="nb2" onclick="goTab('s-ai',2);initAiTeacher()"><span class="ni">🤖</span>ИИ Учитель</button>
+  <button class="nb" id="nb2v" onclick="goTab('s-vocab',3);renderV()"><span class="ni">📚</span>Словарь</button>
+  <button class="nb" id="nb3" onclick="goTab('s-stats',4);renderStats()"><span class="ni">📊</span>Прогресс</button>
+  <button class="nb" id="nb4" onclick="goTab('s-prof',5);renderProf()"><span class="ni">👤</span>Профиль</button>
 </nav>
 </div>
 
@@ -2703,6 +2793,299 @@ function updateSrsWidget(){
   }
 }
 
+
+// ============================================================
+// 🤖 AI УЧИТЕЛЬ — Anthropic API + Web Speech
+// ============================================================
+let aiHistory = [];
+let aiScenario = 'free';
+let aiMicOn = false;
+let aiTypingEl = null;
+let aiInitDone = false;
+
+const AI_SYSTEM = {
+  free: `Ты — Мин Лаоши (老师), дружелюбный учитель китайского языка для русскоязычных учеников. 
+Твоя задача: вести живой разговор на смеси русского и китайского, постепенно увеличивая долю китайского.
+Правила:
+- ВСЕГДА пиши китайские фразы в формате: 汉字 (pīnyīn) — перевод
+- Начинай с простых фраз HSK 1
+- Если ученик пишет по-русски — ответь и дай китайский эквивалент
+- Исправляй ошибки мягко, хвали прогресс
+- Давай грамматические пояснения кратко
+- В конце каждого ответа предлагай 1-2 фразы для практики
+- Используй эмодзи для живости
+- Отвечай компактно (3-5 предложений максимум)`,
+
+  greet: `Ты — Мин Лаоши, учитель китайского. Разыгрываем сценарий ЗНАКОМСТВА.
+Начни диалог: познакомься с учеником, спроси имя, откуда, сколько лет учит китайский.
+Пиши китайские фразы как: 你好！(nǐ hǎo!) — Привет!
+Учи: приветствия, имена, страны, профессии. Исправляй ошибки.`,
+
+  restaurant: `Ты — Мин Лаоши. Мы в китайском ресторане 北京烤鸭. Ты — официант/хозяин.
+Помогаешь ученику заказать еду, спросить цену, попросить счёт.
+Учи: еду, числа, вежливые просьбы. Пиши китайские слова с пиньинь и переводом.`,
+
+  shopping: `Ты — Мин Лаоши. Мы на рынке Ябаолу в Пекине. Ты — продавец.
+Торгуйся с учеником, учи числа, цвета, прилагательные (дорого/дёшево).
+Китайские фразы: 多少钱？(duō shǎo qián?) — Сколько стоит?`,
+
+  travel: `Ты — Мин Лаоши. Помогаешь ученику ориентироваться в Пекине.
+Объясняй как добраться, купить билет, спросить дорогу.
+Учи: транспорт, направления, числа для времени.`,
+
+  grammar: `Ты — Мин Лаоши, объясняешь грамматику китайского языка по-русски с примерами.
+Объясняй порядок слов, частицы 了/的/吗, счётные слова, тоны.
+Давай упражнения: составь предложение, переведи фразу.`,
+
+  culture: `Ты — Мин Лаоши, рассказываешь о культуре и традициях Китая.
+Чередуй интересные факты с изучением связанных слов и фраз.
+Темы: праздники, еда, традиции, история, современный Китай.`,
+};
+
+const AI_SUGGESTIONS = {
+  free:     ['你好！', 'Как сказать "спасибо"?', '我是俄罗斯人', 'Что значит 加油？', '我学习汉语'],
+  greet:    ['你好！', '我叫...', '我是俄罗斯人', '你叫什么名字？', '很高兴认识你'],
+  restaurant:['菜单', '多少钱？', '我要这个', '好吃！', '买单！', '不辣'],
+  shopping:  ['多少钱？', '太贵了！', '便宜一点', '我买了', '有没有...'],
+  travel:    ['去北京', '地铁在哪里', '多少钱？', '我迷路了', '帮我叫出租车'],
+  grammar:   ['解释一下了', '什么是量词？', '语序是什么？', 'как использовать 的？'],
+  culture:   ['春节是什么？', '为什么红色是幸运的？', '筷子的礼仪', '中国新年习俗'],
+};
+
+const AI_WELCOME = {
+  free:       '你好！我是你的中文老师明老师 😊\n\nНапиши мне что-нибудь — по-русски или по-китайски! Буду учить тебя разговорному китайскому. С чего начнём?',
+  greet:      '你好！(Nǐ hǎo!) — Привет! 👋\n\nСейчас мы будем практиковать знакомство. Я начну: 你叫什么名字？(Nǐ jiào shén me míng zì?) — Как тебя зовут?',
+  restaurant: '欢迎光临！(Huānyíng guānglín!) — Добро пожаловать! 🍜\n\nМы в ресторане «Пекинская утка». Я ваш официант. Вот меню! Что будете заказывать?\n\n菜单 (càidān) — меню\n服务员 (fúwùyuán) — официант',
+  shopping:   '你好！来买东西吗？(Lái mǎi dōngxi ma?) — Пришли за покупками? 🛍️\n\nМы на рынке! Спрашивай цену: 多少钱？(Duō shǎo qián?)',
+  travel:     '你好！去哪里？(Qù nǎlǐ?) — Куда едем? ✈️\n\nЯ помогу тебе ориентироваться в Пекине! Спрашивай всё что нужно.',
+  grammar:    '你好！今天我们学语法 (jīntiān wǒmen xué yǔfǎ) — Сегодня изучаем грамматику! 📚\n\nЧто хочешь понять? Могу объяснить тоны, порядок слов, частицы 了/的/吗 и многое другое.',
+  culture:    '你好！中国文化很有趣！(Zhōngguó wénhuà hěn yǒuqù!) — Китайская культура очень интересна! 🐉\n\nО чём хочешь узнать? Праздники, традиции, история, современный Китай?',
+};
+
+async function callAiApi(userMsg) {
+  const systemPrompt = AI_SYSTEM[aiScenario] || AI_SYSTEM.free;
+  const messages = [
+    ...aiHistory.slice(-12), // last 6 turns
+    { role: 'user', content: userMsg }
+  ];
+  
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: messages,
+      })
+    });
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+    const data = await resp.json();
+    return data.content?.[0]?.text || '对不起，произошла ошибка.';
+  } catch(e) {
+    console.error('AI error:', e);
+    return '对不起 (duìbuqǐ) 😔\n\nПроизошла ошибка соединения. Попробуй ещё раз!';
+  }
+}
+
+function initAiTeacher() {
+  if (aiInitDone) return;
+  aiInitDone = true;
+  showAiWelcome();
+  renderAiSuggestions();
+}
+
+function showAiWelcome() {
+  const chat = g('ai-chat');
+  if (!chat) return;
+  chat.innerHTML = '';
+  aiHistory = [];
+  const welcomeText = AI_WELCOME[aiScenario] || AI_WELCOME.free;
+  appendAiBubble('ai', welcomeText);
+  // Save welcome to history
+  aiHistory.push({ role: 'assistant', content: welcomeText });
+}
+
+function renderAiSuggestions() {
+  const cont = g('ai-suggestions');
+  if (!cont) return;
+  cont.innerHTML = '';
+  const sugs = AI_SUGGESTIONS[aiScenario] || AI_SUGGESTIONS.free;
+  sugs.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'ai-sug';
+    btn.textContent = s;
+    btn.onclick = () => {
+      const inp = g('ai-input');
+      if (inp) { inp.value = s; sendAiMsg(); }
+    };
+    cont.appendChild(btn);
+  });
+}
+
+function setScenario(id, el) {
+  aiScenario = id;
+  aiInitDone = false;
+  document.querySelectorAll('.ai-scenario-chip').forEach(b => b.classList.remove('on'));
+  if (el) el.classList.add('on');
+  showAiWelcome();
+  renderAiSuggestions();
+  aiInitDone = true;
+}
+
+function appendAiBubble(role, text, extra) {
+  const chat = g('ai-chat');
+  if (!chat) return;
+
+  const div = document.createElement('div');
+  div.className = 'ai-bubble ' + role;
+
+  if (role === 'ai') {
+    // Parse text: look for Chinese characters and format them
+    const formatted = formatAiText(text);
+    div.innerHTML = formatted;
+    
+    // Add TTS button for AI messages with Chinese
+    if (/[\u4e00-\u9fff]/.test(text)) {
+      const ttsBtn = document.createElement('button');
+      ttsBtn.className = 'bubble-tts';
+      ttsBtn.textContent = '🔊';
+      ttsBtn.onclick = () => {
+        // Extract Chinese text and speak
+        const cnMatch = text.match(/[\u4e00-\u9fff\s，。！？、：；""'']+/g);
+        if (cnMatch) speakTxt(cnMatch.join(''));
+      };
+      div.appendChild(ttsBtn);
+    }
+  } else {
+    div.textContent = text;
+  }
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function formatAiText(text) {
+  // Convert newlines to <br>
+  let s = text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s = s.replace(/\n/g, '<br>');
+  // Highlight Chinese characters with pinyin in parens: 你好 (nǐ hǎo) — Привет
+  s = s.replace(/([\u4e00-\u9fff]+)\s*\(([^)]+)\)\s*—\s*([^<\n]+)/g,
+    '<div class="bubble-cn">$1</div><div class="bubble-py">$2</div><div class="bubble-ru">$3</div>');
+  // Highlight standalone Chinese chars
+  s = s.replace(/([\u4e00-\u9fff！？。，、：；""'']+)/g, '<span style="font-family:var(--fc);font-weight:700">$1</span>');
+  // ✅ correction blocks
+  s = s.replace(/✅[^\n<]*/g, m => `<div class="bubble-tip">${m}</div>`);
+  s = s.replace(/❌[^\n<]*/g, m => `<div class="bubble-correction">${m}</div>`);
+  s = s.replace(/💡[^\n<]*/g, m => `<div class="bubble-tip">${m}</div>`);
+  return s;
+}
+
+function showAiTyping() {
+  const chat = g('ai-chat');
+  if (!chat) return;
+  const div = document.createElement('div');
+  div.className = 'ai-typing';
+  div.id = 'ai-typing';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  aiTypingEl = div;
+}
+
+function hideAiTyping() {
+  if (aiTypingEl) { aiTypingEl.remove(); aiTypingEl = null; }
+  const t = g('ai-typing');
+  if (t) t.remove();
+}
+
+async function sendAiMsg(text) {
+  const inp = g('ai-input');
+  const msg = text || (inp ? inp.value.trim() : '');
+  if (!msg) return;
+  if (inp) inp.value = '';
+
+  // Show user bubble
+  appendAiBubble('user', msg);
+  aiHistory.push({ role: 'user', content: msg });
+
+  // Disable send button
+  const sendBtn = g('ai-send-btn');
+  if (sendBtn) sendBtn.disabled = true;
+  g('ai-status').textContent = 'Думает... ✦';
+
+  showAiTyping();
+
+  try {
+    const reply = await callAiApi(msg);
+    hideAiTyping();
+    appendAiBubble('ai', reply);
+    aiHistory.push({ role: 'assistant', content: reply });
+
+    // Auto-speak Chinese parts if autoplay enabled
+    if (ST.settings.autoplay) {
+      const cnMatch = reply.match(/[\u4e00-\u9fff\s，。！？]+/g);
+      if (cnMatch && cnMatch[0].trim().length > 1) {
+        setTimeout(() => speakTxt(cnMatch[0].trim()), 400);
+      }
+    }
+
+    // Award XP for conversation
+    addXP(5);
+    tick();
+
+  } catch(e) {
+    hideAiTyping();
+    appendAiBubble('ai', '对不起！Произошла ошибка. Попробуй ещё раз.');
+  }
+
+  if (sendBtn) sendBtn.disabled = false;
+  g('ai-status').textContent = 'Готов к занятию ✦';
+}
+
+function aiTyping() {
+  const inp = g('ai-input');
+  const sendBtn = g('ai-send-btn');
+  if (sendBtn) sendBtn.disabled = !(inp && inp.value.trim());
+}
+
+function toggleAiMic() {
+  const btn = g('ai-mic-btn');
+  if (aiMicOn) {
+    stopMic();
+    aiMicOn = false;
+    if (btn) { btn.classList.remove('on'); btn.textContent = '🎤'; }
+    g('ai-status').textContent = 'Готов к занятию ✦';
+    return;
+  }
+  aiMicOn = true;
+  if (btn) { btn.classList.add('on'); btn.textContent = '⏹'; }
+  g('ai-status').textContent = '🎤 Говорите...';
+
+  // Try Chinese recognition first, fall back to Russian
+  const lang = aiScenario === 'free' ? 'ru-RU' : 'zh-CN';
+  startMic(lang, 
+    text => {
+      aiMicOn = false;
+      if (btn) { btn.classList.remove('on'); btn.textContent = '🎤'; }
+      g('ai-status').textContent = 'Готов к занятию ✦';
+      if (text.trim()) sendAiMsg(text);
+    },
+    err => {
+      aiMicOn = false;
+      if (btn) { btn.classList.remove('on'); btn.textContent = '🎤'; }
+      g('ai-status').textContent = 'Готов к занятию ✦';
+      toast('Не распознано, попробуй ещё раз');
+    }
+  );
+}
+
+function showScenarioPicker() {
+  toast('Выбери тему в полоске выше 👆');
+}
+
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
@@ -2740,8 +3123,9 @@ window.addEventListener('popstate',()=>{
 });
 history.pushState({},'','');
 // Nav wiring
-g('nb3').onclick=()=>{goTab('s-stats',3);renderStats();};
-g('nb4').onclick=()=>{goTab('s-prof',4);renderProf();};
+g('nb3').onclick=()=>{goTab('s-stats',4);renderStats();};
+g('nb2v')?.addEventListener('click',()=>{goTab('s-vocab',3);renderV();});
+g('nb4').onclick=()=>{goTab('s-prof',5);renderProf();};
 function openSettings(){goTab('s-set',4);renderSet();}
 </script>
 </body>
