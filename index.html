@@ -446,7 +446,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 <div class="scr" id="s-home">
   <div class="ph"><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 14px">
     <div><div style="font-size:13px;color:var(--l2);font-weight:600" id="home-greeting">Добро пожаловать!</div>
-    <div style="font-size:28px;font-weight:900;letter-spacing:-.5px;color:var(--label)"><span style="color:var(--red)">汉</span>字 HànZì</div></div>
+    <div style="font-size:28px;font-weight:900;letter-spacing:-.5px;color:var(--label)" id="home-title"><span style="color:var(--red)">汉</span>字 HànZì</div></div>
     <div onclick="goTab('s-prof',5);renderProf()" style="cursor:pointer;flex-shrink:0" id="home-avatar"></div>
   </div></div>
   <div class="scroll"><div class="si">
@@ -743,6 +743,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
   </div>
   <div class="prow" style="padding:6px 16px 8px;flex-shrink:0" id="vpills">
     <button class="pill on" onclick="setVf('all',this)">Все</button>
+    <button class="pill off" onclick="setVf('en',this)">🇬🇧 Английский</button>
     <button class="pill off" onclick="setVf('conv',this)">💬 Разговорные</button>
     <button class="pill off" onclick="setVf('hsk1',this)">HSK 1</button>
     <button class="pill off" onclick="setVf('hsk2',this)">HSK 2</button>
@@ -864,6 +865,22 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 <div class="scr" id="s-set">
   <div class="ph"><div class="pt">Настройки</div></div>
   <div class="scroll"><div class="si">
+    <div class="sl">🌍 Язык обучения</div>
+    <div class="card" style="padding:14px 16px;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--l2);font-weight:600;margin-bottom:10px">Выбери язык для изучения</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button id="lang-cn" onclick="setLang('cn')" style="padding:14px;border-radius:var(--rlg);border:2px solid var(--red);background:var(--rl);font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+          <span style="font-size:28px">🇨🇳</span>
+          <span style="color:var(--red)">Китайский</span>
+          <span style="font-size:11px;color:var(--l2);font-weight:500">HSK 1-3 • 340 слов</span>
+        </button>
+        <button id="lang-en" onclick="setLang('en')" style="padding:14px;border-radius:var(--rlg);border:2px solid var(--sep);background:var(--surface);font-family:var(--f);font-size:14px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .15s">
+          <span style="font-size:28px">🇬🇧</span>
+          <span style="color:var(--label)">Английский</span>
+          <span style="font-size:11px;color:var(--l2);font-weight:500">A1-B2 • 150 слов</span>
+        </button>
+      </div>
+    </div>
     <div class="sl">Профиль обучения</div>
     <div class="lcard">
       <div style="padding:12px 16px 4px"><div style="font-size:15px;font-weight:700;margin-bottom:10px">Уровень сложности</div>
@@ -1463,7 +1480,7 @@ let ST={
   dailyCards:0,dailyGoal:10,startDate:null,
   weekAct:[0,0,0,0,0,0,0],heatmap:{},
   sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,
-  difficulty:1,
+  difficulty:1,lang:'cn',
   profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},
   settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},
   onboarded:false,
@@ -1566,6 +1583,9 @@ function finishOb(){
 // HOME
 function updateHome(){
   g('h-str').textContent=ST.streak;
+  // Update title for language
+  const ht=g('home-title');
+  if(ht)ht.innerHTML=ST.lang==='en'?'<span style="color:var(--red)">Eng</span>lish GO':'<span style="color:var(--red)">汉</span>字 HànZì';
   // Personalized greeting
   const hr=new Date().getHours();
   const greet=hr<5?'Ночная учёба 🌙':hr<12?'Доброе утро ☀️':hr<17?'Добрый день 🌤':hr<21?'Добрый вечер 🌆':'Ночная учёба 🌙';
@@ -1573,7 +1593,7 @@ function updateHome(){
   const grEl=g('home-greeting');if(grEl)grEl.textContent=greet+nameG+'!';
   // Mini avatar in header
   const haEl=g('home-avatar');
-  if(haEl){haEl.innerHTML=`<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid var(--sep)">${generateAvatar(ST.profile.avaStyle,ST.profile.avaColor,ST.profile.avaAccent,38)}</div>`;}g('h-xp').textContent=ST.totalXp;
+  if(haEl&&typeof generateAvatar==='function'){haEl.innerHTML=`<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid var(--sep)">${generateAvatar(ST.profile.avaStyle||0,ST.profile.avaColor||'#FF3B30',ST.profile.avaAccent||'#FFD60A',38)}</div>`;}else if(haEl){haEl.innerHTML=`<div style="width:38px;height:38px;border-radius:50%;background:var(--rl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px">${ST.profile.emoji||'🐣'}</div>`;}g('h-xp').textContent=ST.totalXp;
   const lv=Math.min(ST.level-1,6);g('h-lv').textContent=ST.level;g('h-lvn').textContent=LVN[lv];
   const need=200*ST.level;g('h-xpf').style.width=Math.min(ST.xp/need*100,100)+'%';g('h-xpn').textContent=`${ST.xp} / ${need} XP`;
   const DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],td=new Date().getDay(),tdi=td===0?6:td-1;
@@ -1608,6 +1628,8 @@ function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=~~(Math.ra
 // LESSON START
 function startLesson(type,level){resumeAC();sndStartLesson();
   synth.cancel();stopMic();
+  // Language routing
+  if(ST.lang==='en'){startEnLesson(type,level);return;}
   let cards=[];
   if(level==='hsk1')cards=VOCAB.filter(w=>w.hsk===1);
   else if(level==='hsk2')cards=VOCAB.filter(w=>w.hsk===2);
@@ -1656,6 +1678,7 @@ function showV(id){['v-flash','v-quiz','v-voice','v-dia','v-tones','v-write','v-
 // FLASH
 function initFlash(){isFlipped=false;renderFlash();}
 function renderFlash(){
+  if(SES.isEn){renderEnFlash();return;}
   const{cards,idx}=SES;if(idx>=cards.length){showComp();return;}
   const w=cards[idx];
   g('lpbf').style.width=(idx/cards.length*100)+'%';g('lcnt').textContent=`${idx+1}/${cards.length}`;
@@ -1680,7 +1703,8 @@ function renderFlash(){
 }
 function flipCard(){if(isFlipped)return;isFlipped=true;sndFlip();g('fcw').classList.add('flipped');g('fchint').textContent='';g('fcact').style.display='flex';if(ST.difficulty>1&&!ST.settings.autoplay)speakWord(SES.cards[SES.idx]);}
 function mark(ok){
-  const w=SES.cards[SES.idx],wd=ST.wordData[w.id];
+  const w=SES.cards[SES.idx];
+  const wd=SES.isEn?(EN_WORDDATA[w.id]||(EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0})):ST.wordData[w.id];
   if(ok){wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;SES.correct++;const mult=SES.bossXPMult||getComboMult();const xpGain=Math.round(10*mult);SES.xp+=xpGain;addXP(xpGain);ST.totalCorrect++;addCombo();sndCorrect();checkBossTrigger();}
   else{wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;SES.wrong++;SES.mistakes.push(w);ST.totalWrong++;resetCombo();sndWrong();if(SES.lives<99){SES.lives--;g('lhrt').innerHTML='❤️'.repeat(Math.max(0,SES.lives))+'🖤'.repeat(Math.max(0,3-SES.lives));}}
   tick();SES.idx++;if(SES.lives<=0){showComp();return;}setTimeout(renderFlash,250);
@@ -1865,7 +1889,8 @@ function retryMis(){
 function renderV(){
   const q=(g('vsrch').value||'').toLowerCase().trim();
   let list=[...VOCAB];
-  if(vf==='hsk1')list=list.filter(w=>w.hsk===1);else if(vf==='hsk2')list=list.filter(w=>w.hsk===2);
+  if(vf==='en'){list=EN_VOCAB;} // Show English words
+  else if(vf==='hsk1')list=list.filter(w=>w.hsk===1);else if(vf==='hsk2')list=list.filter(w=>w.hsk===2);
   else if(vf==='hsk3')list=list.filter(w=>w.hsk===3);else if(vf==='conv')list=list.filter(w=>w.conv);
   else if(vf==='fav')list=list.filter(w=>ST.favorites.includes(w.id));
   else if(vf==='learned')list=list.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2);
@@ -1882,8 +1907,9 @@ function renderV(){
     const wd=ST.wordData[w.id]||{},m=wd.mastery||0,fav=ST.favorites.includes(w.id);
     const row=document.createElement('div');row.className='vi';
     const tonesCls=w.hsk===1?'t1':w.hsk===2?'t2':'t3';
-    row.innerHTML=`<div class="vich">${w.char}</div><div class="vii"><div class="vipy">${w.pinyin}${getRuPinyin(w.pinyin)?`<span style="color:var(--teal);font-weight:700;margin-left:8px;font-size:11px">${getRuPinyin(w.pinyin)}</span>`:''}
-</div><div class="vim">${w.meaning}</div><div class="vimt"><span class="vitag ${tonesCls}">HSK${w.hsk}</span>${w.conv?'<span style="font-size:10px;background:var(--bl);color:var(--blue);padding:2px 7px;border-radius:999px;font-weight:800">💬</span>':''}<span class="vistr">${'★'.repeat(m)}${'☆'.repeat(5-m)}</span></div></div><button class="vitts" onclick="event.stopPropagation();speakTxt('${w.char.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">🔊</button>${fav?'<span style="font-size:18px;color:var(--orange);flex-shrink:0">⭐</span>':''}`;
+    const isEn=!!w.transl;
+    row.innerHTML=`<div class="${isEn?'':'vich'}" style="${isEn?'font-family:var(--f);font-size:16px;font-weight:700;width:auto;padding-right:8px;flex-shrink:0;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis':''}">${w.char}</div><div class="vii"><div class="vipy">${w.pinyin}${getRuPinyin(w.pinyin)?`<span style="color:var(--teal);font-weight:700;margin-left:8px;font-size:11px">${getRuPinyin(w.pinyin)}</span>`:''}
+</div><div class="vim">${w.transl||w.meaning}</div><div class="vimt"><span class="vitag ${tonesCls}">HSK${w.hsk}</span>${w.conv?'<span style="font-size:10px;background:var(--bl);color:var(--blue);padding:2px 7px;border-radius:999px;font-weight:800">💬</span>':''}<span class="vistr">${'★'.repeat(m)}${'☆'.repeat(5-m)}</span></div></div><button class="vitts" onclick="event.stopPropagation();speakTxt('${w.char.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">🔊</button>${fav?'<span style="font-size:18px;color:var(--orange);flex-shrink:0">⭐</span>':''}`;
     row.onclick=()=>openModal(w);card.appendChild(row);
   });
   cont.innerHTML='';cont.appendChild(card);
@@ -1981,7 +2007,7 @@ function renderProf(){
   const favWords=VOCAB.filter(w=>ST.favorites.includes(w.id)).slice(0,5);
   if(!favWords.length){fl.innerHTML='<div style="padding:14px 16px;color:var(--l2);font-size:14px;background:var(--surface);border-radius:var(--r)">Нет избранных слов</div>';}
   else{favWords.forEach(w=>{const row=document.createElement('div');row.className='vi';row.innerHTML=`<div class="vich">${w.char}</div><div class="vii"><div class="vipy">${w.pinyin}${getRuPinyin(w.pinyin)?`<span style="color:var(--teal);font-weight:700;margin-left:8px;font-size:11px">${getRuPinyin(w.pinyin)}</span>`:''}
-</div><div class="vim">${w.meaning}</div></div><span style="font-size:18px;color:var(--orange)">⭐</span>`;row.onclick=()=>openModal(w);fl.appendChild(row);});}
+</div><div class="vim">${w.transl||w.meaning}</div></div><span style="font-size:18px;color:var(--orange)">⭐</span>`;row.onclick=()=>openModal(w);fl.appendChild(row);});}
   const acc=ST.totalCards>0?Math.round(ST.totalCorrect/ST.totalCards*100):0;
   renderAchs('profachs',acc);
 }
@@ -2013,7 +2039,7 @@ function saveProfile(){
 }
 
 // SETTINGS
-function renderSet(){
+function renderSet(){updateLangUI();
   document.querySelectorAll('#diffbtns .dopt').forEach((b,i)=>b.classList.toggle('on',i+1===ST.difficulty));
   const gs=g('goalsel');if(gs)gs.value=ST.dailyGoal;
   ['autoplay','voiceInput','slowSpeech','sounds','ruTranslit','showCulture'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});updateThemeBtns();
@@ -2793,8 +2819,8 @@ const ROADMAP_LEVELS=[
   {lv:50,name:'Легенда',icon:'👑',desc:'Полное владение',goal:330},
 ];
 function renderRoadmap(){
-  try{
   const cont=g('roadmap-content');if(!cont)return;
+  try{
   const lv=ST.level;const learned=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
   const curStage=ROADMAP_LEVELS.filter(s=>lv>=s.lv).pop()||ROADMAP_LEVELS[0];
   const nextStage=ROADMAP_LEVELS.find(s=>lv<s.lv)||ROADMAP_LEVELS[ROADMAP_LEVELS.length-1];
@@ -2821,10 +2847,8 @@ function renderRoadmap(){
         </div>`).join('')}
     </div>
   `;
+  }catch(e){console.warn("roadmap err",e);}
 }
-
-
-// ── УМНОЕ НАПОМИНАНИЕ SRS ────────────────────────────────────
 function getNextSrsTime(){
   const due=getDue();if(!due.length)return null;
   // Already due
@@ -2920,10 +2944,8 @@ const AI_WELCOME = {
 function initAiTeacher() {
   if (aiInitDone) return;
   aiInitDone = true;
-  showAiWelcome();
-  renderAiSuggestions();
+  try{showAiWelcome();renderAiSuggestions();}catch(e){console.warn("initAI err",e);}
 }
-
 function showAiWelcome() {
   const chat = g('ai-chat');
   if (!chat) return;
@@ -3381,7 +3403,7 @@ function renderRecentWords(){
   const recent=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=3)
     .sort((a,b)=>(ST.wordData[b.id]?.nextReview||0)-(ST.wordData[a.id]?.nextReview||0))
     .slice(0,6);
-  if(!recent.length){cont.parentElement.style.display='none';return;}
+  if(!recent.length){if(cont.parentElement)cont.parentElement.style.display='none';return;}
   cont.parentElement.style.display='';
   cont.innerHTML='';
   recent.forEach(w=>{
@@ -3395,6 +3417,330 @@ function renderRecentWords(){
   });
 }
 
+
+// ── ДОПОЛНИТЕЛЬНЫЕ КИТАЙСКИЕ СЛОВА (281-400) ──────────────────
+const VOCAB_CN_EX=[
+  // Body & health
+  {id:281,char:'头痛',pinyin:'tóu tòng',tones:[2,4],meaning:'болит голова',en:'headache',hsk:2,conv:true},
+  {id:282,char:'肚子痛',pinyin:'dù zi tòng',tones:[4,5,4],meaning:'болит живот',en:'stomachache',hsk:2,conv:true},
+  {id:283,char:'发烧',pinyin:'fā shāo',tones:[1,1],meaning:'температура / жар',en:'fever',hsk:2,conv:true},
+  {id:284,char:'过敏',pinyin:'guò mǐn',tones:[4,3],meaning:'аллергия',en:'allergy',hsk:3,conv:true},
+  {id:285,char:'药',pinyin:'yào',tones:[4],meaning:'лекарство',en:'medicine',hsk:2,conv:false},
+  {id:286,char:'药店',pinyin:'yào diàn',tones:[4,4],meaning:'аптека',en:'pharmacy',hsk:2,conv:true},
+  // Food expanded
+  {id:287,char:'早饭',pinyin:'zǎo fàn',tones:[3,4],meaning:'завтрак',en:'breakfast',hsk:1,conv:false},
+  {id:288,char:'午饭',pinyin:'wǔ fàn',tones:[3,4],meaning:'обед',en:'lunch',hsk:1,conv:false},
+  {id:289,char:'晚饭',pinyin:'wǎn fàn',tones:[3,4],meaning:'ужин',en:'dinner',hsk:1,conv:false},
+  {id:290,char:'炒菜',pinyin:'chǎo cài',tones:[3,4],meaning:'жареные блюда',en:'stir-fry',hsk:2,conv:false},
+  {id:291,char:'汤',pinyin:'tāng',tones:[1],meaning:'суп',en:'soup',hsk:1,conv:false},
+  {id:292,char:'啤酒',pinyin:'pí jiǔ',tones:[2,3],meaning:'пиво',en:'beer',hsk:2,conv:false},
+  {id:293,char:'白酒',pinyin:'bái jiǔ',tones:[2,3],meaning:'байцзю (крепкий)',en:'baijiu (spirits)',hsk:3,conv:true},
+  {id:294,char:'辣椒',pinyin:'là jiāo',tones:[4,1],meaning:'перец чили',en:'chili pepper',hsk:2,conv:false},
+  {id:295,char:'甜',pinyin:'tián',tones:[2],meaning:'сладкий',en:'sweet',hsk:2,conv:false},
+  {id:296,char:'酸',pinyin:'suān',tones:[1],meaning:'кислый',en:'sour',hsk:2,conv:false},
+  {id:297,char:'苦',pinyin:'kǔ',tones:[3],meaning:'горький',en:'bitter',hsk:2,conv:false},
+  {id:298,char:'咸',pinyin:'xián',tones:[2],meaning:'солёный',en:'salty',hsk:2,conv:false},
+  // Weather & nature
+  {id:299,char:'晴天',pinyin:'qíng tiān',tones:[2,1],meaning:'ясный день',en:'sunny day',hsk:2,conv:true},
+  {id:300,char:'阴天',pinyin:'yīn tiān',tones:[1,1],meaning:'пасмурный день',en:'cloudy day',hsk:2,conv:true},
+  {id:301,char:'台风',pinyin:'tái fēng',tones:[2,1],meaning:'тайфун',en:'typhoon',hsk:3,conv:true},
+  {id:302,char:'地震',pinyin:'dì zhèn',tones:[4,4],meaning:'землетрясение',en:'earthquake',hsk:3,conv:true},
+  // Tech & modern
+  {id:303,char:'手机',pinyin:'shǒu jī',tones:[3,1],meaning:'смартфон',en:'smartphone',hsk:1,conv:false},
+  {id:304,char:'电脑',pinyin:'diàn nǎo',tones:[4,3],meaning:'компьютер',en:'computer',hsk:1,conv:false},
+  {id:305,char:'网络',pinyin:'wǎng luò',tones:[3,4],meaning:'интернет / сеть',en:'internet/network',hsk:2,conv:false},
+  {id:306,char:'发微信',pinyin:'fā wēi xìn',tones:[1,1,4],meaning:'написать в WeChat',en:'send on WeChat',hsk:2,conv:true},
+  {id:307,char:'扫码',pinyin:'sǎo mǎ',tones:[3,3],meaning:'сканировать QR',en:'scan QR code',hsk:2,conv:true},
+  {id:308,char:'打折',pinyin:'dǎ zhé',tones:[3,2],meaning:'скидка',en:'discount',hsk:2,conv:true},
+  {id:309,char:'外卖',pinyin:'wài mài',tones:[4,4],meaning:'доставка еды',en:'food delivery',hsk:2,conv:true},
+  {id:310,char:'快递',pinyin:'kuài dì',tones:[4,4],meaning:'курьерская доставка',en:'express delivery',hsk:2,conv:true},
+  // Work & study
+  {id:311,char:'会议',pinyin:'huì yì',tones:[4,4],meaning:'совещание',en:'meeting',hsk:2,conv:true},
+  {id:312,char:'报告',pinyin:'bào gào',tones:[4,4],meaning:'доклад / отчёт',en:'report',hsk:2,conv:false},
+  {id:313,char:'合同',pinyin:'hé tong',tones:[2,5],meaning:'контракт',en:'contract',hsk:3,conv:true},
+  {id:314,char:'老板',pinyin:'lǎo bǎn',tones:[3,3],meaning:'босс / хозяин',en:'boss/owner',hsk:2,conv:true},
+  {id:315,char:'同事',pinyin:'tóng shì',tones:[2,4],meaning:'коллега',en:'colleague',hsk:2,conv:false},
+  {id:316,char:'加班',pinyin:'jiā bān',tones:[1,1],meaning:'работать сверхурочно',en:'overtime work',hsk:3,conv:true},
+  // Places & directions
+  {id:317,char:'左边',pinyin:'zuǒ biān',tones:[3,1],meaning:'левая сторона',en:'left side',hsk:1,conv:true},
+  {id:318,char:'右边',pinyin:'yòu biān',tones:[4,1],meaning:'правая сторона',en:'right side',hsk:1,conv:true},
+  {id:319,char:'前面',pinyin:'qián miàn',tones:[2,4],meaning:'впереди',en:'in front',hsk:1,conv:true},
+  {id:320,char:'后面',pinyin:'hòu miàn',tones:[4,4],meaning:'сзади',en:'behind',hsk:1,conv:true},
+  {id:321,char:'附近',pinyin:'fù jìn',tones:[4,4],meaning:'рядом / поблизости',en:'nearby',hsk:2,conv:true},
+  {id:322,char:'超市',pinyin:'chāo shì',tones:[1,4],meaning:'супермаркет',en:'supermarket',hsk:1,conv:false},
+  {id:323,char:'机场',pinyin:'jī chǎng',tones:[1,3],meaning:'аэропорт',en:'airport',hsk:1,conv:false},
+  {id:324,char:'火车站',pinyin:'huǒ chē zhàn',tones:[3,1,4],meaning:'железнодорожный вокзал',en:'train station',hsk:1,conv:false},
+  {id:325,char:'酒店',pinyin:'jiǔ diàn',tones:[3,4],meaning:'отель',en:'hotel',hsk:1,conv:false},
+  {id:326,char:'宾馆',pinyin:'bīn guǎn',tones:[1,3],meaning:'гостиница',en:'guesthouse',hsk:2,conv:false},
+  // Emotions & states
+  {id:327,char:'生气',pinyin:'shēng qì',tones:[1,4],meaning:'злой / сердиться',en:'angry',hsk:2,conv:false},
+  {id:328,char:'害怕',pinyin:'hài pà',tones:[4,4],meaning:'бояться / страшно',en:'afraid/scared',hsk:2,conv:false},
+  {id:329,char:'紧张',pinyin:'jǐn zhāng',tones:[3,1],meaning:'нервничать / напряжённый',en:'nervous/tense',hsk:2,conv:false},
+  {id:330,char:'开心',pinyin:'kāi xīn',tones:[1,1],meaning:'счастливый / радоваться',en:'happy/joyful',hsk:1,conv:false},
+  // Useful phrases
+  {id:331,char:'以后',pinyin:'yǐ hòu',tones:[3,4],meaning:'после / в будущем',en:'after/in the future',hsk:2,conv:false},
+  {id:332,char:'以前',pinyin:'yǐ qián',tones:[3,2],meaning:'раньше / до',en:'before/previously',hsk:2,conv:false},
+  {id:333,char:'一样',pinyin:'yī yàng',tones:[1,4],meaning:'одинаковый / такой же',en:'same/alike',hsk:2,conv:false},
+  {id:334,char:'不同',pinyin:'bù tóng',tones:[4,2],meaning:'разный / отличается',en:'different',hsk:2,conv:false},
+  {id:335,char:'一定',pinyin:'yī dìng',tones:[1,4],meaning:'обязательно / непременно',en:'definitely/certainly',hsk:2,conv:false},
+  {id:336,char:'可能',pinyin:'kě néng',tones:[3,2],meaning:'возможно / может быть',en:'possibly/maybe',hsk:2,conv:false},
+  {id:337,char:'其实',pinyin:'qí shí',tones:[2,2],meaning:'на самом деле',en:'actually/in fact',hsk:2,conv:false},
+  {id:338,char:'比如',pinyin:'bǐ rú',tones:[3,2],meaning:'например',en:'for example',hsk:2,conv:false},
+  {id:339,char:'而且',pinyin:'ér qiě',tones:[2,3],meaning:'и к тому же / более того',en:'moreover/furthermore',hsk:2,conv:false},
+  {id:340,char:'一起来',pinyin:'yī qǐ lái',tones:[1,3,2],meaning:'пойдём вместе!',en:'come together!',hsk:1,conv:true},
+];
+VOCAB.push(...VOCAB_CN_EX);
+VOCAB_CN_EX.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
+
+// ============================================================
+// 🇬🇧 ENGLISH MODULE — полный курс английского
+// ============================================================
+const EN_VOCAB=[
+  // Greetings & basics
+  {id:'e1',char:'Hello',transl:'привет',pron:'хэлоу',ipa:'həˈloʊ',level:'A1',topic:'greet',example:'Hello! How are you?',ex_ru:'Привет! Как дела?'},
+  {id:'e2',char:'Goodbye',transl:'до свидания',pron:'гуд-бай',ipa:'ˌɡʊdˈbaɪ',level:'A1',topic:'greet',example:'Goodbye! See you tomorrow.',ex_ru:'Пока! Увидимся завтра.'},
+  {id:'e3',char:'Thank you',transl:'спасибо',pron:'сэнкью',ipa:'ˈθæŋk juː',level:'A1',topic:'greet',example:'Thank you very much!',ex_ru:'Большое спасибо!'},
+  {id:'e4',char:'Please',transl:'пожалуйста',pron:'плиз',ipa:'pliːz',level:'A1',topic:'greet',example:'Can I have some water, please?',ex_ru:'Можно воды, пожалуйста?'},
+  {id:'e5',char:'Sorry',transl:'извините / прости',pron:'сори',ipa:'ˈsɒri',level:'A1',topic:'greet',example:'Sorry, I don't understand.',ex_ru:'Извините, я не понимаю.'},
+  {id:'e6',char:"You're welcome",transl:'пожалуйста (ответ)',pron:'юр вэлком',ipa:'jɔːr ˈwelkəm',level:'A1',topic:'greet',example:'"Thank you!" — "You're welcome!"',ex_ru:'«Спасибо!» — «Пожалуйста!»'},
+  {id:'e7',char:'Excuse me',transl:'простите / подождите',pron:'экскьюз ми',ipa:'ɪkˈskjuːz miː',level:'A1',topic:'greet',example:'Excuse me, where is the toilet?',ex_ru:'Простите, где туалет?'},
+  {id:'e8',char:'Nice to meet you',transl:'приятно познакомиться',pron:'найс ту мит ю',ipa:'naɪs tə miːt juː',level:'A1',topic:'greet',example:'Nice to meet you! My name is Anna.',ex_ru:'Приятно познакомиться! Меня зовут Анна.'},
+  // Numbers
+  {id:'e9',char:'One',transl:'один',pron:'уан',ipa:'wʌn',level:'A1',topic:'numbers',example:'I need one ticket.',ex_ru:'Мне нужен один билет.'},
+  {id:'e10',char:'Two',transl:'два',pron:'ту',ipa:'tuː',level:'A1',topic:'numbers'},
+  {id:'e11',char:'Three',transl:'три',pron:'сри',ipa:'θriː',level:'A1',topic:'numbers'},
+  {id:'e12',char:'Ten',transl:'десять',pron:'тэн',ipa:'ten',level:'A1',topic:'numbers'},
+  {id:'e13',char:'Hundred',transl:'сто',pron:'хандред',ipa:'ˈhʌndrəd',level:'A1',topic:'numbers'},
+  {id:'e14',char:'Thousand',transl:'тысяча',pron:'саузэнд',ipa:'ˈθaʊzənd',level:'A1',topic:'numbers'},
+  // Pronouns
+  {id:'e15',char:'I',transl:'я',pron:'ай',ipa:'aɪ',level:'A1',topic:'pronouns',example:'I am from Russia.',ex_ru:'Я из России.'},
+  {id:'e16',char:'You',transl:'ты / вы',pron:'ю',ipa:'juː',level:'A1',topic:'pronouns'},
+  {id:'e17',char:'He / She',transl:'он / она',pron:'хи / ши',ipa:'hiː / ʃiː',level:'A1',topic:'pronouns'},
+  {id:'e18',char:'We',transl:'мы',pron:'уи',ipa:'wiː',level:'A1',topic:'pronouns'},
+  {id:'e19',char:'They',transl:'они',pron:'дэй',ipa:'ðeɪ',level:'A1',topic:'pronouns'},
+  // Time
+  {id:'e20',char:'Today',transl:'сегодня',pron:'тудэй',ipa:'təˈdeɪ',level:'A1',topic:'time'},
+  {id:'e21',char:'Tomorrow',transl:'завтра',pron:'тумороу',ipa:'təˈmɒrəʊ',level:'A1',topic:'time'},
+  {id:'e22',char:'Yesterday',transl:'вчера',pron:'йестердэй',ipa:'ˈjestədeɪ',level:'A1',topic:'time'},
+  {id:'e23',char:'Now',transl:'сейчас',pron:'нау',ipa:'naʊ',level:'A1',topic:'time'},
+  {id:'e24',char:'Later',transl:'позже',pron:'лэйтэр',ipa:'ˈleɪtər',level:'A1',topic:'time'},
+  {id:'e25',char:'Always',transl:'всегда',pron:'олвэйз',ipa:'ˈɔːlweɪz',level:'A1',topic:'time'},
+  {id:'e26',char:'Never',transl:'никогда',pron:'нэвэр',ipa:'ˈnevər',level:'A1',topic:'time'},
+  {id:'e27',char:'Sometimes',transl:'иногда',pron:'самтаймз',ipa:'ˈsʌmtaɪmz',level:'A2',topic:'time'},
+  // Core verbs
+  {id:'e28',char:'to be',transl:'быть',pron:'ту би',ipa:'tə biː',level:'A1',topic:'verbs',example:'I am a student.',ex_ru:'Я студент.'},
+  {id:'e29',char:'to have',transl:'иметь',pron:'ту хэв',ipa:'tə hæv',level:'A1',topic:'verbs',example:'I have a question.',ex_ru:'У меня есть вопрос.'},
+  {id:'e30',char:'to go',transl:'идти / ехать',pron:'ту гоу',ipa:'tə ɡəʊ',level:'A1',topic:'verbs'},
+  {id:'e31',char:'to come',transl:'приходить',pron:'ту кам',ipa:'tə kʌm',level:'A1',topic:'verbs'},
+  {id:'e32',char:'to want',transl:'хотеть',pron:'ту вонт',ipa:'tə wɒnt',level:'A1',topic:'verbs',example:'I want to learn English.',ex_ru:'Я хочу учить английский.'},
+  {id:'e33',char:'to need',transl:'нуждаться',pron:'ту нид',ipa:'tə niːd',level:'A1',topic:'verbs'},
+  {id:'e34',char:'to know',transl:'знать',pron:'ту ноу',ipa:'tə nəʊ',level:'A1',topic:'verbs'},
+  {id:'e35',char:'to understand',transl:'понимать',pron:'ту андэстэнд',ipa:'tə ˌʌndəˈstænd',level:'A1',topic:'verbs',example:"I don't understand.",ex_ru:'Я не понимаю.'},
+  {id:'e36',char:'to speak',transl:'говорить',pron:'ту спик',ipa:'tə spiːk',level:'A1',topic:'verbs'},
+  {id:'e37',char:'to listen',transl:'слушать',pron:'ту лисэн',ipa:'tə ˈlɪsən',level:'A1',topic:'verbs'},
+  {id:'e38',char:'to read',transl:'читать',pron:'ту рид',ipa:'tə riːd',level:'A1',topic:'verbs'},
+  {id:'e39',char:'to write',transl:'писать',pron:'ту райт',ipa:'tə raɪt',level:'A1',topic:'verbs'},
+  {id:'e40',char:'to eat',transl:'есть / кушать',pron:'ту ит',ipa:'tə iːt',level:'A1',topic:'verbs'},
+  {id:'e41',char:'to drink',transl:'пить',pron:'ту дринк',ipa:'tə drɪŋk',level:'A1',topic:'verbs'},
+  {id:'e42',char:'to buy',transl:'покупать',pron:'ту бай',ipa:'tə baɪ',level:'A1',topic:'verbs'},
+  {id:'e43',char:'to work',transl:'работать',pron:'ту вёрк',ipa:'tə wɜːk',level:'A1',topic:'verbs'},
+  {id:'e44',char:'to study',transl:'учиться',pron:'ту стади',ipa:'tə ˈstʌdi',level:'A1',topic:'verbs'},
+  {id:'e45',char:'to like',transl:'нравиться / любить',pron:'ту лайк',ipa:'tə laɪk',level:'A1',topic:'verbs'},
+  {id:'e46',char:'to love',transl:'любить',pron:'ту лав',ipa:'tə lʌv',level:'A1',topic:'verbs'},
+  {id:'e47',char:'to help',transl:'помогать',pron:'ту хэлп',ipa:'tə help',level:'A1',topic:'verbs'},
+  {id:'e48',char:'to call',transl:'звонить',pron:'ту кол',ipa:'tə kɔːl',level:'A1',topic:'verbs'},
+  {id:'e49',char:'to ask',transl:'спрашивать',pron:'ту аск',ipa:'tə ɑːsk',level:'A1',topic:'verbs'},
+  {id:'e50',char:'to say',transl:'говорить / сказать',pron:'ту сэй',ipa:'tə seɪ',level:'A1',topic:'verbs'},
+  // Adjectives
+  {id:'e51',char:'Good',transl:'хороший',pron:'гуд',ipa:'ɡʊd',level:'A1',topic:'adj'},
+  {id:'e52',char:'Bad',transl:'плохой',pron:'бэд',ipa:'bæd',level:'A1',topic:'adj'},
+  {id:'e53',char:'Big',transl:'большой',pron:'биг',ipa:'bɪɡ',level:'A1',topic:'adj'},
+  {id:'e54',char:'Small',transl:'маленький',pron:'смол',ipa:'smɔːl',level:'A1',topic:'adj'},
+  {id:'e55',char:'Fast',transl:'быстрый',pron:'фаст',ipa:'fɑːst',level:'A1',topic:'adj'},
+  {id:'e56',char:'Slow',transl:'медленный',pron:'слоу',ipa:'sləʊ',level:'A1',topic:'adj'},
+  {id:'e57',char:'Hot',transl:'горячий',pron:'хот',ipa:'hɒt',level:'A1',topic:'adj'},
+  {id:'e58',char:'Cold',transl:'холодный',pron:'колд',ipa:'kəʊld',level:'A1',topic:'adj'},
+  {id:'e59',char:'Happy',transl:'счастливый',pron:'хэпи',ipa:'ˈhæpi',level:'A1',topic:'adj'},
+  {id:'e60',char:'Sad',transl:'грустный',pron:'сэд',ipa:'sæd',level:'A1',topic:'adj'},
+  {id:'e61',char:'Beautiful',transl:'красивый',pron:'бьютифул',ipa:'ˈbjuːtɪfl',level:'A1',topic:'adj'},
+  {id:'e62',char:'Expensive',transl:'дорогой',pron:'икспэнсив',ipa:'ɪkˈspensɪv',level:'A1',topic:'adj'},
+  {id:'e63',char:'Cheap',transl:'дешёвый',pron:'чип',ipa:'tʃiːp',level:'A1',topic:'adj'},
+  {id:'e64',char:'Easy',transl:'лёгкий',pron:'изи',ipa:'ˈiːzi',level:'A1',topic:'adj'},
+  {id:'e65',char:'Difficult',transl:'трудный',pron:'дификалт',ipa:'ˈdɪfɪkəlt',level:'A1',topic:'adj'},
+  // Travel phrases
+  {id:'e66',char:'Where is...?',transl:'Где находится...?',pron:'вэр из',ipa:'weər ɪz',level:'A1',topic:'travel',example:'Where is the hotel?',ex_ru:'Где гостиница?'},
+  {id:'e67',char:'How much?',transl:'Сколько стоит?',pron:'хау мач',ipa:'haʊ mʌtʃ',level:'A1',topic:'travel',example:'How much is this?',ex_ru:'Сколько это стоит?'},
+  {id:'e68',char:'I need help',transl:'Мне нужна помощь',pron:'ай нид хэлп',ipa:'aɪ niːd help',level:'A1',topic:'travel'},
+  {id:'e69',char:'I'm lost',transl:'Я заблудился',pron:'айм лост',ipa:'aɪm lɒst',level:'A1',topic:'travel'},
+  {id:'e70',char:'Can you repeat?',transl:'Повторите, пожалуйста',pron:'кэн ю репит',ipa:'kæn juː rɪˈpiːt',level:'A1',topic:'travel'},
+  {id:'e71',char:'Speak slowly',transl:'Говорите медленнее',pron:'спик слоули',ipa:'spiːk ˈsləʊli',level:'A1',topic:'travel'},
+  {id:'e72',char:'I don't understand',transl:'Я не понимаю',pron:'ай донт андэстэнд',ipa:'aɪ dəʊnt ˌʌndəˈstænd',level:'A1',topic:'travel'},
+  {id:'e73',char:'Airport',transl:'аэропорт',pron:'эрпорт',ipa:'ˈeəpɔːt',level:'A1',topic:'travel'},
+  {id:'e74',char:'Hotel',transl:'отель',pron:'хоутэл',ipa:'həʊˈtel',level:'A1',topic:'travel'},
+  {id:'e75',char:'Restaurant',transl:'ресторан',pron:'рэстрант',ipa:'ˈrestərɒnt',level:'A1',topic:'travel'},
+  // Food
+  {id:'e76',char:'Water',transl:'вода',pron:'вотэр',ipa:'ˈwɔːtər',level:'A1',topic:'food'},
+  {id:'e77',char:'Coffee',transl:'кофе',pron:'кофи',ipa:'ˈkɒfi',level:'A1',topic:'food'},
+  {id:'e78',char:'Tea',transl:'чай',pron:'ти',ipa:'tiː',level:'A1',topic:'food'},
+  {id:'e79',char:'Bread',transl:'хлеб',pron:'брэд',ipa:'bred',level:'A1',topic:'food'},
+  {id:'e80',char:'Meat',transl:'мясо',pron:'мит',ipa:'miːt',level:'A1',topic:'food'},
+  {id:'e81',char:'Fish',transl:'рыба',pron:'фиш',ipa:'fɪʃ',level:'A1',topic:'food'},
+  {id:'e82',char:'Vegetarian',transl:'вегетарианский',pron:'вэджитэриэн',ipa:'ˌvedʒɪˈteəriən',level:'A2',topic:'food'},
+  {id:'e83',char:'The bill, please',transl:'Счёт, пожалуйста',pron:'зэ бил плиз',ipa:'ðə bɪl pliːz',level:'A1',topic:'food'},
+  // Work & study
+  {id:'e84',char:'Job',transl:'работа / должность',pron:'джоб',ipa:'dʒɒb',level:'A1',topic:'work'},
+  {id:'e85',char:'Meeting',transl:'встреча / собрание',pron:'митинг',ipa:'ˈmiːtɪŋ',level:'A2',topic:'work'},
+  {id:'e86',char:'Email',transl:'электронная почта',pron:'имейл',ipa:'ˈiːmeɪl',level:'A1',topic:'work'},
+  {id:'e87',char:'Deadline',transl:'срок / дедлайн',pron:'дэдлайн',ipa:'ˈdedlaɪn',level:'B1',topic:'work'},
+  {id:'e88',char:'Project',transl:'проект',pron:'проджект',ipa:'ˈprɒdʒekt',level:'A2',topic:'work'},
+  {id:'e89',char:'Contract',transl:'контракт',pron:'контракт',ipa:'ˈkɒntrækt',level:'B1',topic:'work'},
+  {id:'e90',char:'Interview',transl:'собеседование',pron:'интэрвью',ipa:'ˈɪntəvjuː',level:'A2',topic:'work'},
+  // Social phrases
+  {id:'e91',char:'How are you?',transl:'Как дела?',pron:'хау ар ю',ipa:'haʊ ɑː juː',level:'A1',topic:'social',example:'Hi! How are you?',ex_ru:'Привет! Как дела?'},
+  {id:'e92',char:"I'm fine",transl:'У меня всё хорошо',pron:'айм файн',ipa:'aɪm faɪn',level:'A1',topic:'social'},
+  {id:'e93',char:"What's your name?",transl:'Как вас зовут?',pron:'вотс ёр нейм',ipa:'wɒts jɔː neɪm',level:'A1',topic:'social'},
+  {id:'e94',char:'My name is...',transl:'Меня зовут...',pron:'май нейм из',ipa:'maɪ neɪm ɪz',level:'A1',topic:'social'},
+  {id:'e95',char:"Where are you from?",transl:'Откуда вы?',pron:'вэр ар ю фром',ipa:'weər ɑː juː frɒm',level:'A1',topic:'social'},
+  {id:'e96',char:"I'm from Russia",transl:'Я из России',pron:'айм фром раша',ipa:'aɪm frɒm ˈrʌʃə',level:'A1',topic:'social'},
+  {id:'e97',char:"How old are you?",transl:'Сколько вам лет?',pron:'хау олд ар ю',ipa:'haʊ əʊld ɑː juː',level:'A1',topic:'social'},
+  {id:'e98',char:"Do you speak English?",transl:'Вы говорите по-английски?',pron:'ду ю спик инглиш',ipa:'duː juː spiːk ˈɪŋɡlɪʃ',level:'A1',topic:'social'},
+  {id:'e99',char:"A little",transl:'Немного',pron:'э литл',ipa:'ə ˈlɪtl',level:'A1',topic:'social'},
+  {id:'e100',char:"I'm learning English",transl:'Я учу английский',pron:'айм лёрнинг инглиш',ipa:'aɪm ˈlɜːnɪŋ ˈɪŋɡlɪʃ',level:'A1',topic:'social'},
+  // Grammar words
+  {id:'e101',char:'But',transl:'но / однако',pron:'бат',ipa:'bʌt',level:'A1',topic:'grammar'},
+  {id:'e102',char:'Because',transl:'потому что',pron:'бикоз',ipa:'bɪˈkɒz',level:'A1',topic:'grammar'},
+  {id:'e103',char:'Although',transl:'хотя',pron:'олзоу',ipa:'ɔːlˈðəʊ',level:'B1',topic:'grammar'},
+  {id:'e104',char:'However',transl:'однако / тем не менее',pron:'хауэвэр',ipa:'haʊˈevər',level:'B1',topic:'grammar'},
+  {id:'e105',char:'Therefore',transl:'поэтому',pron:'зэрфор',ipa:'ˈðeəfɔː',level:'B1',topic:'grammar'},
+  {id:'e106',char:'Also',transl:'также / тоже',pron:'олсоу',ipa:'ˈɔːlsəʊ',level:'A1',topic:'grammar'},
+  {id:'e107',char:'Already',transl:'уже',pron:'олрэди',ipa:'ɔːlˈredi',level:'A2',topic:'grammar'},
+  {id:'e108',char:'Still',transl:'всё ещё',pron:'стил',ipa:'stɪl',level:'A2',topic:'grammar'},
+  {id:'e109',char:'Yet',transl:'ещё / уже (в вопр.)',pron:'йет',ipa:'jet',level:'A2',topic:'grammar'},
+  {id:'e110',char:'Just',transl:'только что / просто',pron:'джаст',ipa:'dʒʌst',level:'A2',topic:'grammar'},
+  // Useful questions
+  {id:'e111',char:'What?',transl:'Что? / Какой?',pron:'вот',ipa:'wɒt',level:'A1',topic:'questions'},
+  {id:'e112',char:'Who?',transl:'Кто?',pron:'ху',ipa:'huː',level:'A1',topic:'questions'},
+  {id:'e113',char:'Where?',transl:'Где? / Куда?',pron:'вэр',ipa:'weər',level:'A1',topic:'questions'},
+  {id:'e114',char:'When?',transl:'Когда?',pron:'вэн',ipa:'wen',level:'A1',topic:'questions'},
+  {id:'e115',char:'Why?',transl:'Почему?',pron:'вай',ipa:'waɪ',level:'A1',topic:'questions'},
+  {id:'e116',char:'How?',transl:'Как?',pron:'хау',ipa:'haʊ',level:'A1',topic:'questions'},
+  {id:'e117',char:'How much/many?',transl:'Сколько?',pron:'хау мач/мэни',ipa:'haʊ mʌtʃ/ˈmeni',level:'A1',topic:'questions'},
+  {id:'e118',char:'Which?',transl:'Который? / Какой?',pron:'вич',ipa:'wɪtʃ',level:'A1',topic:'questions'},
+  // B1+ vocabulary
+  {id:'e119',char:'Actually',transl:'на самом деле',pron:'экчуали',ipa:'ˈæktʃuəli',level:'B1',topic:'daily'},
+  {id:'e120',char:'Basically',transl:'по сути / в общем',pron:'бэйсикли',ipa:'ˈbeɪsɪkli',level:'B1',topic:'daily'},
+  {id:'e121',char:'Definitely',transl:'определённо / точно',pron:'дэфинитли',ipa:'ˈdefɪnətli',level:'B1',topic:'daily'},
+  {id:'e122',char:'Exactly',transl:'именно / точно',pron:'игзэктли',ipa:'ɪɡˈzæktli',level:'B1',topic:'daily'},
+  {id:'e123',char:'Obviously',transl:'очевидно',pron:'обвиэсли',ipa:'ˈɒbviəsli',level:'B1',topic:'daily'},
+  {id:'e124',char:'Probably',transl:'наверное / вероятно',pron:'пробэбли',ipa:'ˈprɒbəbli',level:'A2',topic:'daily'},
+  {id:'e125',char:'Anyway',transl:'в любом случае',pron:'энивэй',ipa:'ˈeniweɪ',level:'A2',topic:'daily'},
+  {id:'e126',char:'Meanwhile',transl:'тем временем',pron:'минвайл',ipa:'ˈmiːnwaɪl',level:'B1',topic:'daily'},
+  {id:'e127',char:'Furthermore',transl:'кроме того',pron:'фёрзэрмор',ipa:'ˈfɜːðəmɔː',level:'B2',topic:'daily'},
+  {id:'e128',char:'Nevertheless',transl:'тем не менее',pron:'нэвэрзэлэс',ipa:'ˌnevəðəˈles',level:'B2',topic:'daily'},
+  // Business English
+  {id:'e129',char:'Schedule',transl:'расписание / план',pron:'шэджул',ipa:'ˈʃedjuːl',level:'B1',topic:'business'},
+  {id:'e130',char:'Budget',transl:'бюджет',pron:'баджит',ipa:'ˈbʌdʒɪt',level:'B1',topic:'business'},
+  {id:'e131',char:'Partnership',transl:'партнёрство',pron:'партнэршип',ipa:'ˈpɑːtnəʃɪp',level:'B1',topic:'business'},
+  {id:'e132',char:'Investment',transl:'инвестиция',pron:'инвэстмэнт',ipa:'ɪnˈvestmənt',level:'B1',topic:'business'},
+  {id:'e133',char:'Negotiation',transl:'переговоры',pron:'нигоушиэйшн',ipa:'nɪˌɡəʊʃiˈeɪʃn',level:'B2',topic:'business'},
+  {id:'e134',char:'Agreement',transl:'соглашение',pron:'эгримэнт',ipa:'əˈɡriːmənt',level:'B1',topic:'business'},
+  {id:'e135',char:'Opportunity',transl:'возможность',pron:'опертьюнити',ipa:'ˌɒpəˈtjuːnɪti',level:'B1',topic:'business'},
+  {id:'e136',char:'Challenge',transl:'вызов / трудность',pron:'чэлиндж',ipa:'ˈtʃælɪndʒ',level:'B1',topic:'business'},
+  {id:'e137',char:'Strategy',transl:'стратегия',pron:'стрэтэджи',ipa:'ˈstrætədʒi',level:'B1',topic:'business'},
+  {id:'e138',char:'Feedback',transl:'обратная связь',pron:'фидбэк',ipa:'ˈfiːdbæk',level:'B1',topic:'business'},
+  // Phrasal verbs (very important!)
+  {id:'e139',char:'Give up',transl:'сдаться / бросить',pron:'гив ап',ipa:'ɡɪv ʌp',level:'A2',topic:'phrasal',example:"Don't give up!",ex_ru:'Не сдавайся!'},
+  {id:'e140',char:'Find out',transl:'узнать / выяснить',pron:'файнд аут',ipa:'faɪnd aʊt',level:'A2',topic:'phrasal',example:'I need to find out more.',ex_ru:'Мне нужно узнать больше.'},
+  {id:'e141',char:'Look up',transl:'найти в словаре / поискать',pron:'лук ап',ipa:'lʊk ʌp',level:'A2',topic:'phrasal',example:'Look it up online.',ex_ru:'Поищи это в интернете.'},
+  {id:'e142',char:'Turn on/off',transl:'включить / выключить',pron:'тёрн он/оф',ipa:'tɜːn ɒn/ɒf',level:'A1',topic:'phrasal'},
+  {id:'e143',char:'Pick up',transl:'подобрать / забрать',pron:'пик ап',ipa:'pɪk ʌp',level:'A2',topic:'phrasal'},
+  {id:'e144',char:'Run out of',transl:'исчерпать / закончиться',pron:'ран аут ов',ipa:'rʌn aʊt əv',level:'B1',topic:'phrasal',example:"We've run out of time.",ex_ru:'У нас закончилось время.'},
+  {id:'e145',char:'Come up with',transl:'придумать / предложить',pron:'кам ап виз',ipa:'kʌm ʌp wɪð',level:'B1',topic:'phrasal'},
+  {id:'e146',char:'Look forward to',transl:'с нетерпением ждать',pron:'лук форвэрд ту',ipa:'lʊk ˈfɔːwəd tə',level:'B1',topic:'phrasal',example:'I look forward to meeting you.',ex_ru:'С нетерпением жду встречи.'},
+  {id:'e147',char:'Deal with',transl:'справляться / решать',pron:'дил виз',ipa:'diːl wɪð',level:'B1',topic:'phrasal'},
+  {id:'e148',char:'Set up',transl:'организовать / настроить',pron:'сэт ап',ipa:'set ʌp',level:'A2',topic:'phrasal'},
+  // Idioms
+  {id:'e149',char:'Break a leg!',transl:'Удачи! (театральн.)',pron:'брейк э лэг',ipa:'breɪk ə leɡ',level:'B1',topic:'idioms',example:'Break a leg at your interview!',ex_ru:'Удачи на собеседовании!'},
+  {id:'e150',char:'Hit the road',transl:'Отправиться в путь',pron:'хит зэ роуд',ipa:'hɪt ðə rəʊd',level:'B1',topic:'idioms',example:"Let's hit the road!",ex_ru:'Давай отправимся!'},
+];
+
+const EN_WORDDATA = {};
+EN_VOCAB.forEach(w => { if (!EN_WORDDATA[w.id]) EN_WORDDATA[w.id] = {mastery:0,correct:0,wrong:0,nextReview:0}; });
+
+
+// ── ЯЗЫК ОБУЧЕНИЯ ──────────────────────────────────────────────
+// ST.lang = 'cn' | 'en'
+function setLang(lang){
+  ST.lang=lang;sv();
+  updateLangUI();
+  goTab('s-home',0);updateHome();
+  toast(lang==='en'?'🇬🇧 Английский режим':'🇨🇳 Китайский режим');
+}
+function updateLangUI(){
+  const isCn=ST.lang!=='en';
+  const enBtn=g('lang-en'),cnBtn=g('lang-cn');
+  if(enBtn){enBtn.style.borderColor=!isCn?'var(--red)':'var(--sep)';enBtn.style.background=!isCn?'var(--rl)':'var(--surface)';}
+  if(cnBtn){cnBtn.style.borderColor=isCn?'var(--red)':'var(--sep)';cnBtn.style.background=isCn?'var(--rl)':'var(--surface)';}
+}
+function getCurrentVocab(){
+  if(ST.lang==='en') return EN_VOCAB;
+  return VOCAB;
+}
+function getCurrentWordData(id){
+  if(ST.lang==='en') return EN_WORDDATA[id]||(EN_WORDDATA[id]={mastery:0,correct:0,wrong:0,nextReview:0});
+  return ST.wordData[id]||(ST.wordData[id]={mastery:0,correct:0,wrong:0,nextReview:0});
+}
+
+
+// ── АНГЛИЙСКИЕ КАРТОЧКИ ────────────────────────────────────────
+function renderEnFlash(){
+  const cards=SES.cards;const idx=SES.idx;
+  if(idx>=cards.length){showComp();return;}
+  const w=cards[idx];
+  g('lpbf').style.width=(idx/cards.length*100)+'%';g('lcnt').textContent=`${idx+1}/${cards.length}`;
+  // Front: English word
+  const tagEl=g('fctag');if(tagEl){tagEl.textContent=w.level||'A1';tagEl.style.cssText='position:absolute;top:14px;left:14px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.5px;background:var(--bl);color:var(--blue)';}
+  const charEl=g('fcch');if(charEl){charEl.textContent=w.char;charEl.style.fontFamily='var(--f)';charEl.style.fontSize=w.char.length>12?'24px':'38px';}
+  const pyEl=g('fcpy');
+  if(pyEl)pyEl.textContent=ST.difficulty===1?`🇷🇺 ${w.pron}`:'';
+  const hintEl=g('fchint');
+  if(hintEl)hintEl.textContent=ST.difficulty===1?`/${w.ipa||''}/`:'👆 Нажми для перевода';
+  const rutrEl=g('fc-rutr');if(rutrEl)rutrEl.textContent='';
+  // Back
+  const meanEl=g('fcmean');if(meanEl)meanEl.textContent=w.transl;
+  const enEl=g('fcen');if(enEl)enEl.textContent=w.example?`"${w.example}"`:'';
+  const pysmEl=g('fcpysm');if(pysmEl)pysmEl.textContent=`/${w.ipa||''}/ — ${w.pron||''}`;
+  const trEl=g('tonerow');if(trEl)trEl.innerHTML='';
+  // Example sentence
+  const exDiv=g('fc-example');const exCn=g('fc-ex-cn');const exPy=g('fc-ex-py');const exRu=g('fc-ex-ru');
+  if(exDiv&&w.example){exDiv.style.display='block';if(exCn)exCn.textContent=w.example;if(exPy)exPy.textContent='';if(exRu&&w.ex_ru)exRu.textContent=w.ex_ru;}
+  else if(exDiv)exDiv.style.display='none';
+  g('fcw').classList.remove('flipped');g('fcact').style.display='none';isFlipped=false;
+  if(ST.settings.autoplay)setTimeout(()=>speakEnWord(w),400);
+}
+function speakEnWord(w){
+  if(!w)return;const u=new SpeechSynthesisUtterance(w.char);u.lang='en-US';u.rate=ST.settings.slowSpeech?0.7:0.9;
+  const v=voices.find(x=>x.lang.startsWith('en-US'))||voices.find(x=>x.lang.startsWith('en-GB'))||voices.find(x=>x.lang.startsWith('en'));
+  if(v)u.voice=v;synth.cancel();synth.speak(u);
+}
+
+
+// ── АНГЛИЙСКИЙ РЕЖИМ ──────────────────────────────────────────
+function startEnLesson(type, level){
+  const topicMap={hsk1:'A1',hsk2:'A2',hsk3:'B1'};
+  let cards=[...EN_VOCAB];
+  if(level==='hsk1')cards=EN_VOCAB.filter(w=>w.level==='A1');
+  else if(level==='hsk2')cards=EN_VOCAB.filter(w=>['A1','A2'].includes(w.level));
+  else if(level==='hsk3')cards=EN_VOCAB.filter(w=>['B1','B2'].includes(w.level));
+  if(type==='review')cards=EN_VOCAB.filter(w=>(EN_WORDDATA[w.id]?.nextReview||0)<=Date.now()&&(EN_WORDDATA[w.id]?.mastery||0)>0);
+  if(type==='fav')cards=EN_VOCAB.filter(w=>ST.favorites.includes(w.id));
+  if(!cards.length)cards=[...EN_VOCAB];
+  cards=shuf(cards).slice(0,20);
+  SES={type:'en_flash',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:ST.difficulty<=2?3:99,isEn:true};
+  showLesson();showV('v-flash');renderEnFlash();
+}
+
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
@@ -3405,7 +3751,7 @@ function confetti(){
 let tT=null;
 function toast(msg,dur=2500){const t=g('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),dur);}
 function showCbox(){g('cbox').classList.add('open');}
-function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
+function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,lang:'cn',profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
 
 // SWIPE
 let swX=0;
@@ -3422,7 +3768,7 @@ window.addEventListener('load',()=>{
     const lo=g('loading');lo.style.transition='opacity .5s';lo.style.opacity='0';
     setTimeout(()=>lo.style.display='none',500);
     if(!ST.onboarded){g('ob').style.display='flex';}
-    else{g('s-home').classList.add('on');updateHome();initPotd();}
+    else{g('s-home').classList.add('on');updateHome();initPotd();updateLangUI();}
     if(ST.settings.notif&&Notification.permission==='granted')scheduleNotif();
   },1200);
 });
@@ -3433,7 +3779,7 @@ window.addEventListener('popstate',()=>{
 history.pushState({},'','');
 // Nav wiring
 g('nb3').onclick=()=>{goTab('s-stats',4);renderStats();};
-g('nb2v')?.addEventListener('click',()=>{goTab('s-vocab',3);renderV();});
+const _nb2v=g('nb2v');if(_nb2v)_nb2v.onclick=()=>{goTab('s-vocab',3);renderV();};
 g('nb4').onclick=()=>{goTab('s-prof',5);renderProf();};
 function openSettings(){goTab('s-set',4);renderSet();}
 </script>
