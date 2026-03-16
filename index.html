@@ -416,6 +416,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
       </div>
       <div class="hdays" id="h-days" style="position:relative;z-index:1"></div>
     </div>
+    <!-- SRS Due indicator -->
+    <div id="srs-widget" onclick="startLesson('review','all')" style="display:none;background:linear-gradient(135deg,#007AFF,#5AC8FA);border-radius:var(--rlg);padding:14px 18px;margin-bottom:12px;cursor:pointer;align-items:center;gap:14px;box-shadow:0 6px 20px rgba(0,122,255,.3)">
+      <div style="font-size:32px">⏰</div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:800;color:#fff">Пора повторить!</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.8);margin-top:2px"><span class="srs-count">0</span> слов ждут повторения</div>
+      </div>
+      <div style="color:rgba(255,255,255,.7);font-size:20px">›</div>
+    </div>
     <div class="card xpc">
       <div class="xph"><div class="xpl">⚡ <span id="h-xp">0</span> XP</div><div class="xps" id="h-xpn">0 / 200 XP</div></div>
       <div class="xptr"><div class="xpf" id="h-xpf" style="width:0%"></div></div>
@@ -497,7 +506,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
       <div class="lr" onclick="startLesson('quiz','all')"><div class="li" style="background:var(--pl)">🧠</div><div><div class="lt">Тест — значение</div><div class="ls">Иероглиф → перевод</div></div><div class="la">›</div></div>
       <div class="lr" onclick="startLesson('voice','all')"><div class="li" style="background:var(--rl)">🎤</div><div><div class="lt">Говори по-китайски</div><div class="ls">Произноси слова и фразы</div></div><div class="la">›</div></div>
       <div class="lr" onclick="startLesson('listen','all')"><div class="li" style="background:var(--ol)">🔊</div><div><div class="lt">Аудирование</div><div class="ls">Слушай и выбирай перевод</div></div><div class="la">›</div></div>
-      <div class="lr" onclick="startLesson('write','all')"><div class="li" style="background:var(--tl)">✍️</div><div><div class="lt">Письмо и черты</div><div class="ls">Разбор иероглифов, ключи, черты</div></div><div class="la">›</div></div>
+      <div class="lr" onclick="startLesson('pinyintype','all')"><div class="li" style="background:var(--tl)">⌨️</div><div><div class="lt">Напиши пиньинь</div><div class="ls">Введи транскрипцию иероглифа</div></div><div class="la">›</div></div>
+      <div class="lr" onclick="startLesson('write','all')"><div class="li" style="background:var(--gl)">✍️</div><div><div class="lt">Письмо и черты</div><div class="ls">Разбор иероглифов, ключи, черты</div></div><div class="la">›</div></div>
       <div class="lr" onclick="startLesson('fav','all')"><div class="li" style="background:var(--ol)">⭐</div><div><div class="lt">Избранное</div><div class="ls">Твои сохранённые слова</div></div><div class="la">›</div></div>
     </div>
   </div></div>
@@ -559,6 +569,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
   <div id="v-dia" style="display:none;flex:1;flex-direction:column;overflow:hidden">
     <div class="dia-area" id="dia-msgs"></div>
     <div class="dia-opts" id="dia-opts"></div>
+  </div>
+
+  <!-- Pinyin Typing View -->
+  <div id="v-pinyin-type" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:16px">
+    <div class="qpmt" id="pt-prompt">Напиши пиньинь</div>
+    <div style="font-family:var(--fc);font-size:100px;font-weight:900;color:var(--label);line-height:1;animation:chpop .35s cubic-bezier(.34,1.56,.64,1)" id="pt-char">汉</div>
+    <div style="font-size:14px;color:var(--l2);font-weight:600" id="pt-meaning"></div>
+    <div style="position:relative;width:100%;max-width:360px">
+      <input id="pt-input" type="text" 
+        style="width:100%;padding:14px 50px 14px 16px;border-radius:var(--rlg);border:2px solid var(--sep);background:var(--surface);font-family:var(--f);font-size:18px;font-weight:700;color:var(--label);outline:none;text-align:center;letter-spacing:2px;transition:border-color .2s"
+        placeholder="например: nǐ hǎo"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        oninput="ptCheck()" onkeydown="if(event.key==='Enter')ptSubmit()">
+      <button onclick="ptSubmit()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;border:none;border-radius:999px;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">→</button>
+    </div>
+    <div id="pt-hint" style="font-size:13px;color:var(--l2);font-weight:600;min-height:20px"></div>
+    <div id="pt-result" style="font-size:16px;font-weight:700;min-height:24px"></div>
+    <button onclick="speakCur()" class="ttsb">🔊 Услышать</button>
+    <div style="font-size:12px;color:var(--l3);margin-top:-8px">Подсказка: используй a e i o u без тонов тоже засчитывается</div>
   </div>
   <!-- Writing mode -->
   <div id="v-write" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px;overflow-y:auto">
@@ -704,6 +733,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
     <div class="card" style="padding:16px;overflow-x:auto">
       <div class="hmap" id="profhmap"></div>
     </div>
+
+    <div class="sl">🗺️ Путь к мастерству</div>
+    <div class="card" style="padding:16px" id="roadmap-card">
+      <div id="roadmap-content"></div>
+    </div>
     <div class="sl">Избранные слова</div>
     <div id="pfavlist" class="lcard"></div>
     <div class="sl">Достижения</div>
@@ -766,6 +800,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
           </button>
         </div>
       </div>
+    </div>
+    <div class="sl">🗺️ Контент</div>
+    <div class="lcard">
+      <div class="lr" onclick="goTab('s-course',1);renderCourse()"><div class="li" style="background:var(--bl)">🗺️</div><div class="lt">Тематический курс</div><div class="la">›</div></div>
+      <div class="swrow"><div class="swi"><div class="swt">💡 Культурные советы</div><div class="sws">Показывать факты о Китае</div></div><button class="tgl on" id="tog-culture" onclick="togSet('showCulture',this)"></button></div>
     </div>
     <div class="sl">📱 О приложении</div>
     <div class="lcard">
@@ -1312,7 +1351,7 @@ let ST={
   sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,
   difficulty:1,
   profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},
-  settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},
+  settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},
   onboarded:false,
 };
 let SES={type:'',cards:[],dialogs:[],idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,diaStep:0};
@@ -1418,11 +1457,12 @@ function updateHome(){
   const _learned=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
   const _acc=ST.totalCards>0?Math.round(ST.totalCorrect/ST.totalCards*100):0;
   const ql=g('qs-learned'),qt=g('qs-total'),qa=g('qs-acc');
-  if(ql)ql.textContent=_learned;if(qt)qt.textContent=ST.totalCards;if(qa)qa.textContent=ST.totalCards>0?_acc+'%':'—';
+  if(ql)ql.textContent=_learned+'/'+VOCAB.length;if(qt)qt.textContent=ST.totalCards;if(qa)qa.textContent=ST.totalCards>0?_acc+'%':'—';
   const due=getDue().length,dot=g('revdot');if(dot)dot.classList.toggle('v',due>0);
   g('duecount').textContent=due>0?`${due} к повтору`:'SRS';
   const rb=g('revbadge');if(rb)rb.innerHTML=due>0?`<span class="lcbadge">${due}</span>`:'';
-  renderCultureTip();
+  if(ST.settings.showCulture!==false){renderCultureTip();const cc=g('culture-tip');if(cc)cc.style.display='';}else{const cc=g('culture-tip');if(cc)cc.style.display='none';}
+  updateSrsWidget();
   // Notif banner
   const nb=g('notifbanner');
   if(nb&&!ST.settings.notif&&'Notification'in window&&Notification.permission==='default'){
@@ -1444,6 +1484,11 @@ function startLesson(type,level){resumeAC();sndStartLesson();
   if(ST.difficulty===1)cards=cards.filter(w=>w.hsk===1);
   else if(ST.difficulty===2)cards=cards.filter(w=>w.hsk<=2);
 
+  if(type==='pinyintype'){
+    let ptCards=shuf(VOCAB.filter(w=>w.hsk<=Math.min(ST.difficulty+1,3))).slice(0,15);
+    SES={type:'pinyintype',cards:ptCards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99};
+    showLesson();initPinyinType();return;
+  }
   if(type==='write'){
     let wCards=shuf(VOCAB.filter(w=>w.hsk<=Math.min(ST.difficulty+1,3))).slice(0,15);
     SES={type:'write',cards:wCards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99};
@@ -1474,7 +1519,7 @@ function showLesson(){
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   g('lhrt').innerHTML=SES.lives<99?'❤️'.repeat(SES.lives):'';
 }
-function showV(id){['v-flash','v-quiz','v-voice','v-dia','v-tones','v-write'].forEach(v=>{const e=g(v);if(e)e.style.display='none';});const e=g(id);if(e)e.style.display=id==='v-dia'?'flex':'flex';if(id==='v-dia'){g('v-dia').style.flexDirection='column';}}
+function showV(id){['v-flash','v-quiz','v-voice','v-dia','v-tones','v-write','v-pinyin-type'].forEach(v=>{const e=g(v);if(e)e.style.display='none';});const e=g(id);if(e)e.style.display=id==='v-dia'?'flex':'flex';if(id==='v-dia'){g('v-dia').style.flexDirection='column';}}
 
 // FLASH
 function initFlash(){isFlipped=false;renderFlash();}
@@ -1789,6 +1834,7 @@ function renderProf(){
   g('pstr').textContent=ST.streak;g('pxp').textContent=ST.totalXp;g('plearn').textContent=learned;g('pdays').textContent=daysActive;
   g('pbstr').textContent=ST.bestStreak||ST.streak;g('pbxp').textContent=ST.totalXp;g('pbcards').textContent=ST.totalCards;g('pbsess').textContent=ST.sessions;
   renderHmap('profhmap');
+  renderRoadmap();
   // Favs
   const fl=g('pfavlist');fl.innerHTML='';
   const favWords=VOCAB.filter(w=>ST.favorites.includes(w.id)).slice(0,5);
@@ -1829,7 +1875,7 @@ function saveProfile(){
 function renderSet(){
   document.querySelectorAll('#diffbtns .dopt').forEach((b,i)=>b.classList.toggle('on',i+1===ST.difficulty));
   const gs=g('goalsel');if(gs)gs.value=ST.dailyGoal;
-  ['autoplay','voiceInput','slowSpeech','sounds','ruTranslit'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});updateThemeBtns();
+  ['autoplay','voiceInput','slowSpeech','sounds','ruTranslit','showCulture'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});updateThemeBtns();
   const nt=g('tog-notif');if(nt)nt.classList.toggle('on',!!ST.settings.notif);
   const nr=g('ntirow');if(nr)nr.style.display=ST.settings.notif?'flex':'none';
   const ni=g('ntiinp');if(ni)ni.value=ST.settings.notifTime||'09:00';
@@ -2432,7 +2478,8 @@ const CULTURE_TIPS=[
 let _ctipIdx=0;
 function showNextCulture(){
   _ctipIdx=(_ctipIdx+1)%CULTURE_TIPS.length;
-  renderCultureTip();
+  if(ST.settings.showCulture!==false){renderCultureTip();const cc=g('culture-tip');if(cc)cc.style.display='';}else{const cc=g('culture-tip');if(cc)cc.style.display='none';}
+  updateSrsWidget();
 }
 function renderCultureTip(){
   const tip=CULTURE_TIPS[_ctipIdx%CULTURE_TIPS.length];
@@ -2465,6 +2512,197 @@ const EXAMPLES={
 };
 function getExample(wordId){return EXAMPLES[wordId]||null;}
 
+
+// ── ДОПОЛНИТЕЛЬНЫЕ СЛОВА (id 231-280) ─────────────────────────
+const VOCAB_EXTRA=[
+  {id:231,char:'早上好',pinyin:'zǎo shàng hǎo',tones:[3,4,3],meaning:'доброе утро',en:'good morning',hsk:1,conv:true},
+  {id:232,char:'晚上好',pinyin:'wǎn shàng hǎo',tones:[3,4,3],meaning:'добрый вечер',en:'good evening',hsk:1,conv:true},
+  {id:233,char:'晚安',pinyin:'wǎn ān',tones:[3,1],meaning:'спокойной ночи',en:'good night',hsk:1,conv:true},
+  {id:234,char:'生日快乐',pinyin:'shēng rì kuài lè',tones:[1,4,4,4],meaning:'с днём рождения',en:'happy birthday',hsk:2,conv:true},
+  {id:235,char:'新年快乐',pinyin:'xīn nián kuài lè',tones:[1,2,4,4],meaning:'с новым годом',en:'happy new year',hsk:2,conv:true},
+  {id:236,char:'我爱你',pinyin:'wǒ ài nǐ',tones:[3,4,3],meaning:'я тебя люблю',en:'I love you',hsk:1,conv:true},
+  {id:237,char:'随便',pinyin:'suí biàn',tones:[2,4],meaning:'всё равно / как угодно',en:'whatever/as you like',hsk:2,conv:true},
+  {id:238,char:'对',pinyin:'duì',tones:[4],meaning:'правильно / да',en:'correct/right',hsk:1,conv:true},
+  {id:239,char:'不对',pinyin:'bù duì',tones:[4,4],meaning:'неправильно / нет',en:'incorrect/wrong',hsk:1,conv:true},
+  {id:240,char:'当然',pinyin:'dāng rán',tones:[1,2],meaning:'конечно',en:'of course',hsk:2,conv:true},
+  {id:241,char:'可能',pinyin:'kě néng',tones:[3,2],meaning:'возможно',en:'maybe/possible',hsk:2,conv:true},
+  {id:242,char:'真的吗',pinyin:'zhēn de ma',tones:[1,5,5],meaning:'правда? серьёзно?',en:'really? seriously?',hsk:1,conv:true},
+  {id:243,char:'太好了',pinyin:'tài hǎo le',tones:[4,3,5],meaning:'отлично! замечательно!',en:'great! wonderful!',hsk:1,conv:true},
+  {id:244,char:'没事',pinyin:'méi shì',tones:[2,4],meaning:'ничего / не важно',en:'it's nothing/never mind',hsk:2,conv:true},
+  {id:245,char:'辛苦了',pinyin:'xīn kǔ le',tones:[1,3,5],meaning:'ты старался (уважение)',en:'you worked hard',hsk:3,conv:true},
+  {id:246,char:'不好意思',pinyin:'bù hǎo yì si',tones:[4,3,4,5],meaning:'неловко / извините',en:'excuse me/embarrassed',hsk:2,conv:true},
+  {id:247,char:'马上',pinyin:'mǎ shàng',tones:[3,4],meaning:'сейчас / немедленно',en:'right away/immediately',hsk:2,conv:true},
+  {id:248,char:'一般',pinyin:'yī bān',tones:[1,1],meaning:'обычно / средне',en:'generally/so-so',hsk:2,conv:true},
+  {id:249,char:'没时间',pinyin:'méi shí jiān',tones:[2,2,1],meaning:'нет времени',en:'no time',hsk:2,conv:true},
+  {id:250,char:'有时间吗',pinyin:'yǒu shí jiān ma',tones:[3,2,1,5],meaning:'есть время?',en:'do you have time?',hsk:2,conv:true},
+  {id:251,char:'一起去吧',pinyin:'yī qǐ qù ba',tones:[1,3,4,5],meaning:'пойдём вместе!',en:'let's go together!',hsk:1,conv:true},
+  {id:252,char:'我请客',pinyin:'wǒ qǐng kè',tones:[3,3,4],meaning:'я угощаю / с меня',en:'my treat / I'll pay',hsk:2,conv:true},
+  {id:253,char:'各付各的',pinyin:'gè fù gè de',tones:[4,4,4,5],meaning:'каждый платит сам',en:'go Dutch / split the bill',hsk:3,conv:true},
+  {id:254,char:'你在哪',pinyin:'nǐ zài nǎ',tones:[3,4,3],meaning:'ты где?',en:'where are you?',hsk:1,conv:true},
+  {id:255,char:'快点',pinyin:'kuài diǎn',tones:[4,3],meaning:'быстрее!',en:'hurry up!',hsk:2,conv:true},
+  {id:256,char:'慢慢来',pinyin:'màn màn lái',tones:[4,4,2],meaning:'не торопись',en:'take it easy/slow down',hsk:2,conv:true},
+  {id:257,char:'一点都不',pinyin:'yī diǎn dōu bù',tones:[1,3,1,4],meaning:'совсем не / ни капли',en:'not at all',hsk:2,conv:true},
+  {id:258,char:'差不多',pinyin:'chà bù duō',tones:[4,4,1],meaning:'почти / примерно',en:'almost/approximately',hsk:2,conv:true},
+  {id:259,char:'说真的',pinyin:'shuō zhēn de',tones:[1,1,5],meaning:'честно говоря',en:'to tell the truth',hsk:2,conv:true},
+  {id:260,char:'我不确定',pinyin:'wǒ bù quèdìng',tones:[3,4,4,4],meaning:'я не уверен',en:'I'm not sure',hsk:3,conv:true},
+  {id:261,char:'厕所',pinyin:'cè suǒ',tones:[4,3],meaning:'туалет',en:'toilet/restroom',hsk:2,conv:true},
+  {id:262,char:'医生',pinyin:'yī shēng',tones:[1,1],meaning:'врач / доктор',en:'doctor',hsk:2,conv:true},
+  {id:263,char:'警察',pinyin:'jǐng chá',tones:[3,2],meaning:'полиция',en:'police',hsk:2,conv:true},
+  {id:264,char:'大使馆',pinyin:'dà shǐ guǎn',tones:[4,3,3],meaning:'посольство',en:'embassy',hsk:3,conv:true},
+  {id:265,char:'我丢了',pinyin:'wǒ diū le',tones:[3,1,5],meaning:'я потерял(а)',en:'I lost (something)',hsk:2,conv:true},
+  {id:266,char:'叫救护车',pinyin:'jiào jiù hù chē',tones:[4,4,4,1],meaning:'вызвать скорую',en:'call an ambulance',hsk:2,conv:true},
+  {id:267,char:'有WiFi吗',pinyin:'yǒu WiFi ma',tones:[3,5],meaning:'есть вайфай?',en:'is there WiFi?',hsk:1,conv:true},
+  {id:268,char:'密码是多少',pinyin:'mì mǎ shì duō shao',tones:[4,3,4,1,5],meaning:'какой пароль?',en:'what's the password?',hsk:2,conv:true},
+  {id:269,char:'充电器',pinyin:'chōng diàn qì',tones:[1,4,4],meaning:'зарядное устройство',en:'charger',hsk:3,conv:true},
+  {id:270,char:'手机没电了',pinyin:'shǒu jī méi diàn le',tones:[3,1,2,4,5],meaning:'телефон разрядился',en:'phone is dead/out of battery',hsk:2,conv:true},
+  {id:271,char:'我来中国旅游',pinyin:'wǒ lái zhōng guó lǚ yóu',tones:[3,2,1,2,3,2],meaning:'я приехал в Китай туристом',en:'I came to China as a tourist',hsk:2,conv:true},
+  {id:272,char:'好久不见',pinyin:'hǎo jiǔ bù jiàn',tones:[3,3,4,4],meaning:'давно не виделись',en:'long time no see',hsk:2,conv:true},
+  {id:273,char:'保持联系',pinyin:'bǎo chí lián xì',tones:[3,2,2,4],meaning:'будем на связи',en:'keep in touch',hsk:3,conv:true},
+  {id:274,char:'下次见',pinyin:'xià cì jiàn',tones:[4,4,4],meaning:'увидимся в следующий раз',en:'see you next time',hsk:2,conv:true},
+  {id:275,char:'有意思',pinyin:'yǒu yì si',tones:[3,4,5],meaning:'интересно!',en:'how interesting!',hsk:2,conv:true},
+  {id:276,char:'没意思',pinyin:'méi yì si',tones:[2,4,5],meaning:'скучно / неинтересно',en:'boring/uninteresting',hsk:2,conv:true},
+  {id:277,char:'开玩笑',pinyin:'kāi wán xiào',tones:[1,2,4],meaning:'шутить',en:'to joke/just kidding',hsk:2,conv:true},
+  {id:278,char:'认真的',pinyin:'rèn zhēn de',tones:[4,1,5],meaning:'серьёзно?',en:'seriously?',hsk:2,conv:true},
+  {id:279,char:'我到了',pinyin:'wǒ dào le',tones:[3,4,5],meaning:'я приехал / я на месте',en:'I've arrived / I'm here',hsk:1,conv:true},
+  {id:280,char:'路上小心',pinyin:'lù shàng xiǎo xīn',tones:[4,4,3,1],meaning:'будь осторожен в дороге',en:'be careful on the way',hsk:2,conv:true},
+];
+// Merge extra vocab
+VOCAB.push(...VOCAB_EXTRA);
+VOCAB_EXTRA.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
+
+// ── PINYIN TYPING QUIZ ────────────────────────────────────────
+function initPinyinType(){
+  showV('v-pinyin-type');
+  renderPinyinType();
+}
+function renderPinyinType(){
+  const{cards,idx}=SES;if(idx>=cards.length){showComp();return;}
+  const w=cards[idx];
+  g('lpbf').style.width=(idx/cards.length*100)+'%';g('lcnt').textContent=`${idx+1}/${cards.length}`;
+  const pc=g('pt-char');pc.style.animation='none';pc.offsetHeight;pc.style.animation='';
+  pc.textContent=w.char;
+  g('pt-meaning').textContent=w.meaning+' — '+w.en;
+  g('pt-prompt').textContent='Напиши пиньинь (тоны необязательны)';
+  g('pt-input').value='';g('pt-result').textContent='';g('pt-hint').textContent='';
+  g('pt-input').style.borderColor='var(--sep)';
+  g('pt-input').focus();
+  if(ST.settings.autoplay)setTimeout(()=>speakWord(w),400);
+}
+function normPinyin(s){
+  // strip tone marks + lowercase + trim
+  return s.toLowerCase().trim()
+    .replace(/[āáǎà]/g,'a').replace(/[ēéěè]/g,'e').replace(/[īíǐì]/g,'i')
+    .replace(/[ōóǒò]/g,'o').replace(/[ūúǔù]/g,'u').replace(/[ǖǘǚǜ]/g,'u')
+    .replace(/\s+/g,' ');
+}
+function ptCheck(){
+  const w=SES.cards[SES.idx];if(!w)return;
+  const val=g('pt-input').value;
+  const correct=normPinyin(w.pinyin);
+  const typed=normPinyin(val);
+  if(typed===correct){
+    g('pt-input').style.borderColor='var(--green)';
+  } else if(correct.startsWith(typed)&&typed.length>0){
+    g('pt-input').style.borderColor='var(--orange)';
+  } else if(typed.length>0){
+    g('pt-input').style.borderColor=typed.length>=3?'var(--red)':'var(--sep)';
+  }
+}
+function ptSubmit(){
+  const w=SES.cards[SES.idx];if(!w)return;
+  const val=g('pt-input').value.trim();if(!val)return;
+  const correct=normPinyin(w.pinyin);
+  const typed=normPinyin(val);
+  const ok=typed===correct||typed===w.pinyin.toLowerCase().trim();
+  const wd=ST.wordData[w.id];
+  const res=g('pt-result');const inp=g('pt-input');
+  if(ok){
+    inp.style.borderColor='var(--green)';
+    res.style.color='var(--green)';res.textContent='✅ Верно! '+w.pinyin;
+    wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;
+    wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;
+    SES.correct++;const mult=getComboMult();SES.xp+=Math.round(20*mult);addXP(Math.round(20*mult));ST.totalCorrect++;
+    addCombo();sndCorrect();checkBossTrigger();
+    setTimeout(()=>{tick();SES.idx++;renderPinyinType();},1200);
+  } else {
+    inp.style.borderColor='var(--red)';
+    res.style.color='var(--red)';res.textContent=`❌ Правильно: ${w.pinyin}`;
+    g('pt-hint').textContent=`Твой ответ: ${val}`;
+    wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;
+    wd.nextReview=Date.now()+3600000;
+    SES.wrong++;SES.mistakes.push(w);ST.totalWrong++;
+    resetCombo();sndWrong();
+    speakWord(w);
+    setTimeout(()=>{tick();SES.idx++;renderPinyinType();},2200);
+  }
+}
+
+
+// ── УРОВЕНЬ-ДОРОЖНАЯ КАРТА ────────────────────────────────────
+const ROADMAP_LEVELS=[
+  {lv:1,name:'Турист',icon:'🗺️',desc:'Выживаю в Китае',goal:10},
+  {lv:3,name:'Путешественник',icon:'✈️',desc:'Могу объясниться',goal:30},
+  {lv:5,name:'Студент',icon:'📚',desc:'Читаю HSK 1',goal:60},
+  {lv:8,name:'Разговорник',icon:'💬',desc:'Болтаю о простом',goal:100},
+  {lv:12,name:'Знаток',icon:'🧠',desc:'HSK 2 завоёван',goal:150},
+  {lv:18,name:'Мастер',icon:'⚔️',desc:'Понимаю фильмы',goal:200},
+  {lv:25,name:'Эксперт',icon:'🎓',desc:'HSK 3 готов',goal:230},
+  {lv:35,name:'Гуру',icon:'🐉',desc:'Думаю по-китайски',goal:280},
+  {lv:50,name:'Легенда',icon:'👑',desc:'Полное владение',goal:330},
+];
+function renderRoadmap(){
+  const cont=g('roadmap-content');if(!cont)return;
+  const lv=ST.level;const learned=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
+  const curStage=ROADMAP_LEVELS.filter(s=>lv>=s.lv).pop()||ROADMAP_LEVELS[0];
+  const nextStage=ROADMAP_LEVELS.find(s=>lv<s.lv)||ROADMAP_LEVELS[ROADMAP_LEVELS.length-1];
+  cont.innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="font-size:40px">${curStage.icon}</div>
+      <div>
+        <div style="font-size:16px;font-weight:800;color:var(--label)">${curStage.name}</div>
+        <div style="font-size:13px;color:var(--l2);margin-top:2px">${curStage.desc}</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:22px;font-weight:900;color:var(--orange)">Ур.${lv}</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--l2);font-weight:600;margin-bottom:6px">До «${nextStage.name}»: уровень ${nextStage.lv} • ${nextStage.goal} слов</div>
+    <div style="height:6px;background:var(--s3);border-radius:6px;overflow:hidden;margin-bottom:12px">
+      <div style="height:100%;background:linear-gradient(90deg,var(--orange),var(--red));border-radius:6px;width:${Math.min((lv-curStage.lv)/(nextStage.lv-curStage.lv)*100,100)}%;transition:width .8s"></div>
+    </div>
+    <div style="display:flex;overflow-x:auto;gap:6px;padding-bottom:4px">
+      ${ROADMAP_LEVELS.map(s=>`
+        <div style="flex-shrink:0;text-align:center;padding:8px 10px;border-radius:var(--rsm);background:${lv>=s.lv?'var(--rl)':'var(--s3)'};border:2px solid ${lv>=s.lv?'var(--red)':'var(--sep)'}">
+          <div style="font-size:18px">${lv>=s.lv?s.icon:'🔒'}</div>
+          <div style="font-size:9px;font-weight:800;color:${lv>=s.lv?'var(--red)':'var(--l3)'};margin-top:2px;white-space:nowrap">Ур.${s.lv}</div>
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+
+// ── УМНОЕ НАПОМИНАНИЕ SRS ────────────────────────────────────
+function getNextSrsTime(){
+  const due=getDue();if(!due.length)return null;
+  // Already due
+  const overdue=due.filter(w=>(ST.wordData[w.id]?.nextReview||0)<=Date.now());
+  if(overdue.length)return 'now';
+  const next=Math.min(...due.map(w=>ST.wordData[w.id]?.nextReview||Infinity));
+  return next===Infinity?null:next;
+}
+function updateSrsWidget(){
+  const el=g('srs-widget');if(!el)return;
+  const due=getDue();
+  const count=due.filter(w=>(ST.wordData[w.id]?.nextReview||0)<=Date.now()).length;
+  if(count>0){
+    el.style.display='flex';
+    el.querySelector('.srs-count').textContent=count;
+  } else {
+    el.style.display='none';
+  }
+}
+
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
@@ -2475,7 +2713,7 @@ function confetti(){
 let tT=null;
 function toast(msg,dur=2500){const t=g('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),dur);}
 function showCbox(){g('cbox').classList.add('open');}
-function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
+function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
 
 // SWIPE
 let swX=0;
