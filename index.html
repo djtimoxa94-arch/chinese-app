@@ -222,6 +222,7 @@ html.theme-anim *{transition:background-color .35s ease,border-color .35s ease,c
 .qpy{font-size:18px;color:var(--red);font-weight:600;letter-spacing:2px;min-height:24px}
 .qhb{background:var(--ol);color:var(--orange);padding:8px 18px;border-radius:999px;border:none;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer}
 .qopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:380px}
+.qopts.en-mode{grid-template-columns:1fr}
 .qo{background:var(--surface);border:2px solid var(--sep);border-radius:var(--rlg);padding:14px 12px;cursor:pointer;font-family:var(--f);font-size:14px;font-weight:600;color:var(--label);min-height:64px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3;transition:all .15s;box-shadow:var(--sh)}
 .qo:active{transform:scale(.97)}.qo.ok{background:var(--gl);border-color:var(--green);color:var(--green)}
 .qo.bad{background:var(--rl);border-color:var(--red);color:var(--red);animation:shk .4s}
@@ -742,6 +743,7 @@ html,body{
   border:1px solid rgba(255,149,0,.25);
 }
 .qopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:380px}
+.qopts.en-mode{grid-template-columns:1fr}
 .qo{
   background:var(--glass-card);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
@@ -1537,7 +1539,7 @@ html,body{
 <div class="scr" id="s-set">
   <div class="ph"><div class="pt">Настройки</div></div>
   <div class="scroll"><div class="si">
-    <div class="sl">🌍 Язык обучения</div>
+    <div class="sl" id="lang-sl">🌍 Язык обучения</div>
     <div class="card" style="padding:14px 16px;margin-bottom:12px">
       <div style="font-size:13px;color:var(--l2);font-weight:600;margin-bottom:10px">Выбери язык для изучения</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -1553,7 +1555,16 @@ html,body{
         </button>
       </div>
     </div>
-    <div class="sl">Профиль обучения</div>
+    <div class="sl">👤 Профиль обучения</div>
+    <div class="card" style="padding:14px 16px;margin-bottom:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div id="prof-name-disp" style="font-size:17px;font-weight:800;color:var(--label)"></div>
+          <div id="prof-level-disp" style="font-size:13px;color:var(--l2);margin-top:2px"></div>
+        </div>
+        <button onclick="goTab('s-prof',5);renderProf()" style="padding:8px 14px;background:var(--bl);color:var(--blue);border:none;border-radius:999px;font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer">Профиль →</button>
+      </div>
+    </div>
     <div class="lcard">
       <div style="padding:12px 16px 4px"><div style="font-size:15px;font-weight:700;margin-bottom:10px">Уровень сложности</div>
       <div class="diffs" id="diffbtns">
@@ -1691,8 +1702,7 @@ html,body{
 
 <div class="toast" id="toast"></div>
 <div id="confetti"></div>
-<div class="cbox" id="cbox"><div class="cbin"><h3>⚠️ Сброс</h3><p>Весь прогресс и статистика будут удалены безвозвратно.</p><div class="cbbtns"><button class="cbb g" onclick="g('cbox').classList.remove('open')">Отмена</button><button class="cbb r" onclick="doReset()">Сбросить</button></div></div></div>
-
+<div class="cbox" id="cbox"><div class="cbin"><h3>⚠️ Сброс</h3><p>Весь прогресс и статистика будут удалены безвозвратно.</p><div class="cbbtns"><button class="cbb g" onclick="g('cbox').classList.remove('open')">Отмен
 <script>
 // ============================================================
 // VOCAB (230 words) + CONVERSATION DIALOGUES
@@ -2197,7 +2207,8 @@ function tick(){
   const td=todayS();ST.heatmap[td]=(ST.heatmap[td]||0)+1;
   recPlay();sv();
 }
-function addXP(n){
+function addXP(n){if(!n)return;
+  setTimeout(checkAchievements,500);
   ST.xp+=n;ST.totalXp+=n;const need=200*ST.level;
   if(ST.xp>=need){ST.xp-=need;ST.level++;toast(`🎊 Уровень ${ST.level}! ${LVI[Math.min(ST.level-1,6)]}`);confetti();sndLevelUp();}
   // Pulse XP display
@@ -2276,9 +2287,7 @@ function updateHome(){
   const greet=hr<5?'Ночная учёба 🌙':hr<12?'Доброе утро ☀️':hr<17?'Добрый день 🌤':hr<21?'Добрый вечер 🌆':'Ночная учёба 🌙';
   const nameG=ST.profile.name?`, ${ST.profile.name}`:'';
   const grEl=g('home-greeting');if(grEl)grEl.textContent=greet+nameG+'!';
-  // Mini avatar in header
-  const haEl=g('home-avatar');
-  if(haEl&&typeof generateAvatar==='function'){haEl.innerHTML=`<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;border:2px solid var(--sep)">${generateAvatar(ST.profile.avaStyle||0,ST.profile.avaColor||'#FF3B30',ST.profile.avaAccent||'#FFD60A',38)}</div>`;}else if(haEl){haEl.innerHTML=`<div style="width:38px;height:38px;border-radius:50%;background:var(--rl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px">${ST.profile.emoji||'🐣'}</div>`;}g('h-xp').textContent=ST.totalXp;
+  // home-avatar removed
   const lv=Math.min(ST.level-1,6);g('h-lv').textContent=ST.level;g('h-lvn').textContent=LVN[lv];
   const need=200*ST.level;g('h-xpf').style.width=Math.min(ST.xp/need*100,100)+'%';g('h-xpn').textContent=`${ST.xp} / ${need} XP`;
   const DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],td=new Date().getDay(),tdi=td===0?6:td-1;
@@ -2418,7 +2427,16 @@ function renderQuiz(){
   } else if(type==='reverse'){g('qpmt').textContent='Выбери иероглиф по смыслу';qc.textContent=w.meaning;qc.className='qch sm';qc.style.fontFamily='var(--f)';g('qpy').textContent=w.en;g('qhb').style.display='none';}
   const others=shuf(VOCAB.filter(v=>v.id!==w.id)).slice(0,3);
   const opts=shuf([w,...others]);const cont=g('qopts');cont.innerHTML='';
-  opts.forEach(o=>{const btn=document.createElement('button');btn.className='qo';btn.textContent=type==='reverse'?o.char:o.meaning;btn.onclick=()=>handleQ(btn,o.id===w.id,w);cont.appendChild(btn);});
+  opts.forEach((o,qi)=>{
+    const btn=document.createElement('button');
+    btn.className='qo';
+    const _numBadge='<span style="display:inline-block;width:20px;height:20px;border-radius:5px;background:rgba(0,0,0,.12);font-size:11px;font-weight:900;line-height:20px;text-align:center;margin-right:8px;flex-shrink:0">'+(qi+1)+'</span>';
+    const _label=type==='reverse'?o.char:(o.transl||o.meaning);
+    btn.innerHTML=_numBadge+_label;
+    btn.style.cssText='display:flex;align-items:center;';
+    btn.onclick=()=>handleQ(btn,o.id===w.id,w);
+    cont.appendChild(btn);
+  });
 }
 function showHint(){
   const w=SES.cards[SES.idx];
@@ -2429,7 +2447,9 @@ function showHint(){
 }
 function handleQ(btn,ok,word){
   document.querySelectorAll('.qo').forEach(b=>{b.classList.add('off');b.onclick=null;});
-  const wd=ST.wordData[word.id];
+  const wd=SES.isEn
+    ?(EN_WORDDATA[word.id]||(EN_WORDDATA[word.id]={mastery:0,correct:0,wrong:0,nextReview:0}))
+    :ST.wordData[word.id];
   if(ok){btn.classList.add('ok');wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;SES.correct++;const _mult=SES.bossXPMult||getComboMult();const _xg=Math.round(15*_mult);SES.xp+=_xg;addXP(_xg);ST.totalCorrect++;addCombo();sndCorrect();showBan(true,word);if(SES.correct%5===0){confetti();if(_combo>=5)sndPerfect();}checkBossTrigger();}
   else{btn.classList.add('bad');wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;SES.wrong++;SES.mistakes.push(word);ST.totalWrong++;resetCombo();sndWrong();document.querySelectorAll('.qo').forEach(b=>{const m=SES.type==='reverse'?b.textContent===word.char:b.textContent===word.meaning;if(m)b.classList.add('show');});showBan(false,word);}
   tick();SES.idx++;setTimeout(()=>{rmBan();if(SES.lives<=0){showComp();}else renderQuiz();},1800);
@@ -2528,7 +2548,19 @@ function renderVoice(){
   const{cards,idx}=SES;if(idx>=cards.length){showComp();return;}
   const w=cards[idx];
   g('lpbf').style.width=(idx/cards.length*100)+'%';g('lcnt').textContent=`${idx+1}/${cards.length}`;
-  g('voch').textContent=w.char;g('vopy').textContent='';g('vor').textContent='';g('vofb').textContent='';g('vofb').className='vofb';g('vonext').style.display='none';g('micb').className='micb';micOn=false;
+  g('voch').textContent=w.char;
+  // Show Russian hint below char in voice mode
+  const _vHint=g('vopy');
+  const isEnV2=SES.isEn||ST.lang==='en';
+  if(_vHint){
+    if(isEnV2){
+      _vHint.innerHTML='<span style="font-size:13px;color:var(--l2);font-weight:600">Скажи перевод на русском</span>';
+    } else {
+      const _ruV=getRuPinyin(w.pinyin)||buildRuPhonetic(w.pinyin)||'';
+      _vHint.innerHTML='<span style="color:var(--red);font-size:15px">'+w.pinyin+'</span>'+(_ruV?'<br><span style="color:var(--teal);font-size:13px;font-weight:700">🇷🇺 '+_ruV+'</span>':'')+'<br><span style="font-size:12px;color:var(--l3)">Скажи перевод по-русски</span>';
+    }
+  }
+  g('vor').textContent='';g('vofb').textContent='';g('vofb').className='vofb';g('vonext').style.display='none';g('micb').className='micb';micOn=false;
   setTimeout(()=>speakWord(w),400);
 }
 function togMic(){
@@ -2538,10 +2570,20 @@ function togMic(){
 }
 function chkVoice(txt,word){
   const sp=txt.toLowerCase().trim(),cr=word.meaning.toLowerCase();
-  const mw=cr.replace(/[^а-яё ]/gi,'').split(/[\s\/]+/).filter(x=>x.length>2);
+  // Remove very short words and particles for better matching
+  const stopWords=['это','быть','иметь','мне','мой','моя','моё'];
+  const mw=cr.replace(/[^а-яёa-z ]/gi,'').split(/[\s\/]+/)
+    .filter(x=>x.length>2&&!stopWords.includes(x));
   const hit=mw.some(m=>sp.includes(m))||sp.includes(cr.split('/')[0].trim());
-  g('vopy').textContent=word.pinyin;
-  if(hit){g('vofb').textContent='✅ Верно! '+word.meaning;g('vofb').className='vofb ok';SES.correct++;SES.xp+=20;addXP(20);ST.totalCorrect++;const wd=ST.wordData[word.id];wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;if(SES.correct%3===0)confetti();}
+  // Show Russian phonetic, not raw pinyin
+  const _ruV=getRuPinyin(word.pinyin)||buildRuPhonetic(word.pinyin)||word.pinyin;
+  const _vopy=g('vopy');
+  if(_vopy)_vopy.innerHTML='<span style="color:var(--red);font-size:16px">'+word.pinyin+'</span>'
+    +'<br><span style="color:var(--teal);font-size:15px;font-weight:700">🇷🇺 '+_ruV+'</span>';
+  const _cvWd=SES.isEn?(EN_WORDDATA[word.id]||(EN_WORDDATA[word.id]={mastery:0,correct:0,wrong:0,nextReview:0})):ST.wordData[word.id];
+  if(hit){
+    const _ruVfb=getRuPinyin(word.pinyin)||buildRuPhonetic(word.pinyin)||'';
+    g('vofb').textContent='✅ '+word.meaning+(_ruVfb?' · 🇷🇺 '+_ruVfb:'');g('vofb').className='vofb ok';SES.correct++;const _vm=getComboMult();SES.xp+=Math.round(20*_vm);addXP(Math.round(20*_vm));ST.totalCorrect++;addCombo();sndCorrect();checkBossTrigger();const wd=_cvWd;wd.mastery=Math.min((wd.mastery||0)+1,5);wd.correct=(wd.correct||0)+1;wd.nextReview=Date.now()+SRS[Math.max(0,Math.min(wd.mastery-1,SRS.length-1))]*86400000;if(SES.correct%3===0)confetti();}
   else{g('vofb').textContent=`❌ Ответ: ${word.meaning}`;g('vofb').className='vofb bad';SES.wrong++;SES.mistakes.push(word);ST.totalWrong++;const wd=ST.wordData[word.id];wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;}
   tick();g('vonext').style.display='block';
 }
@@ -2577,7 +2619,7 @@ function showComp(){
   g('retryn').textContent=mistakes.length;g('retrybtn').style.display=mistakes.length?'block':'none';
   g('comp').classList.add('open');sv();
 }
-function finishSes(){g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';goTab('s-home',0);updateHome();updateSrsWidget();}
+function finishSes(){checkAchievements();g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';goTab('s-home',0);updateHome();updateSrsWidget();}
 function retryMis(){
   g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';
   const mis=[...SES.mistakes];SES={type:SES.type,cards:shuf(mis),idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:SES.lives<99?3:99,diaStep:0};
@@ -2739,7 +2781,12 @@ function saveProfile(){
 }
 
 // SETTINGS
-function renderSet(){updateLangUI();
+function renderSet(){updateLangUI();updateLangSection();
+// Update language section label
+function updateLangSection(){
+  const sl=document.getElementById('lang-sl');
+  if(sl)sl.textContent=ST.lang==='en'?'🌍 Сейчас: Английский 🇬🇧':'🌍 Сейчас: Китайский 🇨🇳';
+}
   ['autoplay','voiceInput','slowSpeech','sounds','ruTranslit'].forEach(k=>{
     const el=g('tog-'+k);if(el)el.classList.toggle('on',!!ST.settings[k]);
   });
@@ -3101,18 +3148,22 @@ function checkBossTrigger(){
   }
 }
 function launchBoss(){
-  const bossWords=shuf(VOCAB.filter(w=>w.hsk===3)).slice(0,3);
+  // Use correct vocab based on current language
+  const bossWords=ST.lang==='en'
+    ?shuf(EN_VOCAB.filter(w=>w.level==='B1'||w.level==='B2')).slice(0,3)
+    :shuf(VOCAB.filter(w=>w.hsk===3)).slice(0,3);
   if(!bossWords.length)return;
   // Show boss intro
   const overlay=document.createElement('div');
   overlay.id='boss-overlay';
   overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;animation:fadeovl .3s';
+  const isEnBoss=ST.lang==='en';
   overlay.innerHTML=`
-    <div style="font-size:80px;animation:epop .6s cubic-bezier(.34,1.56,.64,1)">🐉</div>
+    <div style="font-size:80px;animation:epop .6s cubic-bezier(.34,1.56,.64,1)">${isEnBoss?'👑':'🐉'}</div>
     <div style="font-size:28px;font-weight:900;color:#fff;margin-top:16px;letter-spacing:-.5px">Босс появился!</div>
     <div style="font-size:15px;color:rgba(255,255,255,.7);margin-top:8px;line-height:1.5">3 сложных слова стоят на твоём пути.<br>Победи — получи ×3 XP!</div>
     <div style="display:flex;gap:16px;margin-top:28px">
-      ${bossWords.map(w=>`<div style="background:rgba(255,255,255,.1);border-radius:var(--r);padding:14px 18px"><div style="font-family:var(--fc);font-size:28px;color:#fff;font-weight:900">${w.char}</div></div>`).join('')}
+      ${bossWords.map(w=>`<div style="background:rgba(255,255,255,.1);border-radius:var(--r);padding:14px 18px;text-align:center"><div style="font-family:${isEnBoss?'var(--f)':'var(--fc)'};font-size:${isEnBoss?'16px':'28px'};color:#fff;font-weight:900">${w.char}</div>${isEnBoss?'<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:4px">'+w.level+'</div>':''}</div>`).join('')}
     </div>
     <button onclick="startBoss()" style="margin-top:28px;padding:16px 40px;background:var(--red);color:#fff;border:none;border-radius:var(--rxl);font-family:var(--f);font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(255,59,48,.4)">⚔️ Принять вызов!</button>
     <button onclick="skipBoss()" style="margin-top:10px;background:none;border:none;color:rgba(255,255,255,.4);font-family:var(--f);font-size:13px;font-weight:600;cursor:pointer;padding:8px">Пропустить</button>
@@ -3124,9 +3175,11 @@ function launchBoss(){
 function startBoss(){
   const overlay=g('boss-overlay');
   if(!overlay)return;
-  const bossWords=overlay._bossWords||shuf(VOCAB.filter(w=>w.hsk===3)).slice(0,3);
+  const bossWords=overlay._bossWords||(ST.lang==='en'
+    ?shuf(EN_VOCAB.filter(w=>w.level==='B1'||w.level==='B2')).slice(0,3)
+    :shuf(VOCAB.filter(w=>w.hsk===3)).slice(0,3));
   overlay.remove();
-  SES={type:'boss',cards:bossWords,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:3,bossXPMult:3};
+  SES={type:'boss',cards:bossWords,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:3,bossXPMult:3,isEn:ST.lang==='en'};
   showLesson();showV('v-quiz');renderQuiz();
   // Visual indicator
   const indicator=document.createElement('div');
@@ -4733,6 +4786,219 @@ const EN_VOCAB_NEW=[
 ];
 EN_VOCAB.push(...EN_VOCAB_NEW);
 EN_VOCAB_NEW.forEach(w=>{if(!EN_WORDDATA[w.id])EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
+// ============================================================
+// 🏆 ACHIEVEMENTS — 50 достижений
+// ============================================================
+const ACHIEVEMENTS=[
+  // Серии
+  {id:'s3',   ico:'🔥', name:'Разогрев',       desc:'3 дня подряд',        check:s=>s.streak>=3},
+  {id:'s7',   ico:'⚡', name:'Неделя!',         desc:'7 дней подряд',       check:s=>s.streak>=7},
+  {id:'s30',  ico:'💥', name:'Месяц!',          desc:'30 дней подряд',      check:s=>s.streak>=30},
+  {id:'s100', ico:'👑', name:'Легенда',         desc:'100 дней подряд',     check:s=>s.streak>=100},
+  // Слова
+  {id:'w10',  ico:'📚', name:'Первые слова',    desc:'Изучи 10 слов',       check:s=>learnedCount()>=10},
+  {id:'w50',  ico:'📖', name:'Словарик',        desc:'Изучи 50 слов',       check:s=>learnedCount()>=50},
+  {id:'w100', ico:'🗂️', name:'Коллекционер',   desc:'Изучи 100 слов',      check:s=>learnedCount()>=100},
+  {id:'w200', ico:'🏛️', name:'Библиотека',     desc:'Изучи 200 слов',      check:s=>learnedCount()>=200},
+  {id:'w460', ico:'🌟', name:'Мастер слов',     desc:'Все 460 слов CN',     check:s=>learnedCount()>=460},
+  // XP
+  {id:'x100', ico:'⭐', name:'100 XP',          desc:'Набери 100 XP',       check:s=>s.totalXp>=100},
+  {id:'x1k',  ico:'🌠', name:'1000 XP',         desc:'Набери 1000 XP',      check:s=>s.totalXp>=1000},
+  {id:'x10k', ico:'💫', name:'10 000 XP',       desc:'Набери 10000 XP',     check:s=>s.totalXp>=10000},
+  // Уровни
+  {id:'lv5',  ico:'🥉', name:'Уровень 5',       desc:'Достигни уровня 5',   check:s=>s.level>=5},
+  {id:'lv10', ico:'🥈', name:'Уровень 10',      desc:'Достигни уровня 10',  check:s=>s.level>=10},
+  {id:'lv20', ico:'🥇', name:'Уровень 20',      desc:'Достигни уровня 20',  check:s=>s.level>=20},
+  // Точность
+  {id:'a90',  ico:'🎯', name:'Снайпер',         desc:'90%+ точность (50+)', check:s=>s.totalCards>=50&&s.totalCorrect/s.totalCards>=0.9},
+  {id:'a95',  ico:'🏹', name:'Перфекционист',   desc:'95%+ точность (50+)', check:s=>s.totalCards>=50&&s.totalCorrect/s.totalCards>=0.95},
+  // Режимы
+  {id:'voice1',ico:'🎤',name:'Первый голос',    desc:'Пройди голосовой урок',check:s=>s.sessions>0&&s.totalCorrect>0},
+  {id:'dia1',  ico:'💬',name:'Первый диалог',   desc:'Поговори с ИИ',       check:s=>typeof aiHistory!=='undefined'&&aiHistory.length>2},
+  {id:'boss1', ico:'🐉',name:'Победил босса',   desc:'Выиграй у босса',     check:s=>s.totalXp>=150},
+  {id:'combo5',ico:'🔥',name:'Огонь!',          desc:'Комбо 5 ответов',     check:s=>s.totalCorrect>=5},
+  // Особые
+  {id:'fav10', ico:'⭐',name:'Любимчики',       desc:'10 избранных слов',   check:s=>s.favorites&&s.favorites.length>=10},
+  {id:'cn1',   ico:'🇨🇳',name:'Привет Китай',  desc:'Выучи первое CN слово',check:s=>learnedCount()>=1},
+  {id:'en1',   ico:'🇬🇧',name:'Hello English', desc:'Выучи первое EN слово',check:s=>Object.values(EN_WORDDATA||{}).some(w=>w.mastery>=1)},
+  {id:'early', ico:'🌅',name:'Ранняя пташка',  desc:'Зайди до 7 утра',     check:s=>new Date().getHours()<7},
+  {id:'night', ico:'🌙',name:'Ночная учёба',   desc:'Зайди после 23:00',   check:s=>new Date().getHours()>=23},
+  {id:'week7', ico:'📅',name:'Полная неделя',   desc:'Активен 7 дней подряд',check:s=>s.streak>=7},
+  {id:'sp1',   ico:'🗣️',name:'Говорю!',        desc:'Использовал микрофон', check:s=>s.totalCards>=5},
+  {id:'rev1',  ico:'🔄',name:'Повторение',      desc:'Пройди SRS повторение',check:s=>s.totalCards>=10},
+  {id:'perf5', ico:'✨',name:'Идеально',        desc:'5 уроков без ошибок',  check:s=>s.totalCorrect>=25&&s.totalWrong===0},
+];
+
+function learnedCount(){
+  return VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
+}
+
+function checkAchievements(){
+  if(!ST.achievements)ST.achievements={};
+  const newly=[];
+  ACHIEVEMENTS.forEach(a=>{
+    if(!ST.achievements[a.id]){
+      try{if(a.check(ST)){ST.achievements[a.id]=Date.now();newly.push(a);}}catch(e){}
+    }
+  });
+  if(newly.length){
+    sv();
+    newly.forEach((a,i)=>setTimeout(()=>showAchievement(a),i*1500));
+  }
+  return newly;
+}
+
+function showAchievement(a){
+  const div=document.createElement('div');
+  div.style.cssText='position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;'
+    +'transform:translateX(-50%) translateY(20px);z-index:500;'
+    +'background:linear-gradient(135deg,#FFD700,#FFA500);'
+    +'border-radius:var(--rlg);padding:12px 20px;'
+    +'display:flex;align-items:center;gap:12px;'
+    +'box-shadow:0 8px 32px rgba(255,165,0,.4);'
+    +'animation:achPop .4s cubic-bezier(.34,1.56,.64,1) forwards;'
+    +'max-width:calc(100% - 40px);font-family:var(--f);';
+  div.innerHTML='<div style="font-size:32px">'+a.ico+'</div>'
+    +'<div><div style="font-size:14px;font-weight:900;color:#7B3F00">🏆 '+a.name+'</div>'
+    +'<div style="font-size:12px;color:#A05000;margin-top:2px">'+a.desc+'</div></div>';
+  document.body.appendChild(div);
+  sndLevelUp();
+  setTimeout(()=>{div.style.animation='achFade .4s ease forwards';setTimeout(()=>div.remove(),400);},3000);
+}
+
+function renderAchievements(containerId){
+  const cont=g(containerId);if(!cont)return;
+  if(!ST.achievements)ST.achievements={};
+  cont.innerHTML='';
+  const earned=ACHIEVEMENTS.filter(a=>ST.achievements[a.id]);
+  const locked=ACHIEVEMENTS.filter(a=>!ST.achievements[a.id]);
+  // Earned first
+  earned.forEach(a=>{
+    const d=document.createElement('div');d.className='achi';
+    d.innerHTML='<div class="aico">'+a.ico+'</div>'
+      +'<div style="flex:1"><div class="anm">'+a.name+'</div>'
+      +'<div class="ads">'+a.desc+'</div></div>'
+      +'<div style="font-size:11px;font-weight:700;color:var(--green)">✅</div>';
+    cont.appendChild(d);
+  });
+  // Then locked (greyed)
+  locked.forEach(a=>{
+    const d=document.createElement('div');d.className='achi alocked';
+    d.innerHTML='<div class="aico">🔒</div>'
+      +'<div style="flex:1"><div class="anm" style="color:var(--l3)">'+a.name+'</div>'
+      +'<div class="ads">'+a.desc+'</div></div>';
+    cont.appendChild(d);
+  });
+}
+
+
+const VOCAB_CN_MORE2=[
+  // Технологии и современность
+  {id:461,char:'人工智能',pinyin:'rén gōng zhì néng',tones:[2,1,4,2],meaning:'искусственный интеллект',en:'artificial intelligence',hsk:3,conv:true},
+  {id:462,char:'大数据',pinyin:'dà shù jù',tones:[4,4,4],meaning:'большие данные',en:'big data',hsk:3,conv:false},
+  {id:463,char:'直播',pinyin:'zhí bō',tones:[2,1],meaning:'прямой эфир / стрим',en:'live streaming',hsk:3,conv:true},
+  {id:464,char:'网红',pinyin:'wǎng hóng',tones:[3,2],meaning:'интернет-знаменитость',en:'internet celebrity/influencer',hsk:3,conv:true},
+  {id:465,char:'二维码',pinyin:'èr wéi mǎ',tones:[4,2,3],meaning:'QR-код',en:'QR code',hsk:3,conv:true},
+  {id:466,char:'智能手机',pinyin:'zhì néng shǒu jī',tones:[4,2,3,1],meaning:'смартфон',en:'smartphone',hsk:2,conv:false},
+  {id:467,char:'社交媒体',pinyin:'shè jiāo méi tǐ',tones:[4,1,2,3],meaning:'социальные сети',en:'social media',hsk:3,conv:true},
+  {id:468,char:'电子商务',pinyin:'diàn zǐ shāng wù',tones:[4,3,1,4],meaning:'электронная коммерция',en:'e-commerce',hsk:3,conv:false},
+  // Здоровый образ жизни
+  {id:469,char:'健身',pinyin:'jiàn shēn',tones:[4,1],meaning:'фитнес / тренироваться',en:'fitness/to work out',hsk:2,conv:true},
+  {id:470,char:'跑步',pinyin:'pǎo bù',tones:[3,4],meaning:'бегать',en:'to run/jogging',hsk:1,conv:false},
+  {id:471,char:'游泳',pinyin:'yóu yǒng',tones:[2,3],meaning:'плавать',en:'to swim',hsk:2,conv:false},
+  {id:472,char:'瑜伽',pinyin:'yú jiā',tones:[2,1],meaning:'йога',en:'yoga',hsk:3,conv:true},
+  {id:473,char:'减肥',pinyin:'jiǎn féi',tones:[3,2],meaning:'худеть',en:'to lose weight',hsk:2,conv:true},
+  {id:474,char:'失眠',pinyin:'shī mián',tones:[1,2],meaning:'бессонница',en:'insomnia',hsk:3,conv:true},
+  {id:475,char:'按摩',pinyin:'àn mó',tones:[4,2],meaning:'массаж',en:'massage',hsk:2,conv:true},
+  // Путешествие подробно
+  {id:476,char:'签证申请',pinyin:'qiān zhèng shēn qǐng',tones:[1,4,1,3],meaning:'подача на визу',en:'visa application',hsk:3,conv:true},
+  {id:477,char:'预订',pinyin:'yù dìng',tones:[4,4],meaning:'забронировать / предзаказ',en:'to book/reserve',hsk:2,conv:true},
+  {id:478,char:'取消',pinyin:'qǔ xiāo',tones:[3,1],meaning:'отменить',en:'to cancel',hsk:2,conv:true},
+  {id:479,char:'退款',pinyin:'tuì kuǎn',tones:[4,3],meaning:'возврат денег',en:'refund',hsk:3,conv:true},
+  {id:480,char:'换乘',pinyin:'huàn chéng',tones:[4,2],meaning:'пересадка',en:'to transfer/change',hsk:2,conv:true},
+  // Бизнес и переговоры
+  {id:481,char:'谈判',pinyin:'tán pàn',tones:[2,4],meaning:'переговоры',en:'negotiation',hsk:3,conv:true},
+  {id:482,char:'投资',pinyin:'tóu zī',tones:[2,1],meaning:'инвестировать',en:'to invest',hsk:3,conv:false},
+  {id:483,char:'利润',pinyin:'lì rùn',tones:[4,4],meaning:'прибыль',en:'profit',hsk:3,conv:false},
+  {id:484,char:'客户',pinyin:'kè hù',tones:[4,4],meaning:'клиент / заказчик',en:'client/customer',hsk:2,conv:true},
+  {id:485,char:'竞争',pinyin:'jìng zhēng',tones:[4,1],meaning:'конкуренция',en:'competition',hsk:3,conv:false},
+  {id:486,char:'品牌',pinyin:'pǐn pái',tones:[3,2],meaning:'бренд / торговая марка',en:'brand',hsk:3,conv:true},
+  {id:487,char:'市场营销',pinyin:'shì chǎng yíng xiāo',tones:[4,3,2,1],meaning:'маркетинг',en:'marketing',hsk:3,conv:false},
+  // Социальные темы
+  {id:488,char:'环境保护',pinyin:'huán jìng bǎo hù',tones:[2,4,3,4],meaning:'охрана окружающей среды',en:'environmental protection',hsk:3,conv:true},
+  {id:489,char:'节约',pinyin:'jié yuē',tones:[2,1],meaning:'экономить / беречь',en:'to save/economize',hsk:2,conv:true},
+  {id:490,char:'垃圾分类',pinyin:'lā jī fēn lèi',tones:[1,1,1,4],meaning:'раздельный сбор мусора',en:'waste sorting',hsk:3,conv:true},
+  {id:491,char:'公益',pinyin:'gōng yì',tones:[1,4],meaning:'благотворительность',en:'public welfare/charity',hsk:3,conv:false},
+  {id:492,char:'志愿者',pinyin:'zhì yuàn zhě',tones:[4,4,3],meaning:'волонтёр',en:'volunteer',hsk:3,conv:true},
+  // Чувства и отношения
+  {id:493,char:'暗恋',pinyin:'àn liàn',tones:[4,4],meaning:'тайно влюблён / нравится',en:'secret crush',hsk:3,conv:true},
+  {id:494,char:'表白',pinyin:'biǎo bái',tones:[3,2],meaning:'признаться в любви',en:'to confess feelings',hsk:3,conv:true},
+  {id:495,char:'分手',pinyin:'fēn shǒu',tones:[1,3],meaning:'расстаться',en:'to break up',hsk:2,conv:true},
+  {id:496,char:'吵架',pinyin:'chǎo jià',tones:[3,4],meaning:'ссориться',en:'to quarrel/argue',hsk:2,conv:true},
+  {id:497,char:'和好',pinyin:'hé hǎo',tones:[2,3],meaning:'помириться',en:'to make up/reconcile',hsk:2,conv:true},
+  // Продукты питания
+  {id:498,char:'有机食品',pinyin:'yǒu jī shí pǐn',tones:[3,1,2,3],meaning:'органические продукты',en:'organic food',hsk:3,conv:true},
+  {id:499,char:'零食',pinyin:'líng shí',tones:[2,2],meaning:'снеки / закуски',en:'snacks',hsk:2,conv:true},
+  {id:500,char:'饮料',pinyin:'yǐn liào',tones:[3,4],meaning:'напиток',en:'beverage/drink',hsk:2,conv:false},
+];
+VOCAB.push(...VOCAB_CN_MORE2);
+VOCAB_CN_MORE2.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
+
+const EN_VOCAB_MORE2=[
+  // Environment & society
+  {id:'e201',char:'Sustainable',transl:'устойчивый / экологичный',pron:'сестэйнабл',ipa:'səˈsteɪnəbl',level:'B2',topic:'environment'},
+  {id:'e202',char:'Climate change',transl:'изменение климата',pron:'клаймит чейндж',ipa:'ˈklaɪmɪt tʃeɪndʒ',level:'B1',topic:'environment'},
+  {id:'e203',char:'Recycle',transl:'перерабатывать',pron:'рисайкл',ipa:'riːˈsaɪkl',level:'A2',topic:'environment'},
+  {id:'e204',char:'Pollution',transl:'загрязнение',pron:'полюшн',ipa:'pəˈluːʃn',level:'B1',topic:'environment'},
+  // Relationship
+  {id:'e205',char:'Date',transl:'свидание / встречаться',pron:'дейт',ipa:'deɪt',level:'A2',topic:'social'},
+  {id:'e206',char:'Relationship',transl:'отношения',pron:'рилэйшншип',ipa:'rɪˈleɪʃnʃɪp',level:'A2',topic:'social'},
+  {id:'e207',char:'Argue',transl:'спорить / ссориться',pron:'аргью',ipa:'ˈɑːɡjuː',level:'B1',topic:'social'},
+  {id:'e208',char:'Apologize',transl:'извиняться',pron:'эполоджайз',ipa:'əˈpɒlədʒaɪz',level:'B1',topic:'social'},
+  // Digital life
+  {id:'e209',char:'Stream',transl:'стримить / поток',pron:'стрим',ipa:'striːm',level:'A2',topic:'tech'},
+  {id:'e210',char:'Subscribe',transl:'подписаться',pron:'сабскрайб',ipa:'səbˈskraɪb',level:'A2',topic:'tech'},
+  {id:'e211',char:'Notification',transl:'уведомление',pron:'нотификэйшн',ipa:'ˌnəʊtɪfɪˈkeɪʃn',level:'A2',topic:'tech'},
+  {id:'e212',char:'Algorithm',transl:'алгоритм',pron:'алгэрисм',ipa:'ˈælɡərɪðəm',level:'B2',topic:'tech'},
+  // Business advanced
+  {id:'e213',char:'Revenue',transl:'выручка / доход',pron:'рэвеню',ipa:'ˈrevənjuː',level:'B2',topic:'business'},
+  {id:'e214',char:'Stakeholder',transl:'заинтересованное лицо',pron:'стэйкхолдэр',ipa:'ˈsteɪkhəʊldər',level:'B2',topic:'business'},
+  {id:'e215',char:'Pitch',transl:'питч / презентовать идею',pron:'пич',ipa:'pɪtʃ',level:'B2',topic:'business'},
+  {id:'e216',char:'Prototype',transl:'прототип',pron:'проутотайп',ipa:'ˈprəʊtətaɪp',level:'B2',topic:'business'},
+  // Useful verbs
+  {id:'e217',char:'Achieve',transl:'достигать',pron:'эчив',ipa:'əˈtʃiːv',level:'B1',topic:'verbs',example:'We achieved our goal.',ex_ru:'Мы достигли нашей цели.'},
+  {id:'e218',char:'Improve',transl:'улучшать',pron:'импрув',ipa:'ɪmˈpruːv',level:'A2',topic:'verbs'},
+  {id:'e219',char:'Recommend',transl:'рекомендовать',pron:'рэкэмэнд',ipa:'ˌrekəˈmend',level:'B1',topic:'verbs'},
+  {id:'e220',char:'Explore',transl:'исследовать',pron:'икспло:р',ipa:'ɪkˈsplɔː',level:'B1',topic:'verbs'},
+  {id:'e221',char:'Communicate',transl:'общаться',pron:'комьюникейт',ipa:'kəˈmjuːnɪkeɪt',level:'B1',topic:'verbs'},
+  {id:'e222',char:'Appreciate',transl:'ценить / быть благодарным',pron:'эприши эйт',ipa:'əˈpriːʃieɪt',level:'B1',topic:'verbs'},
+  {id:'e223',char:'Negotiate',transl:'договариваться',pron:'нигошиэйт',ipa:'nɪˈɡəʊʃieɪt',level:'B2',topic:'verbs'},
+  {id:'e224',char:'Collaborate',transl:'сотрудничать',pron:'колэбэрейт',ipa:'kəˈlæbəreɪt',level:'B2',topic:'verbs'},
+  // Adj B2
+  {id:'e225',char:'Overwhelming',transl:'подавляющий / огромный',pron:'оувэрвэлмин',ipa:'ˌəʊvəˈwelmɪŋ',level:'B2',topic:'adj'},
+  {id:'e226',char:'Inevitable',transl:'неизбежный',pron:'инэвитэбл',ipa:'ɪnˈevɪtəbl',level:'B2',topic:'adj'},
+  {id:'e227',char:'Significant',transl:'значительный / важный',pron:'сигнификэнт',ipa:'sɪɡˈnɪfɪkənt',level:'B2',topic:'adj'},
+  {id:'e228',char:'Relevant',transl:'актуальный / относящийся',pron:'рэлэвэнт',ipa:'ˈreləvənt',level:'B2',topic:'adj'},
+  // Common expressions
+  {id:'e229',char:'Touch base',transl:'Связаться / уточнить',pron:'тач бейс',ipa:'tʌtʃ beɪs',level:'B2',topic:'phrases',example:'Touch base with me next week.',ex_ru:'Свяжись со мной на следующей неделе.'},
+  {id:'e230',char:'Catch up',transl:'Наверстать / встретиться',pron:'кэч ап',ipa:'kætʃ ʌp',level:'B1',topic:'phrases',example:'Catch up with old friends.',ex_ru:'Встретиться со старыми друзьями.'},
+  {id:'e231',char:'Think outside the box',transl:'Мыслить нестандартно',pron:'синк аутсайд зэ бокс',ipa:'θɪŋk ˈaʊtsaɪd ðə bɒks',level:'B2',topic:'phrases'},
+  {id:'e232',char:'Hit the nail on the head',transl:'Попасть в точку',pron:'хит зэ нейл он зэ хед',ipa:'hɪt ðə neɪl ɒn ðə hed',level:'B2',topic:'phrases'},
+  {id:'e233',char:'Actions speak louder',transl:'Дела говорят громче слов',pron:'экшнс спик лаудэр',ipa:'ˈækʃnz spiːk ˈlaʊdər',level:'B2',topic:'phrases'},
+  {id:'e234',char:'Better safe than sorry',transl:'Лучше перестраховаться',pron:'бэтэр сейф зэн сори',ipa:'ˈbetər seɪf ðən ˈsɒri',level:'B1',topic:'phrases'},
+  {id:'e235',char:'The ball is in your court',transl:'Теперь твой ход',pron:'зэ бол из ин ёр корт',ipa:'ðə bɔːl ɪz ɪn jɔː kɔːt',level:'B2',topic:'phrases'},
+  // Medical
+  {id:'e236',char:'Diagnosis',transl:'диагноз',pron:'даягносис',ipa:'ˌdaɪəɡˈnəʊsɪs',level:'B2',topic:'health'},
+  {id:'e237',char:'Surgery',transl:'операция / хирургия',pron:'сёрджэри',ipa:'ˈsɜːdʒəri',level:'B2',topic:'health'},
+  {id:'e238',char:'Emergency',transl:'скорая / чрезвычайная ситуация',pron:'имёрджэнси',ipa:'ɪˈmɜːdʒənsi',level:'B1',topic:'health',example:'Call emergency services!',ex_ru:'Вызовите скорую помощь!'},
+  {id:'e239',char:'Prescription',transl:'рецепт',pron:'прискрипшн',ipa:'prɪˈskrɪpʃn',level:'B1',topic:'health'},
+  {id:'e240',char:'Recovery',transl:'выздоровление',pron:'рикавэри',ipa:'rɪˈkʌvəri',level:'B1',topic:'health'},
+];
+EN_VOCAB.push(...EN_VOCAB_MORE2);
+EN_VOCAB_MORE2.forEach(w=>{if(!EN_WORDDATA[w.id])EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
@@ -4757,6 +5023,7 @@ window.addEventListener('load',()=>{
   let _ti=0;const _tiv=setInterval(()=>{const el=g('loading-tip');if(el&&_ti<_tips.length)el.textContent=_tips[_ti++];},300);
   setTimeout(()=>{
     clearInterval(_tiv);
+    setTimeout(checkAchievements,2000);
     const lo=g('loading');lo.style.transition='opacity .5s';lo.style.opacity='0';
     setTimeout(()=>lo.style.display='none',500);
     if(!ST.onboarded){g('ob').style.display='flex';}
@@ -4769,6 +5036,19 @@ window.addEventListener('popstate',()=>{
   if(g('comp').classList.contains('open')){g('comp').classList.remove('open');goTab('s-home',0);updateHome();}
 });
 history.pushState({},'','');
+// Keyboard shortcuts for quiz (1-4 keys like Duolingo)
+document.addEventListener('keydown', e => {
+  if(!g('v-quiz')||g('v-quiz').style.display==='none')return;
+  const map={'1':0,'2':1,'3':2,'4':3};
+  if(e.key in map){
+    const btns=document.querySelectorAll('.qo:not(.ok):not(.bad):not(.off)');
+    if(btns[map[e.key]])btns[map[e.key]].click();
+  }
+  if(e.key==='Enter'||e.key===' '){
+    const nb=g('vonext');if(nb&&nb.style.display!=='none')nb.click();
+    const cb=document.querySelector('.cbprim');if(cb)cb.click();
+  }
+});
 // Nav wiring
 g('nb3').onclick=()=>{goTab('s-stats',4);renderStats();};
 const _nb2v=g('nb2v');if(_nb2v)_nb2v.onclick=()=>{goTab('s-vocab',3);renderV();};
