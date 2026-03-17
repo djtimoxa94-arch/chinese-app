@@ -6,9 +6,9 @@
 <meta name="theme-color" content="#ffffff" id="tcmeta">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default" id="status-bar-meta">
-<title>汉字 HànZì</title>
+<title>说话 ShuōHua</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>汉</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>说</text></svg>">
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1066,32 +1066,55 @@ html,body{
 <div id="app">
 
 <div id="loading" style="position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
-  <div style="font-family:var(--fc);font-size:80px;color:var(--red);animation:ldsp 2s linear infinite">汉</div>
+  <div style="font-family:var(--fc);font-size:80px;color:var(--red);animation:ldsp 2s linear infinite">说</div>
   <div style="font-size:16px;font-weight:700;color:var(--l2)" id="loading-tip">Загрузка...</div>
   <div style="display:flex;gap:8px"><div class="ldd" style="background:var(--red)"></div><div class="ldd" style="background:var(--orange)"></div><div class="ldd" style="background:var(--green)"></div></div>
 </div>
 
 <!-- ONBOARDING -->
 <div class="ob" id="ob">
-  <div class="oblogo">汉</div>
-  <div class="obtit">汉字 HànZì</div>
-  <input id="ob-name" class="inp" placeholder="Как тебя зовут? (необязательно)" style="width:100%;max-width:340px;margin:16px auto 0;display:block;text-align:center">
-  <div class="obsub">Разговорный китайский по реальным ситуациям — путешествия, еда, покупки</div>
-  <div class="oblvs">
-    <div class="oblv on" onclick="selDiff(1,this)"><div class="obico">🐣</div><div><div class="oblvt">Абсолютный новичок</div><div class="oblvd">Первые фразы, подсказки пиньинь, 5 карточек/день</div></div></div>
-    <div class="oblv" onclick="selDiff(2,this)"><div class="obico">💬</div><div><div class="oblvt">Начинающий</div><div class="oblvd">Базовые диалоги, тесты с выбором, 10/день</div></div></div>
-    <div class="oblv" onclick="selDiff(3,this)"><div class="obico">🗣️</div><div><div class="oblvt">Разговорный</div><div class="oblvd">Ситуационные диалоги, голос, SRS, 15/день</div></div></div>
-    <div class="oblv" onclick="selDiff(4,this)"><div class="obico">🎓</div><div><div class="oblvt">Продвинутый</div><div class="oblvd">Все темы, строгий SRS, голосовые ответы, 20/день</div></div></div>
+  <div class="oblogo">说</div>
+  <div class="obtit">说话 ShuōHua</div>
+  <div class="obsub" id="ob-sub">Выбери язык — мы создадим программу под тебя</div>
+
+  <!-- STEP 1: Language -->
+  <div id="ob-step1" style="width:100%;max-width:340px;margin:20px auto 0">
+    <div style="font-size:13px;font-weight:700;color:var(--l2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;text-align:center">Что хочешь изучать?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="oblv on" id="ob-lang-cn" onclick="obSetLang('cn',this)" style="flex-direction:column;align-items:center;text-align:center;gap:8px;padding:20px 12px">
+        <div style="font-size:42px">🇨🇳</div>
+        <div class="oblvt">Китайский</div>
+        <div class="oblvd">Мандарин · HSK 1-3</div>
+      </div>
+      <div class="oblv" id="ob-lang-en" onclick="obSetLang('en',this)" style="flex-direction:column;align-items:center;text-align:center;gap:8px;padding:20px 12px">
+        <div style="font-size:42px">🇬🇧</div>
+        <div class="oblvt">Английский</div>
+        <div class="oblvd">A1 → B2 · 200 слов</div>
+      </div>
+    </div>
+    <button onclick="obNextStep()" style="width:100%;padding:16px;border-radius:var(--rlg);background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;font-family:var(--f);font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(255,59,48,.4)">Далее →</button>
   </div>
-  <button class="obstrt" onclick="finishOb()">Начать говорить по-китайски →</button>
+
+  <!-- STEP 2: Level + name (hidden) -->
+  <div id="ob-step2" style="display:none;width:100%;max-width:340px;margin:0 auto">
+    <div style="font-size:13px;font-weight:700;color:var(--l2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;text-align:center">Твой уровень</div>
+    <div class="oblvs">
+      <div class="oblv on" onclick="selDiff(1,this)"><div class="obico">🐣</div><div><div class="oblvt">Абсолютный новичок</div><div class="oblvd">Первые фразы, подсказки пиньинь, 5 карточек/день</div></div></div>
+      <div class="oblv" onclick="selDiff(2,this)"><div class="obico">💬</div><div><div class="oblvt">Начинающий</div><div class="oblvd">Базовые диалоги, тесты с выбором, 10/день</div></div></div>
+      <div class="oblv" onclick="selDiff(3,this)"><div class="obico">🗣️</div><div><div class="oblvt">Разговорный</div><div class="oblvd">Ситуационные диалоги, голос, SRS, 15/день</div></div></div>
+      <div class="oblv" onclick="selDiff(4,this)"><div class="obico">🎓</div><div><div class="oblvt">Продвинутый</div><div class="oblvd">Все темы, строгий SRS, голосовые ответы, 20/день</div></div></div>
+    </div>
+    <input id="ob-name" class="inp" placeholder="Как тебя зовут? (необязательно)" style="margin:14px 0 0;text-align:center">
+    <button class="obstrt" onclick="finishOb()" id="ob-start-btn">🚀 Начать обучение</button>
+  </div>
 </div>
 
 <!-- HOME -->
 <div class="scr" id="s-home">
   <div class="ph"><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 14px">
     <div><div style="font-size:13px;color:var(--l2);font-weight:600" id="home-greeting">Добро пожаловать!</div>
-    <div style="font-size:28px;font-weight:900;letter-spacing:-.5px;color:var(--label)" id="home-title"><span style="color:var(--red)">汉</span>字 HànZì</div></div>
-    <div onclick="goTab('s-prof',5);renderProf()" style="cursor:pointer;flex-shrink:0" id="home-avatar"></div>
+    <div style="font-size:28px;font-weight:900;letter-spacing:-.5px;color:var(--label)" id="home-title"><span style="color:var(--red)">说</span>话 ShuōHua</div></div>
+    <button onclick="openSettings()" style="width:36px;height:36px;border-radius:50%;background:var(--glass-inset);backdrop-filter:blur(12px);border:1px solid var(--glass-border2);font-size:18px;cursor:pointer;flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center" title="Настройки">⚙️</button>
   </div></div>
   <div class="scroll"><div class="si">
     <div id="notifbanner"></div>
@@ -2216,17 +2239,30 @@ function goTab(sid,n){
 function exitLesson(){stopMic();synth.cancel();goTab('s-home',0);updateHome();}
 
 // ONBOARDING
-function selDiff(d,el){selDiffVal=d;document.querySelectorAll('.oblv').forEach(e=>e.classList.remove('on'));el.classList.add('on');}
+let obLangVal='cn';
+function obSetLang(lang,el){
+  obLangVal=lang;
+  document.querySelectorAll('#ob-step1 .oblv').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+}
+function obNextStep(){
+  const s1=document.getElementById('ob-step1');
+  const s2=document.getElementById('ob-step2');
+  if(s1)s1.style.display='none';
+  if(s2){s2.style.display='block';s2.style.animation='sIn .3s ease';}
+}
+function selDiff(d,el){selDiffVal=d;document.querySelectorAll('#ob-step2 .oblv').forEach(e=>e.classList.remove('on'));el.classList.add('on');}
 function finishOb(){
   const nameEl=g('ob-name');
-  if(nameEl&&nameEl.value.trim()){
-    ST.profile.name=nameEl.value.trim();
-  }
-  ST.difficulty=selDiffVal;ST.onboarded=true;ST.dailyGoal=[5,10,15,20][selDiffVal-1];
-  g('ob').style.display='none';g('s-home').classList.add('on');sv();updateHome();initPotd();
-  // Welcome toast with name
+  if(nameEl&&nameEl.value.trim())ST.profile.name=nameEl.value.trim();
+  ST.difficulty=selDiffVal;ST.onboarded=true;ST.lang=obLangVal;
+  ST.dailyGoal=[5,10,15,20][selDiffVal-1];
+  g('ob').style.display='none';
+  g('s-home').classList.add('on');
+  sv();updateHome();initPotd();updateLangUI();
   const name=ST.profile.name||'';
-  setTimeout(()=>toast(name?`欢迎，${name}！让我们开始学习吧 🎉`:'欢迎！让我们开始学习吧 🎉'),600);
+  const langName=obLangVal==='en'?'английский 🇬🇧':'китайский 🇨🇳';
+  setTimeout(()=>toast(`🎉 ${name?name+', начнём ':'Начнём '}изучать ${langName}!`),600);
 }
 
 // HOME
@@ -2336,7 +2372,10 @@ function renderFlash(){
   g('fcch').textContent=w.char;g('fcpy').textContent=ST.difficulty===1?w.pinyin:'';
   const _swHint=ST.sessions<=3?' (свайп ←→ тоже работает)':'';
   g('fchint').textContent=(ST.difficulty===1?'Нажми чтобы увидеть перевод':'👆 Нажми чтобы перевернуть')+_swHint;
-  g('fcmean').textContent=w.meaning;g('fcen').textContent=w.en;g('fcpysm').textContent=w.pinyin;
+  g('fcmean').textContent=w.meaning;g('fcen').textContent=w.en;
+  const _ruP=getRuPinyin(w.pinyin)||buildRuPhonetic(w.pinyin)||'';
+  const _fcPy=g('fcpysm');
+  if(_fcPy)_fcPy.innerHTML='<span style="color:var(--red)">'+w.pinyin+'</span>'+(_ruP?'<span style="display:block;font-size:12px;color:var(--teal);margin-top:3px">🇷🇺 '+_ruP+'</span>':'');
   // Tone badges
   const tr=g('tonerow');tr.innerHTML='';
   // Show example sentence on back if available
@@ -2369,14 +2408,25 @@ function renderQuiz(){
   if(type==='quiz'||type==='listen'){
     g('qpmt').textContent=type==='listen'?'Прослушай и выбери значение':'Что значит иероглиф?';
     qc.textContent=type==='listen'?'🔊':w.char;qc.className='qch'+(type==='listen'?' sm':'');qc.style.fontFamily=type==='listen'?'var(--f)':'var(--fc)';
-    g('qpy').textContent='';g('qhb').style.display=type==='quiz'?'block':'none';
+    const _qpyEl=g('qpy');
+    if(type!=='quiz'||ST.difficulty===1){
+      const _ruQC=getRuPinyin(w.pinyin)||buildRuPhonetic(w.pinyin)||'';
+      if(_qpyEl)_qpyEl.innerHTML=w.pinyin+(_ruQC?'<br><span style="font-size:12px;color:var(--teal);font-weight:700">🇷🇺 '+_ruQC+'</span>':'');
+    } else { if(_qpyEl)_qpyEl.innerHTML=''; }
+    g('qhb').style.display=type==='quiz'&&ST.difficulty>1?'block':'none';
     if(type==='listen')setTimeout(()=>speakWord(w),300);
   } else if(type==='reverse'){g('qpmt').textContent='Выбери иероглиф по смыслу';qc.textContent=w.meaning;qc.className='qch sm';qc.style.fontFamily='var(--f)';g('qpy').textContent=w.en;g('qhb').style.display='none';}
   const others=shuf(VOCAB.filter(v=>v.id!==w.id)).slice(0,3);
   const opts=shuf([w,...others]);const cont=g('qopts');cont.innerHTML='';
   opts.forEach(o=>{const btn=document.createElement('button');btn.className='qo';btn.textContent=type==='reverse'?o.char:o.meaning;btn.onclick=()=>handleQ(btn,o.id===w.id,w);cont.appendChild(btn);});
 }
-function showHint(){const w=SES.cards[SES.idx];g('qpy').textContent=w.pinyin;g('qhb').style.display='none';speakWord(w);}
+function showHint(){
+  const w=SES.cards[SES.idx];
+  const _ruH=getRuPinyin(w.pinyin)||buildRuPhonetic(w.pinyin)||'';
+  const _qpy=g('qpy');
+  if(_qpy)_qpy.innerHTML=w.pinyin+(_ruH?'<br><span style="font-size:12px;color:var(--teal);font-weight:700">🇷🇺 '+_ruH+'</span>':'');
+  g('qhb').style.display='none';speakWord(w);
+}
 function handleQ(btn,ok,word){
   document.querySelectorAll('.qo').forEach(b=>{b.classList.add('off');b.onclick=null;});
   const wd=ST.wordData[word.id];
@@ -3028,16 +3078,17 @@ function addCombo(){
 function resetCombo(){_combo=0;clearTimeout(_comboTimer);hideCombo();}
 function getComboMult(){if(_combo>=10)return 3;if(_combo>=5)return 2;if(_combo>=3)return 1.5;return 1;}
 function showCombo(n){
-  let el=g('combo-badge');
-  if(!el){el=document.createElement('div');el.id='combo-badge';
-    el.style.cssText='position:fixed;top:calc(max(20px,env(safe-area-inset-top))+8px);right:16px;z-index:300;font-family:var(--f);font-weight:900;font-size:20px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.4);transition:all .2s;pointer-events:none;display:flex;align-items:center;gap:4px';
-    document.body.appendChild(el);}
-  const color=n>=10?'#FF3B30':n>=5?'#FF9500':n>=3?'#34C759':'#007AFF';
-  el.innerHTML=`<span style="background:${color};border-radius:999px;padding:4px 12px;font-size:16px">🔥 ×${n}</span>`;
-  el.style.transform='scale(1.2)';el.style.opacity='1';
-  setTimeout(()=>{if(el)el.style.transform='scale(1)';},150);
+  // Subtle: flash the lcnt (lesson counter) instead of big overlay
+  const lc=g('lcnt');
+  if(lc&&n>=3){
+    const orig=lc.textContent;
+    const color=n>=10?'#FF3B30':n>=5?'#FF9500':'#34C759';
+    lc.style.color=color;lc.style.fontWeight='900';
+    lc.textContent=`🔥×${n}`;
+    setTimeout(()=>{lc.style.color='';lc.style.fontWeight='';lc.textContent=orig;},1200);
+  }
 }
-function hideCombo(){const el=g('combo-badge');if(el){el.style.opacity='0';setTimeout(()=>el.remove(),300);}}
+function hideCombo(){/* no-op — subtle mode */}
 
 
 // ============================================================
@@ -3112,53 +3163,109 @@ function getWeek(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+
 // ── РУССКАЯ ТРАНСКРИПЦИЯ ──────────────────────────────────────
 // Как произносить пиньинь на русский манер (для новичков)
 const RU_PINYIN={
-  'yī':'йи','yí':'йи↗','yǐ':'йи↕','yì':'йи↘',
-  'nǐ':'ни','nín':'нин','nǐ hǎo':'ни хао',
-  'hǎo':'хао','hāo':'хао',
-  'wǒ':'во','wǒ men':'вомэн',
-  'nǐ men':'нимэн','tā men':'тамэн',
-  'shì':'ши','shí':'ши↗','shǐ':'ши↕',
-  'bù':'бу','bú':'бу↗',
-  'yǒu':'ёу','yōu':'ёу',
-  'méi yǒu':'мэй ёу',
-  'de':'дэ','le':'лэ','ma':'ма',
-  'xiè xiè':'сье сье',
-  'zài jiàn':'цзай цзянь',
-  'duì bù qǐ':'дуэй бу чи',
-  'qǐng':'чин',
-  'bù kè qì':'бу кэ чи',
-  'méi guān xi':'мэй гуань си',
-  'hǎo de':'хао дэ',
-  'gāo xìng':'гао син',
-  'jiā yóu':'цзя ёу',
-  'zài':'цзай',
-  'chī':'чи','hē':'хэ','qù':'чюй','lái':'лай',
-  'kàn':'кань','tīng':'тин','shuō':'шуо','xiě':'сье',
-  'mǎi':'май','jiào':'цзяо','zhù':'чжу',
-  'duō shao':'дуо шао','zěn me':'цзэнмэ',
-  'shén me':'шэнмэ','nǎr':'нар','shéi':'шэй',
-  'jīn tiān':'цзинь тянь','míng tiān':'мин тянь',
-  'zuó tiān':'цзо тянь','xiàn zài':'сянь цзай',
-  'pián yi':'пянь и','tài guì le':'тай гуэй лэ',
+  // Приветствия и частые фразы
+  'nǐ hǎo':'ни хао','nín hǎo':'нин хао','zài jiàn':'цзай цзянь',
+  'xiè xiè':'сье сье','xièxiè':'сье сье','bù kè qì':'бу кэ чи',
+  'duì bù qǐ':'дуэй бу чи','méi guān xi':'мэй гуань си',
+  'qǐng':'чин','wǒ ài nǐ':'во ай ни',
+  'jiā yóu':'цзя ёу','zǎo shàng hǎo':'цзао шан хао',
+  'wǎn shàng hǎo':'вань шан хао','wǎn ān':'вань ань',
+  'hǎo de':'хао дэ','hǎo':'хао','duì':'дуэй',
+  'bù':'бу','méi yǒu':'мэй ёу','yǒu':'ёу',
+  'shì':'ши','bù shì':'бу ши',
+  'wǒ':'во','nǐ':'ни','nín':'нин',
+  'tā':'та','wǒ men':'вомэнь','nǐ men':'нимэнь',
+  'shén me':'шэньмэ','zěn me':'цзэньмэ',
+  'duō shao':'дуо шао','nǎ lǐ':'на ли','nǎr':'нар',
+  // Числа
+  'yī':'и','èr':'эр','sān':'сань','sì':'сы','wǔ':'у',
+  'liù':'лю','qī':'чи','bā':'ба','jiǔ':'цзю','shí':'ши',
+  'bǎi':'бай','qiān':'цянь','wàn':'вань',
+  // Еда
+  'chī':'чи','hē':'хэ','hǎo chī':'хао чи',
+  'mǐ fàn':'ми фань','miàn':'мянь','jiǎo zi':'цзяо цзы',
+  'chǎo fàn':'чао фань','tāng':'тан','là':'ла',
+  'tián':'тянь','suān':'суань','xián':'сянь',
+  'pí jiǔ':'пи цзю','shuǐ':'шуэй',
+  // Деньги и покупки
+  'duō shao qián':'дуо шао цянь','mǎi':'май','mài':'май',
+  'guì':'гуэй','piányí':'пянь и','kuài':'куай',
+  'zhǎo qián':'чжао цянь','mǎi dān':'май дань',
+  // Транспорт и направления
+  'qù':'чюй','lái':'лай','zuǒ':'цзуо','yòu':'ёу',
+  'qián':'цянь','hòu':'хоу','zhí zǒu':'чжи цзоу',
+  'dì tiě':'ди тье','chū zū chē':'чу цзу чэ',
+  'jī chǎng':'цзи чан','huǒ chē zhàn':'хо чэ чжань',
+  // Место и время
+  'zài':'цзай','nǎ lǐ':'на ли','jīn tiān':'цзинь тянь',
+  'míng tiān':'мин тянь','zuó tiān':'цзуо тянь',
+  'xiàn zài':'сянь цзай','shàng wǔ':'шан у',
+  'xià wǔ':'ся у','wǎn shàng':'вань шан',
+  'zǎo shàng':'цзао шан','zhōng wǔ':'чжун у',
+  // Работа и учёба
+  'gōng zuò':'гун цзуо','xué xí':'сюэ си',
+  'lǎo shī':'лао ши','tóng xué':'тун сюэ',
+  'gōng sī':'гун сы','bào gào':'бао гао',
+  // Чувства
   'xǐ huān':'си хуань','ài':'ай','xiǎng':'сян',
-  'kě yǐ':'кэ и','néng':'нэн',
-  'wǒ ài nǐ':'во ай ни',
-  'xièxiè nǐ':'сье сье ни',
-  'péng yǒu':'пэн ёу','lǎo shī':'лао ши',
-  'zhōng guó':'чжун го','běi jīng':'бэй цзин',
-  'shàng hǎi':'шан хай',
-  'tiān qì':'тянь чи','xià yǔ':'ся юй',
-  'hǎo chī':'хао чи','mǎi dān':'май дань',
-  'gān bēi':'гань бэй',
-  'nǐ hǎo':'ни хао','nín hǎo':'нин хао',
+  'gāo xìng':'гао син','shāng xīn':'шан синь',
+  'hài pà':'хай па','jǐn zhāng':'цзинь чжан',
+  'kāi xīn':'кай синь',
+  // Разговор
+  'wǒ tīng bù dǒng':'во тин бу дун',
+  'qǐng zài shuō yī cì':'чин цзай шуо и цы',
+  'qǐng shuō màn diǎn':'чин шуо мань дянь',
+  'nǐ huì shuō yīng yǔ ma':'ни хуэй шуо ин юй ма',
+  'wǒ bù míng bái':'во бу мин бай',
+  // Технологии
+  'shǒu jī':'шоу цзи','diàn nǎo':'дянь нао',
+  'wǎng luò':'ван луо','wēi xìn':'вэй синь',
+  'mì mǎ':'ми ма',
+  // Страны и люди
+  'zhōng guó':'чжун го','é luó sī':'э луо сы',
+  'zhōng guó rén':'чжун го жэнь','é luó sī rén':'э луо сы жэнь',
+  'běi jīng':'бэй цзин','shàng hǎi':'шан хай',
+  // Природа
+  'tiān qì':'тянь чи','xià yǔ':'ся юй','qíng tiān':'чин тянь',
 };
+
 function getRuPinyin(pinyin){
   if(!ST.settings.ruTranslit)return null;
   const clean=pinyin.toLowerCase().trim();
   if(RU_PINYIN[clean])return RU_PINYIN[clean];
-  // fallback: first word only
+  // Try first word
   const first=clean.split(' ')[0];
-  return RU_PINYIN[first]||null;
+  if(RU_PINYIN[first])return RU_PINYIN[first];
+  // Build phonetic from pinyin initials (basic)
+  return buildRuPhonetic(clean);
+}
+// Basic pinyin→Russian phonetic converter
+function buildRuPhonetic(py){
+  if(!ST.settings.ruTranslit)return null;
+  const toneStrip=py.replace(/[āáǎà]/g,'a').replace(/[ēéěè]/g,'e')
+    .replace(/[īíǐì]/g,'i').replace(/[ōóǒò]/g,'o')
+    .replace(/[ūúǔù]/g,'u').replace(/[ǖǘǚǜ]/g,'u')
+    .replace(/\d/g,'').trim();
+  const map={
+    'zh':'чж','ch':'ч','sh':'ш','zh':'чж',
+    'x':'си','q':'ч','c':'ц','z':'цз',
+    'r':'р','j':'дж',
+    'ian':'янь','iang':'ян','iao':'яо','ie':'е',
+    'uan':'уань','uang':'уан','ui':'уэй','un':'унь',
+    'ing':'ин','ang':'ан','eng':'эн','ong':'он',
+    'ao':'ао','ou':'оу','ai':'ай','ei':'эй',
+    'an':'ань','en':'энь','in':'инь',
+    'a':'а','e':'э','i':'и','o':'о','u':'у',
+    'b':'б','p':'п','m':'м','f':'ф',
+    'd':'д','t':'т','n':'н','l':'л',
+    'g':'г','k':'к','h':'х',
+    's':'с','y':'й','w':'в',
+  };
+  let result=toneStrip;
+  // Sort by length desc for greedy replacement
+  const keys=Object.keys(map).sort((a,b)=>b.length-a.length);
+  for(const k of keys)result=result.replace(new RegExp(k,'g'),map[k]);
+  return result||null;
 }
 
 
@@ -3620,8 +3727,10 @@ function showAiWelcome() {
   aiHistory = [];
   const welcomeText = AI_WELCOME[aiScenario] || AI_WELCOME.free;
   appendAiBubble('ai', welcomeText);
-  // Save welcome to history
   aiHistory.push({ role: 'assistant', content: welcomeText });
+  // Speak welcome Chinese
+  const cnM=welcomeText.match(/[\u4e00-\u9fff]+/);
+  if(cnM)setTimeout(()=>speakTxt(cnM[0]),800);
 }
 
 function renderAiSuggestions() {
@@ -3659,22 +3768,20 @@ function appendAiBubble(role, text, extra) {
   div.className = 'ai-bubble ' + role;
 
   if (role === 'ai') {
-    // Parse text: look for Chinese characters and format them
     const formatted = formatAiText(text);
     div.innerHTML = formatted;
-    
-    // Add TTS button for AI messages with Chinese
-    if (/[\u4e00-\u9fff]/.test(text)) {
-      const ttsBtn = document.createElement('button');
-      ttsBtn.className = 'bubble-tts';
-      ttsBtn.textContent = '🔊';
-      ttsBtn.onclick = () => {
-        // Extract Chinese text and speak
-        const cnMatch = text.match(/[\u4e00-\u9fff\s，。！？、：；""'']+/g);
-        if (cnMatch) speakTxt(cnMatch.join(''));
-      };
-      div.appendChild(ttsBtn);
-    }
+    // Always show speak button for AI messages
+    const ttsBtn = document.createElement('button');
+    ttsBtn.className = 'bubble-tts';
+    ttsBtn.textContent = '🔊';
+    ttsBtn.title = 'Произнести';
+    ttsBtn.onclick = () => {
+      const cnMatch = text.match(/[\u4e00-\u9fff\s，。！？、：；""'']+/g);
+      const enMatch = text.match(/[a-zA-Z][a-zA-Z\s,.!?']{3,}/g);
+      if (cnMatch && cnMatch[0].trim().length > 1) speakTxt(cnMatch[0].trim());
+      else if (enMatch) speakTxt(enMatch[0].trim());
+    };
+    div.appendChild(ttsBtn);
   } else {
     div.textContent = text;
   }
@@ -3740,10 +3847,16 @@ async function sendAiMsg(text) {
     hideAiTyping();
     appendAiBubble('ai', reply);
     aiHistory.push({ role: 'assistant', content: reply });
-    // Auto-speak Chinese parts
-    if(ST.settings.autoplay){
-      const cnMatch=reply.match(/\[CN:([^\|]+)\|/);
-      if(cnMatch)setTimeout(()=>speakTxt(cnMatch[1]),500);
+    // Auto-speak AI response (Chinese parts)
+    // Always speak Chinese from AI (it's a conversation class!)
+    const cnTexts=reply.match(/\[CN:([^|]+)\|/g);
+    if(cnTexts&&cnTexts.length>0){
+      const firstCn=cnTexts[0].replace('[CN:','').replace('|','');
+      setTimeout(()=>speakTxt(firstCn),600);
+    } else {
+      // Speak any Chinese characters found
+      const cnChars=reply.match(/[\u4e00-\u9fff][\u4e00-\u9fff\u3000-\u303f，。！？、：；""''…—·]+/);
+      if(cnChars)setTimeout(()=>speakTxt(cnChars[0]),600);
     }
 
     // Auto-speak Chinese parts if autoplay enabled
@@ -3764,7 +3877,7 @@ async function sendAiMsg(text) {
   }
 
   if (sendBtn) sendBtn.disabled = false;
-  g('ai-status').textContent = 'Готов к занятию ✦';
+  g('ai-status').textContent = 'Нажми 🎤 и говори!';
 }
 
 function aiTyping() {
@@ -3779,7 +3892,7 @@ function toggleAiMic() {
     stopMic();
     aiMicOn = false;
     if (btn) { btn.classList.remove('on'); btn.textContent = '🎤'; }
-    g('ai-status').textContent = 'Готов к занятию ✦';
+    g('ai-status').textContent = 'Нажми 🎤 и говори!';
     return;
   }
   aiMicOn = true;
@@ -3792,13 +3905,13 @@ function toggleAiMic() {
     text => {
       aiMicOn = false;
       if (btn) { btn.classList.remove('on'); btn.textContent = '🎤'; }
-      g('ai-status').textContent = 'Готов к занятию ✦';
+      g('ai-status').textContent = 'Нажми 🎤 и говори!';
       if (text.trim()) sendAiMsg(text);
     },
     err => {
       aiMicOn = false;
       if (btn) { btn.classList.remove('on'); btn.textContent = '🎤'; }
-      g('ai-status').textContent = 'Готов к занятию ✦';
+      g('ai-status').textContent = 'Нажми 🎤 и говори!';
       toast('Не распознано, попробуй ещё раз');
     }
   );
