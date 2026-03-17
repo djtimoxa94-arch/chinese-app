@@ -487,6 +487,7 @@ html,body{
 
 /* NAV — Liquid glass pill */
 #nav{
+  display:flex;flex-direction:row;align-items:stretch;
   background:var(--glass-nav);
   backdrop-filter:var(--glass-blur);
   -webkit-backdrop-filter:var(--glass-blur);
@@ -497,7 +498,7 @@ html,body{
   transition:transform .3s;
   position:relative;z-index:100;
 }
-#nav.hide{transform:translateY(100%);position:absolute;bottom:0;width:100%}
+#nav.hide{transform:translateY(120%);position:fixed;bottom:0;left:0;right:0;z-index:99}
 .nb{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:2px;padding:8px 2px;border:none;background:none;cursor:pointer;
@@ -3604,28 +3605,6 @@ const AI_WELCOME = {
   culture:    '你好！中国文化很有趣！(Zhōngguó wénhuà hěn yǒuqù!) — Китайская культура очень интересна! 🐉\n\nО чём хочешь узнать? Праздники, традиции, история, современный Китай?',
 };
 
-
-// ── ДОПОЛНИТЕЛЬНЫЕ ПАТТЕРНЫ ИИ-УЧИТЕЛЯ ────────────────────────
-(function(){
-  if(AI_TEACHER_BRAIN[s])AI_TEACHER_BRAIN[s].unshift(...EXT[s]);
-});
-
-
-// Extra AI patterns (inline, no newline issues)
-if(typeof AI_TEACHER_BRAIN!=='undefined'){
-  var _p=[
-    [/цвет|красный|синий|зелён/i,['Цвета: [CN:红色|hóng sè|красный] [CN:蓝色|lán sè|синий] [CN:绿色|lǜ sè|зелёный] [CN:黄色|huáng sè|жёлтый] [CN:白色|bái sè|белый] [CN:黑色|hēi sè|чёрный]\n💡 Красный — цвет удачи!']],
-    [/семья|папа|мама|брат|сестра/i,['Семья: [CN:爸爸|bà ba|папа] [CN:妈妈|mā ma|мама] [CN:哥哥|gē ge|старший брат] [CN:弟弟|dì di|младший брат] [CN:爷爷|yé ye|дедушка] [CN:奶奶|nǎi nai|бабушка]']],
-    [/который час|время сейчас/i,['几点了？[CN:现在几点？|xiànzài jǐ diǎn?|Который час?] [CN:两点半|liǎng diǎn bàn|Половина третьего]\n💡 2 часа = 两点, не 二点!']],
-    [/профессия|кем работ/i,['Профессии: [CN:我是学生|wǒ shì xuésheng|Я студент] [CN:我是工程师|wǒ shì gōngchéngshī|Я инженер] [CN:在家工作|zài jiā gōngzuò|работаю из дома]']],
-    [/путешеств|туризм/i,['Путешествие! [CN:我是游客|wǒ shì yóukè|Я турист] [CN:我迷路了|wǒ mí lù le|заблудился] [CN:可以拍照吗？|kěyǐ pāizhào ma?|Можно фото?]\n💡 Скачай DiDi + Alipay!']]
-  ];
-  _p.forEach(function(p){AI_TEACHER_BRAIN.free.unshift(p);});
-  AI_TEACHER_BRAIN.grammar.unshift(
-    [/количеств|счётн|量词/i,['Счётные слова: [CN:一本书|yī běn shū|книга] [CN:一杯水|yī bēi shuǐ|стакан воды]\n💡 Между числом и существительным — счётное слово!']],
-    [/сравнени|больше чем|比/i,['Сравнение: А 比 В + прилаг. [CN:我比你高|wǒ bǐ nǐ gāo|Я выше тебя]']]
-  );
-}
 // callAiApi replaced by offline engine below
 
 
@@ -3990,6 +3969,22 @@ function getOfflineResponse(userMsg, scenario) {
     `加油！(Jiā yóu!) Ты хорошо справляешься! 🌟\n\nЗапомни:\n[CN:熟能生巧|shú néng shēng qiǎo|Практика ведёт к совершенству]\n\nПродолжай практиковаться каждый день!`,
   ];
   return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+}
+
+// Extra AI patterns (inline, no newline issues)
+if(typeof AI_TEACHER_BRAIN!=='undefined'){
+  var _p=[
+    [/цвет|красный|синий|зелён/i,['Цвета: [CN:红色|hóng sè|красный] [CN:蓝色|lán sè|синий] [CN:绿色|lǜ sè|зелёный] [CN:黄色|huáng sè|жёлтый] [CN:白色|bái sè|белый] [CN:黑色|hēi sè|чёрный]\n💡 Красный — цвет удачи!']],
+    [/семья|папа|мама|брат|сестра/i,['Семья: [CN:爸爸|bà ba|папа] [CN:妈妈|mā ma|мама] [CN:哥哥|gē ge|старший брат] [CN:弟弟|dì di|младший брат] [CN:爷爷|yé ye|дедушка] [CN:奶奶|nǎi nai|бабушка]']],
+    [/который час|время сейчас/i,['几点了？[CN:现在几点？|xiànzài jǐ diǎn?|Который час?] [CN:两点半|liǎng diǎn bàn|Половина третьего]\n💡 2 часа = 两点, не 二点!']],
+    [/профессия|кем работ/i,['Профессии: [CN:我是学生|wǒ shì xuésheng|Я студент] [CN:我是工程师|wǒ shì gōngchéngshī|Я инженер] [CN:在家工作|zài jiā gōngzuò|работаю из дома]']],
+    [/путешеств|туризм/i,['Путешествие! [CN:我是游客|wǒ shì yóukè|Я турист] [CN:我迷路了|wǒ mí lù le|заблудился] [CN:可以拍照吗？|kěyǐ pāizhào ma?|Можно фото?]\n💡 Скачай DiDi + Alipay!']]
+  ];
+  _p.forEach(function(p){AI_TEACHER_BRAIN.free.unshift(p);});
+  AI_TEACHER_BRAIN.grammar.unshift(
+    [/количеств|счётн|量词/i,['Счётные слова: [CN:一本书|yī běn shū|книга] [CN:一杯水|yī bēi shuǐ|стакан воды]\n💡 Между числом и существительным — счётное слово!']],
+    [/сравнени|больше чем|比/i,['Сравнение: А 比 В + прилаг. [CN:我比你高|wǒ bǐ nǐ gāo|Я выше тебя]']]
+  );
 }
 
 // Replace API call with offline engine
@@ -4571,7 +4566,6 @@ const VOCAB_CN_NEW=[
 VOCAB.push(...VOCAB_CN_NEW);
 VOCAB_CN_NEW.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
 
-
 const EN_VOCAB_NEW=[
   {id:'e151',char:'Excited',transl:'взволнованный',pron:'иксайтид',ipa:'ɪkˈsaɪtɪd',level:'A2',topic:'emotions'},
   {id:'e152',char:'Nervous',transl:'нервный',pron:'нёрвас',ipa:'ˈnɜːvəs',level:'A2',topic:'emotions'},
@@ -4626,7 +4620,6 @@ const EN_VOCAB_NEW=[
 ];
 EN_VOCAB.push(...EN_VOCAB_NEW);
 EN_VOCAB_NEW.forEach(w=>{if(!EN_WORDDATA[w.id])EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
-
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
