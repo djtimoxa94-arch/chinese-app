@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" id="status-bar-meta">
 <title>汉字 HànZì</title>
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>汉</text></svg>">
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -3344,15 +3345,15 @@ const VOCAB_EXTRA=[
   {id:241,char:'可能',pinyin:'kě néng',tones:[3,2],meaning:'возможно',en:'maybe/possible',hsk:2,conv:true},
   {id:242,char:'真的吗',pinyin:'zhēn de ma',tones:[1,5,5],meaning:'правда? серьёзно?',en:'really? seriously?',hsk:1,conv:true},
   {id:243,char:'太好了',pinyin:'tài hǎo le',tones:[4,3,5],meaning:'отлично! замечательно!',en:'great! wonderful!',hsk:1,conv:true},
-  {id:244,char:'没事',pinyin:'méi shì',tones:[2,4],meaning:'ничего / не важно',en:'it's nothing/never mind',hsk:2,conv:true},
+  {id:244,char:'没事',pinyin:'méi shì',tones:[2,4],meaning:'ничего / не важно',en:"it's nothing/never mind",hsk:2,conv:true},
   {id:245,char:'辛苦了',pinyin:'xīn kǔ le',tones:[1,3,5],meaning:'ты старался (уважение)',en:'you worked hard',hsk:3,conv:true},
   {id:246,char:'不好意思',pinyin:'bù hǎo yì si',tones:[4,3,4,5],meaning:'неловко / извините',en:'excuse me/embarrassed',hsk:2,conv:true},
   {id:247,char:'马上',pinyin:'mǎ shàng',tones:[3,4],meaning:'сейчас / немедленно',en:'right away/immediately',hsk:2,conv:true},
   {id:248,char:'一般',pinyin:'yī bān',tones:[1,1],meaning:'обычно / средне',en:'generally/so-so',hsk:2,conv:true},
   {id:249,char:'没时间',pinyin:'méi shí jiān',tones:[2,2,1],meaning:'нет времени',en:'no time',hsk:2,conv:true},
   {id:250,char:'有时间吗',pinyin:'yǒu shí jiān ma',tones:[3,2,1,5],meaning:'есть время?',en:'do you have time?',hsk:2,conv:true},
-  {id:251,char:'一起去吧',pinyin:'yī qǐ qù ba',tones:[1,3,4,5],meaning:'пойдём вместе!',en:'let's go together!',hsk:1,conv:true},
-  {id:252,char:'我请客',pinyin:'wǒ qǐng kè',tones:[3,3,4],meaning:'я угощаю / с меня',en:'my treat / I'll pay',hsk:2,conv:true},
+  {id:251,char:'一起去吧',pinyin:'yī qǐ qù ba',tones:[1,3,4,5],meaning:'пойдём вместе!',en:"let's go together!",hsk:1,conv:true},
+  {id:252,char:'我请客',pinyin:'wǒ qǐng kè',tones:[3,3,4],meaning:'я угощаю / с меня',en:"my treat / I'll pay",hsk:2,conv:true},
   {id:253,char:'各付各的',pinyin:'gè fù gè de',tones:[4,4,4,5],meaning:'каждый платит сам',en:'go Dutch / split the bill',hsk:3,conv:true},
   {id:254,char:'你在哪',pinyin:'nǐ zài nǎ',tones:[3,4,3],meaning:'ты где?',en:'where are you?',hsk:1,conv:true},
   {id:255,char:'快点',pinyin:'kuài diǎn',tones:[4,3],meaning:'быстрее!',en:'hurry up!',hsk:2,conv:true},
@@ -3360,7 +3361,7 @@ const VOCAB_EXTRA=[
   {id:257,char:'一点都不',pinyin:'yī diǎn dōu bù',tones:[1,3,1,4],meaning:'совсем не / ни капли',en:'not at all',hsk:2,conv:true},
   {id:258,char:'差不多',pinyin:'chà bù duō',tones:[4,4,1],meaning:'почти / примерно',en:'almost/approximately',hsk:2,conv:true},
   {id:259,char:'说真的',pinyin:'shuō zhēn de',tones:[1,1,5],meaning:'честно говоря',en:'to tell the truth',hsk:2,conv:true},
-  {id:260,char:'我不确定',pinyin:'wǒ bù quèdìng',tones:[3,4,4,4],meaning:'я не уверен',en:'I'm not sure',hsk:3,conv:true},
+  {id:260,char:'我不确定',pinyin:'wǒ bù quèdìng',tones:[3,4,4,4],meaning:'я не уверен',en:"I'm not sure",hsk:3,conv:true},
   {id:261,char:'厕所',pinyin:'cè suǒ',tones:[4,3],meaning:'туалет',en:'toilet/restroom',hsk:2,conv:true},
   {id:262,char:'医生',pinyin:'yī shēng',tones:[1,1],meaning:'врач / доктор',en:'doctor',hsk:2,conv:true},
   {id:263,char:'警察',pinyin:'jǐng chá',tones:[3,2],meaning:'полиция',en:'police',hsk:2,conv:true},
@@ -3368,7 +3369,7 @@ const VOCAB_EXTRA=[
   {id:265,char:'我丢了',pinyin:'wǒ diū le',tones:[3,1,5],meaning:'я потерял(а)',en:'I lost (something)',hsk:2,conv:true},
   {id:266,char:'叫救护车',pinyin:'jiào jiù hù chē',tones:[4,4,4,1],meaning:'вызвать скорую',en:'call an ambulance',hsk:2,conv:true},
   {id:267,char:'有WiFi吗',pinyin:'yǒu WiFi ma',tones:[3,5],meaning:'есть вайфай?',en:'is there WiFi?',hsk:1,conv:true},
-  {id:268,char:'密码是多少',pinyin:'mì mǎ shì duō shao',tones:[4,3,4,1,5],meaning:'какой пароль?',en:'what's the password?',hsk:2,conv:true},
+  {id:268,char:'密码是多少',pinyin:'mì mǎ shì duō shao',tones:[4,3,4,1,5],meaning:'какой пароль?',en:"what's the password?",hsk:2,conv:true},
   {id:269,char:'充电器',pinyin:'chōng diàn qì',tones:[1,4,4],meaning:'зарядное устройство',en:'charger',hsk:3,conv:true},
   {id:270,char:'手机没电了',pinyin:'shǒu jī méi diàn le',tones:[3,1,2,4,5],meaning:'телефон разрядился',en:'phone is dead/out of battery',hsk:2,conv:true},
   {id:271,char:'我来中国旅游',pinyin:'wǒ lái zhōng guó lǚ yóu',tones:[3,2,1,2,3,2],meaning:'я приехал в Китай туристом',en:'I came to China as a tourist',hsk:2,conv:true},
@@ -3379,7 +3380,7 @@ const VOCAB_EXTRA=[
   {id:276,char:'没意思',pinyin:'méi yì si',tones:[2,4,5],meaning:'скучно / неинтересно',en:'boring/uninteresting',hsk:2,conv:true},
   {id:277,char:'开玩笑',pinyin:'kāi wán xiào',tones:[1,2,4],meaning:'шутить',en:'to joke/just kidding',hsk:2,conv:true},
   {id:278,char:'认真的',pinyin:'rèn zhēn de',tones:[4,1,5],meaning:'серьёзно?',en:'seriously?',hsk:2,conv:true},
-  {id:279,char:'我到了',pinyin:'wǒ dào le',tones:[3,4,5],meaning:'я приехал / я на месте',en:'I've arrived / I'm here',hsk:1,conv:true},
+  {id:279,char:'我到了',pinyin:'wǒ dào le',tones:[3,4,5],meaning:'я приехал / я на месте',en:"I've arrived / I'm here",hsk:1,conv:true},
   {id:280,char:'路上小心',pinyin:'lù shàng xiǎo xīn',tones:[4,4,3,1],meaning:'будь осторожен в дороге',en:'be careful on the way',hsk:2,conv:true},
 ];
 // Merge extra vocab
@@ -4151,8 +4152,8 @@ const EN_VOCAB=[
   {id:'e2',char:'Goodbye',transl:'до свидания',pron:'гуд-бай',ipa:'ˌɡʊdˈbaɪ',level:'A1',topic:'greet',example:'Goodbye! See you tomorrow.',ex_ru:'Пока! Увидимся завтра.'},
   {id:'e3',char:'Thank you',transl:'спасибо',pron:'сэнкью',ipa:'ˈθæŋk juː',level:'A1',topic:'greet',example:'Thank you very much!',ex_ru:'Большое спасибо!'},
   {id:'e4',char:'Please',transl:'пожалуйста',pron:'плиз',ipa:'pliːz',level:'A1',topic:'greet',example:'Can I have some water, please?',ex_ru:'Можно воды, пожалуйста?'},
-  {id:'e5',char:'Sorry',transl:'извините / прости',pron:'сори',ipa:'ˈsɒri',level:'A1',topic:'greet',example:'Sorry, I don't understand.',ex_ru:'Извините, я не понимаю.'},
-  {id:'e6',char:"You're welcome",transl:'пожалуйста (ответ)',pron:'юр вэлком',ipa:'jɔːr ˈwelkəm',level:'A1',topic:'greet',example:'"Thank you!" — "You're welcome!"',ex_ru:'«Спасибо!» — «Пожалуйста!»'},
+  {id:'e5',char:'Sorry',transl:'извините / прости',pron:'сори',ipa:'ˈsɒri',level:'A1',topic:'greet',example:"Sorry, I don't understand.",ex_ru:'Извините, я не понимаю.'},
+  {id:'e6',char:"You're welcome",transl:'пожалуйста (ответ)',pron:'юр вэлком',ipa:'jɔːr ˈwelkəm',level:'A1',topic:'greet',example:"You're welcome!",ex_ru:'Пожалуйста!'},
   {id:'e7',char:'Excuse me',transl:'простите / подождите',pron:'экскьюз ми',ipa:'ɪkˈskjuːz miː',level:'A1',topic:'greet',example:'Excuse me, where is the toilet?',ex_ru:'Простите, где туалет?'},
   {id:'e8',char:'Nice to meet you',transl:'приятно познакомиться',pron:'найс ту мит ю',ipa:'naɪs tə miːt juː',level:'A1',topic:'greet',example:'Nice to meet you! My name is Anna.',ex_ru:'Приятно познакомиться! Меня зовут Анна.'},
   // Numbers
@@ -4221,10 +4222,10 @@ const EN_VOCAB=[
   {id:'e66',char:'Where is...?',transl:'Где находится...?',pron:'вэр из',ipa:'weər ɪz',level:'A1',topic:'travel',example:'Where is the hotel?',ex_ru:'Где гостиница?'},
   {id:'e67',char:'How much?',transl:'Сколько стоит?',pron:'хау мач',ipa:'haʊ mʌtʃ',level:'A1',topic:'travel',example:'How much is this?',ex_ru:'Сколько это стоит?'},
   {id:'e68',char:'I need help',transl:'Мне нужна помощь',pron:'ай нид хэлп',ipa:'aɪ niːd help',level:'A1',topic:'travel'},
-  {id:'e69',char:'I'm lost',transl:'Я заблудился',pron:'айм лост',ipa:'aɪm lɒst',level:'A1',topic:'travel'},
+  {id:'e69',char:"I'm lost",transl:'Я заблудился',pron:'айм лост',ipa:'aɪm lɒst',level:'A1',topic:'travel'},
   {id:'e70',char:'Can you repeat?',transl:'Повторите, пожалуйста',pron:'кэн ю репит',ipa:'kæn juː rɪˈpiːt',level:'A1',topic:'travel'},
   {id:'e71',char:'Speak slowly',transl:'Говорите медленнее',pron:'спик слоули',ipa:'spiːk ˈsləʊli',level:'A1',topic:'travel'},
-  {id:'e72',char:'I don't understand',transl:'Я не понимаю',pron:'ай донт андэстэнд',ipa:'aɪ dəʊnt ˌʌndəˈstænd',level:'A1',topic:'travel'},
+  {id:'e72',char:"I don't understand",transl:'Я не понимаю',pron:'ай донт андэстэнд',ipa:'aɪ dəʊnt ˌʌndəˈstænd',level:'A1',topic:'travel'},
   {id:'e73',char:'Airport',transl:'аэропорт',pron:'эрпорт',ipa:'ˈeəpɔːt',level:'A1',topic:'travel'},
   {id:'e74',char:'Hotel',transl:'отель',pron:'хоутэл',ipa:'həʊˈtel',level:'A1',topic:'travel'},
   {id:'e75',char:'Restaurant',transl:'ресторан',pron:'рэстрант',ipa:'ˈrestərɒnt',level:'A1',topic:'travel'},
