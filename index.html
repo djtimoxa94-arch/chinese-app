@@ -1283,6 +1283,11 @@ html,body{
         <div class="fcen" id="fcen">Hello</div>
         <div class="fcpysm" id="fcpysm"></div>
         <div class="tone-row" id="tonerow"></div>
+        <div id="fc-example" style="display:none;margin-top:10px;padding:10px 12px;background:rgba(255,255,255,.2);border-radius:var(--rsm);width:100%;text-align:left;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.3)">
+          <div id="fc-ex-cn" style="font-family:var(--fc);font-size:15px;font-weight:700;color:var(--label)"></div>
+          <div id="fc-ex-py" style="font-size:11px;color:var(--red);margin-top:3px;font-weight:600;letter-spacing:.5px"></div>
+          <div id="fc-ex-ru" style="font-size:12px;color:var(--l2);margin-top:2px"></div>
+        </div>
       </div></div>
     </div>
     <button class="ttsb" id="ttsmbtn" onclick="speakCur()"><span>🔊</span><span>Послушать</span><div class="twave" id="twave" style="display:none"><div class="twb"></div><div class="twb"></div><div class="twb"></div><div class="twb"></div><div class="twb"></div></div></button>
@@ -1589,7 +1594,7 @@ html,body{
 
 <nav id="nav">
   <button class="nb on" id="nb0" onclick="goTab('s-home',0)"><span class="ni">🏠</span>Главная</button>
-  <button class="nb" id="nb1" onclick="goTab('s-course',1);renderCourse()"><span class="ni">🗺️</span>Курс</button>
+  <button class="nb" id="nb1" onclick="goTab('s-course',1);renderCourse()"><span class="ni">🗺️<span class="nbdot" id="revdot"></span></span>Курс</button>
   <button class="nb" id="nb2" onclick="goTab('s-ai',2);initAiTeacher()"><span class="ni">🤖</span>ИИ Учитель</button>
   <button class="nb" id="nb2v" onclick="goTab('s-vocab',3);renderV()"><span class="ni">📚</span>Словарь</button>
   <button class="nb" id="nb3" onclick="goTab('s-stats',4);renderStats()"><span class="ni">📊</span>Прогресс</button>
@@ -2499,6 +2504,7 @@ function rmBan(){const e=g('ban');if(e)e.remove();}
 function showComp(){
   rmBan();stopMic();synth.cancel();
   const{correct,wrong,xp,mistakes}=SES,tot=correct+wrong,acc=tot>0?Math.round(correct/tot*100):0;
+  delete SES.bossXPMult;
   ST.sessions++;
   g('cright').textContent=correct;g('cwrong').textContent=wrong;g('cxp').textContent='+'+xp;
   // Show if boss/combo bonus was active
@@ -2520,7 +2526,7 @@ function showComp(){
   g('retryn').textContent=mistakes.length;g('retrybtn').style.display=mistakes.length?'block':'none';
   g('comp').classList.add('open');sv();
 }
-function finishSes(){g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';goTab('s-home',0);updateHome();}
+function finishSes(){g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';goTab('s-home',0);updateHome();updateSrsWidget();}
 function retryMis(){
   g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';
   const mis=[...SES.mistakes];SES={type:SES.type,cards:shuf(mis),idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:SES.lives<99?3:99,diaStep:0};
@@ -2683,6 +2689,10 @@ function saveProfile(){
 
 // SETTINGS
 function renderSet(){updateLangUI();
+  ['autoplay','voiceInput','slowSpeech','sounds','ruTranslit'].forEach(k=>{
+    const el=g('tog-'+k);if(el)el.classList.toggle('on',!!ST.settings[k]);
+  });
+  const sc=g('tog-culture');if(sc)sc.classList.toggle('on',ST.settings.showCulture!==false);
   document.querySelectorAll('#diffbtns .dopt').forEach((b,i)=>b.classList.toggle('on',i+1===ST.difficulty));
   const gs=g('goalsel');if(gs)gs.value=ST.dailyGoal;
   ['autoplay','voiceInput','slowSpeech','sounds','ruTranslit','showCulture'].forEach(k=>{const t=g('tog-'+k.toLowerCase());if(t)t.classList.toggle('on',!!ST.settings[k]);});updateThemeBtns();
@@ -2692,7 +2702,13 @@ function renderSet(){updateLangUI();
 }
 function chDiff(d,btn){ST.difficulty=d;document.querySelectorAll('#diffbtns .dopt').forEach((b,i)=>b.classList.toggle('on',i+1===d));ST.dailyGoal=[5,10,15,20][d-1];const gs=g('goalsel');if(gs)gs.value=ST.dailyGoal;sv();toast('Сложность изменена!');}
 function chGoal(v){ST.dailyGoal=parseInt(v);sv();}
-function togSet(key,btn){const k=key==='voiceInput'?'voiceInput':key==='slowSpeech'?'slowSpeech':key;ST.settings[k]=!ST.settings[k];btn.classList.toggle('on',ST.settings[k]);sv();}
+function togSet(key,btn){
+  const keyMap={culture:'showCulture'};
+  const k=keyMap[key]||key;
+  ST.settings[k]=!ST.settings[k];
+  btn.classList.toggle('on',!!ST.settings[k]);
+  sv();
+}
 // ── THEME SYSTEM ──────────────────────────────────────────
 const mq=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)');
 function applyTheme(animate){
@@ -4383,7 +4399,7 @@ function startEnLesson(type, level){
   if(level==='hsk1')cards=EN_VOCAB.filter(w=>w.level==='A1');
   else if(level==='hsk2')cards=EN_VOCAB.filter(w=>['A1','A2'].includes(w.level));
   else if(level==='hsk3')cards=EN_VOCAB.filter(w=>['B1','B2'].includes(w.level));
-  if(type==='review')cards=EN_VOCAB.filter(w=>(EN_WORDDATA[w.id]?.nextReview||0)<=Date.now()&&(EN_WORDDATA[w.id]?.mastery||0)>0);
+  if(type==='review'){cards=EN_VOCAB.filter(w=>(EN_WORDDATA[w.id]?.nextReview||0)<=Date.now()&&(EN_WORDDATA[w.id]?.mastery||0)>0);if(!cards.length)cards=[...EN_VOCAB];}
   if(type==='fav')cards=EN_VOCAB.filter(w=>ST.favorites.includes(w.id));
   if(!cards.length)cards=[...EN_VOCAB];
   cards=shuf(cards).slice(0,20);
