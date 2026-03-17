@@ -10,6 +10,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>说</text></svg>">
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -1062,6 +1063,181 @@ html,body{
 @keyframes chpop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes fadeovl{from{opacity:0}to{opacity:1}}
 @media(min-width:600px){#app{max-width:480px;margin:0 auto;box-shadow:var(--sh3)}}
+
+/* ═══════════════════════════════════════════════════
+   AUTH SCREEN
+═══════════════════════════════════════════════════ */
+#s-auth{position:fixed;inset:0;z-index:1100;display:flex;flex-direction:column;
+  background:linear-gradient(160deg,#1a0533 0%,#0d1b4a 50%,#003322 100%);
+  align-items:center;justify-content:flex-end;overflow:hidden;}
+#s-auth.hidden{display:none}
+.auth-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.auth-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35}
+.auth-logo{position:absolute;top:10vh;left:50%;transform:translateX(-50%);text-align:center;z-index:2}
+.auth-logo-char{font-family:var(--fc);font-size:90px;color:#fff;line-height:1;
+  text-shadow:0 0 60px rgba(255,59,48,.6),0 0 120px rgba(255,59,48,.3);
+  animation:authPop .8s cubic-bezier(.34,1.56,.64,1)}
+.auth-logo-name{font-size:26px;font-weight:900;color:rgba(255,255,255,.95);letter-spacing:-.5px;margin-top:6px}
+.auth-logo-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;font-weight:500}
+.auth-sheet{
+  background:var(--glass-nav);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border-radius:32px 32px 0 0;width:100%;max-width:480px;
+  padding:28px 24px max(28px,env(safe-area-inset-bottom));
+  border:1px solid var(--glass-border);border-bottom:none;
+  box-shadow:0 -20px 60px rgba(0,0,0,.4);z-index:2;
+  animation:sup .5s cubic-bezier(.34,1.1,.64,1)}
+.auth-title{font-size:24px;font-weight:900;color:var(--label);margin-bottom:6px;letter-spacing:-.3px}
+.auth-sub{font-size:14px;color:var(--l2);margin-bottom:24px;line-height:1.5}
+.auth-btn{
+  width:100%;padding:15px;border-radius:var(--rlg);border:none;
+  font-family:var(--f);font-size:16px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:12px;justify-content:center;
+  margin-bottom:10px;transition:all .15s;position:relative;overflow:hidden;
+}
+.auth-btn:active{transform:scale(.97)}
+.auth-btn-guest{background:var(--glass-inset);backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);color:var(--label)}
+.auth-btn-email{background:var(--red);color:#fff;
+  box-shadow:0 8px 24px rgba(255,59,48,.4)}
+.auth-btn-google{background:#fff;color:#444;
+  box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:14px 0;color:var(--l3);font-size:13px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--sep)}
+.auth-footer{text-align:center;font-size:12px;color:var(--l3);margin-top:16px;line-height:1.6}
+@keyframes authPop{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+/* EMAIL FORM */
+.auth-form{display:none;flex-direction:column;gap:12px;margin-bottom:16px}
+.auth-form.show{display:flex}
+.auth-inp{
+  padding:14px 16px;border-radius:var(--r);
+  background:var(--glass-inset);backdrop-filter:blur(8px);
+  border:1.5px solid var(--sep);color:var(--label);
+  font-family:var(--f);font-size:16px;outline:none;transition:border .2s;
+}
+.auth-inp:focus{border-color:var(--red)}
+.auth-err{font-size:13px;color:var(--red);font-weight:600;min-height:18px}
+
+/* LANGUAGE SELECT SCREEN */
+#s-langsel{position:fixed;inset:0;z-index:1050;display:none;flex-direction:column;
+  background:var(--bg);align-items:center;justify-content:center;padding:24px;}
+#s-langsel.show{display:flex;animation:sIn .3s ease}
+.langsel-title{font-size:28px;font-weight:900;color:var(--label);text-align:center;margin-bottom:8px;letter-spacing:-.5px}
+.langsel-sub{font-size:15px;color:var(--l2);text-align:center;margin-bottom:32px;line-height:1.5}
+.langsel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:380px}
+.langsel-card{
+  background:var(--glass-card);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border-radius:var(--rxl);padding:28px 20px;cursor:pointer;text-align:center;
+  border:2px solid var(--glass-border);box-shadow:var(--glass-shadow);
+  transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.langsel-card:active{transform:scale(.96)}
+.langsel-card.sel{border-color:var(--red);background:var(--rl)}
+.langsel-flag{font-size:52px;line-height:1}
+.langsel-name{font-size:18px;font-weight:800;color:var(--label)}
+.langsel-desc{font-size:12px;color:var(--l2);font-weight:500;line-height:1.4}
+.langsel-btn{
+  margin-top:24px;width:100%;max-width:380px;padding:17px;border-radius:var(--rlg);
+  background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border:none;
+  font-family:var(--f);font-size:17px;font-weight:800;cursor:pointer;
+  box-shadow:0 8px 24px rgba(255,59,48,.4);transition:all .15s;
+}
+.langsel-btn:active{transform:scale(.97)}
+
+/* DUOLINGO PATH */
+#s-path{display:none;flex:1;flex-direction:column;overflow:hidden}
+#s-path.on{display:flex}
+.path-header{
+  padding:max(20px,env(safe-area-inset-top)) 20px 12px;flex-shrink:0;
+  background:transparent;display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:2;
+}
+.path-lang-badge{
+  display:flex;align-items:center;gap:8px;
+  background:var(--glass-inset);backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border2);border-radius:999px;
+  padding:8px 16px;cursor:pointer;transition:all .15s;
+}
+.path-lang-badge:active{transform:scale(.96)}
+.path-lang-flag{font-size:20px}
+.path-lang-name{font-size:14px;font-weight:700;color:var(--label)}
+.path-streak{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--orange)}
+.path-xp{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:800;color:var(--purple)}
+.path-scroll{flex:1;overflow-y:auto;padding:0 0 40px}
+.path-scroll::-webkit-scrollbar{display:none}
+
+/* PATH UNIT HEADER */
+.unit-header{
+  margin:20px 16px 0;border-radius:var(--rxl);padding:18px 20px;
+  position:relative;overflow:hidden;cursor:pointer;
+}
+.unit-header::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.15);border-radius:inherit}
+.unit-num{font-size:12px;font-weight:800;color:rgba(255,255,255,.75);letter-spacing:.8px;text-transform:uppercase;position:relative;z-index:1}
+.unit-name{font-size:20px;font-weight:900;color:#fff;margin-top:4px;position:relative;z-index:1}
+.unit-desc{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px;position:relative;z-index:1}
+.unit-progress-bar{height:5px;background:rgba(255,255,255,.25);border-radius:5px;margin-top:12px;overflow:hidden;position:relative;z-index:1}
+.unit-progress-fill{height:100%;background:rgba(255,255,255,.9);border-radius:5px;transition:width .6s cubic-bezier(.34,1.2,.64,1)}
+
+/* PATH NODES */
+.path-row{display:flex;justify-content:center;align-items:center;padding:12px 20px;gap:0;position:relative}
+.path-connector{position:absolute;width:4px;background:var(--sep);border-radius:2px}
+.path-node{
+  width:72px;height:72px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;cursor:pointer;position:relative;z-index:2;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .18s;
+  border:4px solid transparent;
+  flex-shrink:0;
+}
+.path-node:active{transform:scale(.92)!important}
+.path-node.done{border-color:rgba(255,255,255,.3);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.path-node.active{
+  animation:nodePulse 2s ease-in-out infinite;
+  border-color:rgba(255,255,255,.6);
+  box-shadow:0 0 0 8px rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.25);
+}
+.path-node.locked{filter:grayscale(.8) brightness(.5);cursor:default}
+.path-node.locked:active{transform:none!important}
+.node-stars{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:13px}
+@keyframes nodePulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 8px rgba(255,255,255,.12),0 8px 24px rgba(0,0,0,.25)}
+  50%{transform:scale(1.05);box-shadow:0 0 0 14px rgba(255,255,255,.08),0 12px 32px rgba(0,0,0,.3)}
+}
+
+/* NODE POPOVER */
+.node-popover{
+  position:absolute;bottom:calc(100% + 12px);left:50%;transform:translateX(-50%);
+  background:var(--glass-nav);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border-radius:var(--rlg);padding:14px 18px;min-width:160px;z-index:500;
+  border:1px solid var(--glass-border);box-shadow:var(--glass-shadow2);
+  animation:bIn .2s ease;
+}
+.node-popover::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:6px solid transparent;border-top-color:var(--glass-border)}
+.popover-name{font-size:14px;font-weight:800;color:var(--label);margin-bottom:4px}
+.popover-desc{font-size:12px;color:var(--l2);margin-bottom:12px;line-height:1.4}
+.popover-start{
+  width:100%;padding:10px;border-radius:var(--r);background:var(--red);color:#fff;
+  border:none;font-family:var(--f);font-size:14px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 14px rgba(255,59,48,.35);transition:all .15s;
+}
+.popover-start:active{transform:scale(.96)}
+
+/* UNIT COLORS */
+.uc0{background:linear-gradient(135deg,#FF3B30,#FF6B30)}
+.uc1{background:linear-gradient(135deg,#007AFF,#5AC8FA)}
+.uc2{background:linear-gradient(135deg,#34C759,#30D158)}
+.uc3{background:linear-gradient(135deg,#FF9500,#FFCC02)}
+.uc4{background:linear-gradient(135deg,#AF52DE,#FF2D55)}
+.uc5{background:linear-gradient(135deg,#5AC8FA,#34C759)}
+.uc6{background:linear-gradient(135deg,#FF2D55,#AF52DE)}
+.uc7{background:linear-gradient(135deg,#FFCC02,#FF9500)}
+.uc8{background:linear-gradient(135deg,#00C7BE,#5AC8FA)}
+.uc9{background:linear-gradient(135deg,#30D158,#34C759)}
+.uc10{background:linear-gradient(135deg,#FF6B30,#FF3B30)}
+.uc11{background:linear-gradient(135deg,#007AFF,#AF52DE)}
+
 </style>
 </head>
 <body>
@@ -1283,6 +1459,95 @@ html,body{
       <button class="ai-send" id="ai-send-btn" onclick="sendAiMsg()">➤</button>
     </div>
   </div>
+</div>
+
+
+<!-- AUTH SCREEN -->
+<div id="s-auth">
+  <div class="auth-bg">
+    <div class="auth-orb" style="width:300px;height:300px;background:#FF3B30;top:-100px;left:-80px"></div>
+    <div class="auth-orb" style="width:250px;height:250px;background:#007AFF;top:20%;right:-80px"></div>
+    <div class="auth-orb" style="width:200px;height:200px;background:#34C759;bottom:25%;left:10%"></div>
+  </div>
+  <div class="auth-logo">
+    <div class="auth-logo-char">说</div>
+    <div class="auth-logo-name">说话 ShuōHua</div>
+    <div class="auth-logo-sub">Учи языки как живой носитель</div>
+  </div>
+  <div class="auth-sheet">
+    <div class="auth-title">Начни бесплатно</div>
+    <div class="auth-sub">Выбери способ входа — прогресс сохранится на всех устройствах</div>
+
+    <!-- Google -->
+    <button class="auth-btn auth-btn-google" onclick="authGoogle()">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Войти через Google
+    </button>
+
+    <div class="auth-divider">или</div>
+
+    <!-- Email toggle -->
+    <button class="auth-btn auth-btn-email" onclick="toggleEmailForm()" id="auth-email-toggle">
+      ✉️ Войти по email
+    </button>
+
+    <!-- Email form -->
+    <div class="auth-form" id="auth-email-form">
+      <input class="auth-inp" id="auth-email" type="email" placeholder="Email" autocomplete="email" autocapitalize="off">
+      <input class="auth-inp" id="auth-pass" type="password" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password">
+      <div class="auth-err" id="auth-err"></div>
+      <button class="auth-btn auth-btn-email" onclick="authEmail()" style="margin-bottom:0">
+        Войти / Зарегистрироваться →
+      </button>
+    </div>
+
+    <button class="auth-btn auth-btn-guest" onclick="authGuest()">
+      👤 Продолжить как гость
+    </button>
+
+    <div class="auth-footer">
+      Нажимая «Войти», ты соглашаешься с условиями использования.<br>
+      Данные хранятся локально на твоём устройстве.
+    </div>
+  </div>
+</div>
+
+<!-- LANGUAGE SELECT -->
+<div id="s-langsel">
+  <div class="auth-logo-char" style="font-family:var(--fc);font-size:56px;margin-bottom:16px;animation:none">🌍</div>
+  <div class="langsel-title">Что хочешь изучать?</div>
+  <div class="langsel-sub">Программа будет адаптирована<br>специально под выбранный язык</div>
+  <div class="langsel-grid">
+    <div class="langsel-card" id="ls-cn" onclick="lsSelect('cn',this)">
+      <div class="langsel-flag">🇨🇳</div>
+      <div class="langsel-name">Китайский</div>
+      <div class="langsel-desc">Мандарин · HSK 1–3<br>500 слов · 12 тем</div>
+    </div>
+    <div class="langsel-card" id="ls-en" onclick="lsSelect('en',this)">
+      <div class="langsel-flag">🇬🇧</div>
+      <div class="langsel-name">Английский</div>
+      <div class="langsel-desc">A1 → B2<br>240 слов · 10 тем</div>
+    </div>
+  </div>
+  <button class="langsel-btn" onclick="lsConfirm()" id="ls-btn" disabled style="opacity:.4">
+    Начать обучение →
+  </button>
+</div>
+
+<!-- PATH SCREEN -->
+<div id="s-path" class="scr">
+  <div class="path-header">
+    <div class="path-lang-badge" onclick="showLangSwitch()">
+      <span class="path-lang-flag" id="ph-flag">🇨🇳</span>
+      <span class="path-lang-name" id="ph-name">Китайский</span>
+      <span style="font-size:12px;color:var(--l3)">▾</span>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center">
+      <div class="path-streak">🔥 <span id="ph-str">0</span></div>
+      <div class="path-xp">⚡ <span id="ph-xp">0</span></div>
+    </div>
+  </div>
+  <div class="path-scroll" id="path-scroll"></div>
 </div>
 
 <!-- LESSON -->
@@ -1702,10 +1967,10 @@ html,body{
 
 <div class="toast" id="toast"></div>
 <div id="confetti"></div>
-<div class="cbox" id="cbox"><div class="cbin"><h3>⚠️ Сброс</h3><p>Весь прогресс и статистика будут удалены безвозвратно.</p><div class="cbbtns"><button class="cbb g" onclick="g('cbox').classList.remove('open')">Отмен
-<script>
+<div class="cbox" id="cbox"><div class="cbin"><h3>⚠️ Сброс</h3><p>Весь прогресс и статистика будут удалены безвозвратно.</p><div class="cbbtns"><butto
 // ============================================================
 // VOCAB (230 words) + CONVERSATION DIALOGUES
+<script>
 // ============================================================
 const VOCAB=[
   {id:1,char:'一',pinyin:'yī',tones:[1],meaning:'один',en:'one',hsk:1,conv:false},
@@ -2162,7 +2427,7 @@ let ST={
   dailyCards:0,dailyGoal:10,startDate:null,
   weekAct:[0,0,0,0,0,0,0],heatmap:{},
   sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,
-  difficulty:1,lang:'cn',
+  difficulty:1,lang:'cn',lessonProgress:{},
   profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},
   settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},
   onboarded:false,
@@ -2207,7 +2472,7 @@ function tick(){
   const td=todayS();ST.heatmap[td]=(ST.heatmap[td]||0)+1;
   recPlay();sv();
 }
-function addXP(n){if(!n)return;
+function addXP(n){if(!n||isNaN(n))return;n=Math.floor(n);
   setTimeout(checkAchievements,500);
   ST.xp+=n;ST.totalXp+=n;const need=200*ST.level;
   if(ST.xp>=need){ST.xp-=need;ST.level++;toast(`🎊 Уровень ${ST.level}! ${LVI[Math.min(ST.level-1,6)]}`);confetti();sndLevelUp();}
@@ -2226,7 +2491,7 @@ function speakWord(w,cb){
   u.onend=()=>{if(wave)wave.style.display='none';if(btn)btn.classList.remove('sp');if(cb)cb();};
   synth.cancel();synth.speak(u);
 }
-function speakTxt(txt){const u=new SpeechSynthesisUtterance(txt);u.lang='zh-CN';u.rate=ST.settings.slowSpeech?0.6:0.85;const v=voices.find(x=>x.lang.startsWith('zh-CN'))||voices.find(x=>x.lang.startsWith('zh'));if(v)u.voice=v;synth.cancel();synth.speak(u);}
+function speakTxt(txt){if(!txt||!txt.trim())return;const u=new SpeechSynthesisUtterance(txt);u.lang='zh-CN';u.rate=ST.settings.slowSpeech?0.6:0.85;const v=voices.find(x=>x.lang.startsWith('zh-CN'))||voices.find(x=>x.lang.startsWith('zh'));if(v)u.voice=v;synth.cancel();synth.speak(u);}
 function speakCur(){const w=SES.cards[SES.idx];if(w)speakWord(w);}
 
 // STT
@@ -2314,6 +2579,8 @@ function updateHome(){
   if(nb&&!ST.settings.notif&&'Notification'in window&&Notification.permission==='default'){
     nb.innerHTML=`<div style="background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:var(--rlg);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="reqNotif()"><div style="font-size:28px">🔔</div><div><div style="font-size:15px;font-weight:700;color:#fff">Включи уведомления</div><div style="font-size:12px;color:rgba(255,255,255,.85);margin-top:2px">Не забывай о занятиях каждый день</div></div></div>`;
   } else if(nb){nb.innerHTML='';}
+  try{renderGrammarTip();}catch(e){}
+  try{renderRecentWords();}catch(e){}
 }
 function lc(h){return VOCAB.filter(w=>w.hsk===h&&(ST.wordData[w.id]?.mastery||0)>=2).length;}
 function getDue(){return VOCAB.filter(w=>(ST.wordData[w.id]?.nextReview||0)<=Date.now()&&(ST.wordData[w.id]?.mastery||0)>0);}
@@ -2353,7 +2620,7 @@ function startLesson(type,level){resumeAC();sndStartLesson();
     showLesson();showV('v-tones');renderTone();return;
   }
   if(type==='review'){cards=getDue();if(!cards.length)cards=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)<2);if(ST.difficulty===1)cards=cards.filter(w=>w.hsk===1);if(!cards.length){toast('🎉 Нечего повторять!');return;}}
-  if(type==='fav'){cards=VOCAB.filter(w=>ST.favorites.includes(w.id));if(!cards.length){toast('⭐ Добавь слова в избранное!');return;}}
+  if(type==='fav'){cards=VOCAB.filter(w=>(ST.favorites||[]).includes(w.id));if(!cards.length){toast('⭐ Добавь слова в избранное!');return;}}
   cards=shuf(cards).slice(0,type==='voice'?10:20);
   SES={type,cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:ST.difficulty<=2?3:99};
   showLesson();
@@ -2392,9 +2659,9 @@ function renderFlash(){
   if(_exDiv){_exDiv.style.display=_ex?'block':'none';}
   if(_ex){const _ec=g('fc-ex-cn');const _ep=g('fc-ex-py');const _er=g('fc-ex-ru');if(_ec)_ec.textContent=_ex.cn;if(_ep)_ep.textContent=_ex.py;if(_er)_er.textContent=_ex.ru;}
   (w.tones||[]).forEach(t=>{if(t>=1&&t<=4){const span=document.createElement('span');span.className=`tb t${t}b`;span.textContent=TONE_SYMBOLS[t-1];tr.appendChild(span);}});
-  const isFav=ST.favorites.includes(w.id);
+  const isFav=(ST.favorites||[]).includes(w.id);
   g('fcfav').textContent=isFav?'★':'☆';g('fcfav').style.color=isFav?'var(--orange)':'var(--l3)';
-  g('fcw').classList.remove('flipped');g('fcact').style.display='none';
+  g('fcw').classList.remove('flipped');g('fcact').style.display='none';isFlipped=false;
   g('twave').style.display='none';isFlipped=false;
   if(ST.settings.autoplay)setTimeout(()=>speakWord(w),400);
 }
@@ -2406,7 +2673,7 @@ function mark(ok){
   else{wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;SES.wrong++;SES.mistakes.push(w);ST.totalWrong++;resetCombo();sndWrong();if(SES.lives<99){SES.lives--;g('lhrt').innerHTML='❤️'.repeat(Math.max(0,SES.lives))+'🖤'.repeat(Math.max(0,3-SES.lives));}}
   tick();SES.idx++;if(SES.lives<=0){showComp();return;}setTimeout(renderFlash,250);
 }
-function togFav(){const w=SES.cards[SES.idx];if(!w)return;const i=ST.favorites.indexOf(w.id);if(i===-1){ST.favorites.push(w.id);toast('⭐ В избранное');}else{ST.favorites.splice(i,1);toast('Убрано');}g('fcfav').textContent=ST.favorites.includes(w.id)?'★':'☆';g('fcfav').style.color=ST.favorites.includes(w.id)?'var(--orange)':'var(--l3)';sv();}
+function togFav(){const w=SES.cards[SES.idx];if(!w)return;const i=(ST.favorites||[]).indexOf(w.id);if(i===-1){(ST.favorites||(ST.favorites=[])).push(w.id);toast('⭐ В избранное');}else{ST.favorites.splice(i,1);toast('Убрано');}g('fcfav').textContent=(ST.favorites||[]).includes(w.id)?'★':'☆';g('fcfav').style.color=(ST.favorites||[]).includes(w.id)?'var(--orange)':'var(--l3)';sv();}
 
 // QUIZ
 function renderQuiz(){
@@ -2426,7 +2693,9 @@ function renderQuiz(){
     if(type==='listen')setTimeout(()=>speakWord(w),300);
   } else if(type==='reverse'){g('qpmt').textContent='Выбери иероглиф по смыслу';qc.textContent=w.meaning;qc.className='qch sm';qc.style.fontFamily='var(--f)';g('qpy').textContent=w.en;g('qhb').style.display='none';}
   const others=shuf(VOCAB.filter(v=>v.id!==w.id)).slice(0,3);
-  const opts=shuf([w,...others]);const cont=g('qopts');cont.innerHTML='';
+  const opts=shuf([w,...others]);
+  const cont=g('qopts');if(!cont)return;cont.innerHTML='';
+  if(cont)cont.className=SES.isEn?'qopts en-mode':'qopts';
   opts.forEach((o,qi)=>{
     const btn=document.createElement('button');
     btn.className='qo';
@@ -2595,6 +2864,7 @@ function rmBan(){const e=g('ban');if(e)e.remove();}
 
 // COMPLETE
 function showComp(){
+  if(!SES)return;
   rmBan();stopMic();synth.cancel();
   const{correct,wrong,xp,mistakes}=SES,tot=correct+wrong,acc=tot>0?Math.round(correct/tot*100):0;
   delete SES.bossXPMult;
@@ -2634,7 +2904,7 @@ function renderV(){
   if(vf==='en'){list=EN_VOCAB;} // Show English words
   else if(vf==='hsk1')list=list.filter(w=>w.hsk===1);else if(vf==='hsk2')list=list.filter(w=>w.hsk===2);
   else if(vf==='hsk3')list=list.filter(w=>w.hsk===3);else if(vf==='conv')list=list.filter(w=>w.conv);
-  else if(vf==='fav')list=list.filter(w=>ST.favorites.includes(w.id));
+  else if(vf==='fav')list=list.filter(w=>(ST.favorites||[]).includes(w.id));
   else if(vf==='learned')list=list.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2);
   if(q)list=list.filter(w=>w.char.includes(q)||w.pinyin.toLowerCase().includes(q)||w.meaning.toLowerCase().includes(q)||w.en.toLowerCase().includes(q));
   const sort=(g('vsort')?.value)||'default';
@@ -2646,7 +2916,7 @@ function renderV(){
   if(!list.length){cont.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--l2)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div>Ничего не найдено</div></div>';return;}
   const card=document.createElement('div');card.className='card';card.style.overflow='hidden';
   list.forEach(w=>{
-    const wd=ST.wordData[w.id]||{},m=wd.mastery||0,fav=ST.favorites.includes(w.id);
+    const wd=ST.wordData[w.id]||{},m=wd.mastery||0,fav=(ST.favorites||[]).includes(w.id);
     const row=document.createElement('div');row.className='vi';
     const tonesCls=w.hsk===1?'t1':w.hsk===2?'t2':'t3';
     const isEn=!!w.transl;
@@ -2659,6 +2929,7 @@ function renderV(){
 function filterV(){renderV();}
 function setVf(f,btn){vf=f;document.querySelectorAll('#vpills .pill').forEach(b=>{b.className='pill off';});btn.className='pill on';renderV();}
 function openModal(w){
+  if(!w)return;
   activeWord=w;const wd=ST.wordData[w.id]||{},m=wd.mastery||0;
   g('mchar').textContent=w.char;g('mpy').textContent=w.pinyin;g('mru').textContent=w.meaning;
   g('men').textContent=w.en;g('mhsk').textContent='HSK '+w.hsk;
@@ -2669,7 +2940,7 @@ function openModal(w){
   if(_ruEl)_ruEl.textContent=_ruM||'';
   g('mmast').textContent='★'.repeat(m)+'☆'.repeat(5-m)+` (${m}/5)`;
   const nr=wd.nextReview||0;g('mnext').textContent=nr>Date.now()?`через ${Math.ceil((nr-Date.now())/86400000)} дн.`:'Готово к повтору';
-  const fav=ST.favorites.includes(w.id);g('mfavbtn').textContent=fav?'★ Убрать':'☆ В избранное';
+  const fav=(ST.favorites||[]).includes(w.id);g('mfavbtn').textContent=fav?'★ Убрать':'☆ В избранное';
   g('wmodal').classList.add('open');
 }
 function closeModal(){g('wmodal').classList.remove('open');activeWord=null;}
@@ -2678,7 +2949,7 @@ function practiceWord(){
   SES={type:'flash',cards:[activeWord,...shuf(VOCAB.filter(v=>v.id!==activeWord.id&&v.hsk===activeWord.hsk)).slice(0,4)],idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99};
   showLesson();showV('v-flash');initFlash();
 }
-function togFavModal(){if(!activeWord)return;const i=ST.favorites.indexOf(activeWord.id);if(i===-1){ST.favorites.push(activeWord.id);toast('⭐ В избранное');}else{ST.favorites.splice(i,1);toast('Убрано');}sv();openModal(activeWord);}
+function togFavModal(){if(!activeWord)return;const i=(ST.favorites||[]).indexOf(activeWord.id);if(i===-1){(ST.favorites||(ST.favorites=[])).push(activeWord.id);toast('⭐ В избранное');}else{ST.favorites.splice(i,1);toast('Убрано');}sv();openModal(activeWord);}
 
 // STATS
 function renderStats(){
@@ -2746,7 +3017,7 @@ function renderProf(){
   renderRoadmap();
   // Favs
   const fl=g('pfavlist');fl.innerHTML='';
-  const favWords=VOCAB.filter(w=>ST.favorites.includes(w.id)).slice(0,5);
+  const favWords=VOCAB.filter(w=>(ST.favorites||[]).includes(w.id)).slice(0,5);
   if(!favWords.length){fl.innerHTML='<div style="padding:14px 16px;color:var(--l2);font-size:14px;background:var(--surface);border-radius:var(--r)">Нет избранных слов</div>';}
   else{favWords.forEach(w=>{const row=document.createElement('div');row.className='vi';row.innerHTML=`<div class="vich">${w.char}</div><div class="vii"><div class="vipy">${w.pinyin}${getRuPinyin(w.pinyin)?`<span style="color:var(--teal);font-weight:700;margin-left:8px;font-size:11px">${getRuPinyin(w.pinyin)}</span>`:''}
 </div><div class="vim">${w.transl||w.meaning}</div></div><span style="font-size:18px;color:var(--orange)">⭐</span>`;row.onclick=()=>openModal(w);fl.appendChild(row);});}
@@ -2902,6 +3173,7 @@ const STROKE_DATA={
 };
 
 function renderWrite(){
+  if(!SES||!SES.cards)return;
   const{cards,idx}=SES;if(idx>=cards.length){showComp();return;}
   const w=cards[idx];const sd=STROKE_DATA[w.char];
   g('lpbf').style.width=(idx/cards.length*100)+'%';g('lcnt').textContent=`${idx+1}/${cards.length}`;
@@ -4155,9 +4427,12 @@ if(typeof AI_TEACHER_BRAIN!=='undefined'){
 
 // Replace API call with offline engine
 async function callAiApi(userMsg) {
-  // Simulate thinking delay for realism
-  await new Promise(r => setTimeout(r, 600 + Math.random() * 800));
-  return getOfflineResponse(userMsg, aiScenario);
+  try {
+    await new Promise(r=>setTimeout(r,500+Math.random()*600));
+    return getOfflineResponse(userMsg,aiScenario);
+  } catch(e) {
+    return '对不起 Ошибка. Попробуй снова.';
+  }
 }
 
 
@@ -4514,7 +4789,7 @@ const EN_VOCAB=[
   {id:'e150',char:'Hit the road',transl:'Отправиться в путь',pron:'хит зэ роуд',ipa:'hɪt ðə rəʊd',level:'B1',topic:'idioms',example:"Let's hit the road!",ex_ru:'Давай отправимся!'},
 ];
 
-const EN_WORDDATA = {};
+const EN_WORDDATA = {};  // Populated by forEach below
 EN_VOCAB.forEach(w => { if (!EN_WORDDATA[w.id]) EN_WORDDATA[w.id] = {mastery:0,correct:0,wrong:0,nextReview:0}; });
 
 
@@ -4583,7 +4858,7 @@ function startEnLesson(type, level){
   else if(level==='hsk2')cards=EN_VOCAB.filter(w=>['A1','A2'].includes(w.level));
   else if(level==='hsk3')cards=EN_VOCAB.filter(w=>['B1','B2'].includes(w.level));
   if(type==='review'){cards=EN_VOCAB.filter(w=>(EN_WORDDATA[w.id]?.nextReview||0)<=Date.now()&&(EN_WORDDATA[w.id]?.mastery||0)>0);if(!cards.length)cards=[...EN_VOCAB];}
-  if(type==='fav')cards=EN_VOCAB.filter(w=>ST.favorites.includes(w.id));
+  if(type==='fav')cards=EN_VOCAB.filter(w=>(ST.favorites||[]).includes(w.id));
   if(!cards.length)cards=[...EN_VOCAB];
   cards=shuf(cards).slice(0,20);
   SES={type:'en_flash',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:ST.difficulty<=2?3:99,isEn:true};
@@ -4835,7 +5110,7 @@ function learnedCount(){
 }
 
 function checkAchievements(){
-  if(!ST.achievements)ST.achievements={};
+  if(!ST.achievements||typeof ST.achievements!=='object')ST.achievements={};
   const newly=[];
   ACHIEVEMENTS.forEach(a=>{
     if(!ST.achievements[a.id]){
@@ -4999,17 +5274,602 @@ const EN_VOCAB_MORE2=[
 EN_VOCAB.push(...EN_VOCAB_MORE2);
 EN_VOCAB_MORE2.forEach(w=>{if(!EN_WORDDATA[w.id])EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
 
+
+// ============================================================
+// 📚 CURRICULUM — Duolingo-style units
+// ============================================================
+
+// Chinese curriculum (12 units, 5 lessons each)
+const CN_CURRICULUM=[
+  {id:'cn_u1',name:'Привет!',desc:'Приветствия и знакомство',icon:'👋',color:0,
+   lessons:[
+    {id:'cn_u1l1',name:'Привет и пока',type:'flash',filter:w=>w.hsk<=1&&[13,14,15,16,17].includes(w.id)},
+    {id:'cn_u1l2',name:'Как тебя зовут?',type:'quiz',filter:w=>[18,23,26,31,32].includes(w.id)},
+    {id:'cn_u1l3',name:'Откуда ты?',type:'reverse',filter:w=>[33,34,35,36,37].includes(w.id)},
+    {id:'cn_u1l4',name:'Спасибо и пожалуйста',type:'flash',filter:w=>[38,39,65,66,67].includes(w.id)},
+    {id:'cn_u1l5',name:'Закрепление',type:'quiz',filter:w=>w.hsk===1&&w.id<=70},
+   ]},
+  {id:'cn_u2',name:'Числа',desc:'Считай и торгуйся',icon:'🔢',color:1,
+   lessons:[
+    {id:'cn_u2l1',name:'1 до 10',type:'flash',filter:w=>w.id>=1&&w.id<=10},
+    {id:'cn_u2l2',name:'11 до 100',type:'quiz',filter:w=>w.id>=11&&w.id<=12||[58,40,41].includes(w.id)},
+    {id:'cn_u2l3',name:'Деньги и цены',type:'flash',filter:w=>[40,41,42,43,44,58].includes(w.id)},
+    {id:'cn_u2l4',name:'Сколько стоит?',type:'voice',filter:w=>[40,41,42,43,44,58,59,60].includes(w.id)},
+    {id:'cn_u2l5',name:'Тест: числа',type:'pinyintype',filter:w=>w.id>=1&&w.id<=12},
+   ]},
+  {id:'cn_u3',name:'Еда',desc:'Заказывай и наслаждайся',icon:'🍜',color:2,
+   lessons:[
+    {id:'cn_u3l1',name:'Еда и напитки',type:'flash',filter:w=>w.hsk<=2&&[52,53,54,55,56,57].includes(w.id)},
+    {id:'cn_u3l2',name:'В ресторане',type:'dialogue',topic:'restaurant'},
+    {id:'cn_u3l3',name:'Вкусы',type:'quiz',filter:w=>[295,296,297,298,423,424,429,430].includes(w.id)},
+    {id:'cn_u3l4',name:'Заказ',type:'voice',filter:w=>[421,426,427,58,57].includes(w.id)},
+    {id:'cn_u3l5',name:'Закрепление',type:'reverse',filter:w=>w.id>=52&&w.id<=62},
+   ]},
+  {id:'cn_u4',name:'Семья',desc:'Расскажи о близких',icon:'👨‍👩‍👧',color:3,
+   lessons:[
+    {id:'cn_u4l1',name:'Члены семьи',type:'flash',filter:w=>[353,354,355,438].includes(w.id)||w.meaning.includes('папа')||w.meaning.includes('мама')},
+    {id:'cn_u4l2',name:'Описание людей',type:'quiz',filter:w=>[421,422,418,419,420].includes(w.id)},
+    {id:'cn_u4l3',name:'Возраст',type:'voice',filter:w=>w.hsk<=2&&w.id>=1&&w.id<=15},
+    {id:'cn_u4l4',name:'Профессии',type:'flash',filter:w=>[454,455,456].includes(w.id)||w.en?.includes('doctor')||w.en?.includes('teacher')},
+    {id:'cn_u4l5',name:'Тест',type:'quiz',filter:w=>w.hsk<=2&&w.id>=350&&w.id<=360},
+   ]},
+  {id:'cn_u5',name:'Путешествие',desc:'Аэропорт, метро, такси',icon:'✈️',color:4,
+   lessons:[
+    {id:'cn_u5l1',name:'Транспорт',type:'flash',filter:w=>[409,410,411,412,413,323,324].includes(w.id)},
+    {id:'cn_u5l2',name:'Направления',type:'quiz',filter:w=>[317,318,319,320,321].includes(w.id)},
+    {id:'cn_u5l3',name:'В аэропорту',type:'dialogue',topic:'travel'},
+    {id:'cn_u5l4',name:'Бронирование',type:'flash',filter:w=>[477,478,479,480].includes(w.id)},
+    {id:'cn_u5l5',name:'Закрепление',type:'voice',filter:w=>w.conv&&w.hsk<=2&&w.id>=44&&w.id<=60},
+   ]},
+  {id:'cn_u6',name:'Покупки',desc:'Торгуйся на рынке',icon:'🛍️',color:5,
+   lessons:[
+    {id:'cn_u6l1',name:'Магазины',type:'flash',filter:w=>[414,415,416,417,419,420].includes(w.id)},
+    {id:'cn_u6l2',name:'Цены',type:'dialogue',topic:'shopping'},
+    {id:'cn_u6l3',name:'Размеры и цвета',type:'quiz',filter:w=>w.hsk<=2&&(w.en?.includes('color')||w.en?.includes('big')||w.en?.includes('small'))},
+    {id:'cn_u6l4',name:'Торг',type:'voice',filter:w=>[40,41,42,43,44].includes(w.id)},
+    {id:'cn_u6l5',name:'Тест',type:'pinyintype',filter:w=>w.hsk<=2&&w.id>=40&&w.id<=50},
+   ]},
+  {id:'cn_u7',name:'Каждый день',desc:'Рутина и время',icon:'☀️',color:6,
+   lessons:[
+    {id:'cn_u7l1',name:'Время суток',type:'flash',filter:w=>[375,376,377,378,379,380].includes(w.id)},
+    {id:'cn_u7l2',name:'Погода',type:'quiz',filter:w=>[299,300,301,450,451].includes(w.id)},
+    {id:'cn_u7l3',name:'Чувства',type:'flash',filter:w=>[401,402,403,404,405,406].includes(w.id)},
+    {id:'cn_u7l4',name:'Разговор',type:'dialogue',topic:'greet'},
+    {id:'cn_u7l5',name:'Закрепление',type:'voice',filter:w=>w.hsk<=2&&w.conv&&w.id>=59&&w.id<=80},
+   ]},
+  {id:'cn_u8',name:'Работа',desc:'Офис, встречи, карьера',icon:'💼',color:7,
+   lessons:[
+    {id:'cn_u8l1',name:'Офис и работа',type:'flash',filter:w=>[311,312,313,314,315,316,454,455,456].includes(w.id)},
+    {id:'cn_u8l2',name:'Технологии',type:'quiz',filter:w=>[303,304,305,306,307,461,462,463,464,465].includes(w.id)},
+    {id:'cn_u8l3',name:'Переговоры',type:'flash',filter:w=>[481,482,483,484,485,486].includes(w.id)},
+    {id:'cn_u8l4',name:'Встреча',type:'dialogue',topic:'daily'},
+    {id:'cn_u8l5',name:'Тест',type:'pinyintype',filter:w=>w.hsk>=2&&w.id>=310&&w.id<=320},
+   ]},
+  {id:'cn_u9',name:'Здоровье',desc:'Врач, аптека, самочувствие',icon:'🏥',color:8,
+   lessons:[
+    {id:'cn_u9l1',name:'Симптомы',type:'flash',filter:w=>[281,282,283,284,285,286].includes(w.id)},
+    {id:'cn_u9l2',name:'Экстренные ситуации',type:'quiz',filter:w=>[261,262,263,264,265,266].includes(w.id)},
+    {id:'cn_u9l3',name:'Здоровый образ жизни',type:'flash',filter:w=>[469,470,471,472,473,475].includes(w.id)},
+    {id:'cn_u9l4',name:'В больнице',type:'voice',filter:w=>w.hsk<=2&&w.conv&&w.id>=183&&w.id<=195},
+    {id:'cn_u9l5',name:'Закрепление',type:'reverse',filter:w=>w.id>=281&&w.id<=295},
+   ]},
+  {id:'cn_u10',name:'Природа',desc:'Погода, животные, окружение',icon:'🌿',color:9,
+   lessons:[
+    {id:'cn_u10l1',name:'Природа',type:'flash',filter:w=>[386,387,388,389,390,444,454].includes(w.id)},
+    {id:'cn_u10l2',name:'Экология',type:'quiz',filter:w=>[488,489,490,491,492].includes(w.id)},
+    {id:'cn_u10l3',name:'Погода',type:'flash',filter:w=>[299,300,301,302,442,443].includes(w.id)},
+    {id:'cn_u10l4',name:'Диалог',type:'dialogue',topic:'culture'},
+    {id:'cn_u10l5',name:'Тест',type:'pinyintype',filter:w=>w.id>=386&&w.id<=395},
+   ]},
+  {id:'cn_u11',name:'Культура',desc:'Праздники, традиции, искусство',icon:'🐉',color:10,
+   lessons:[
+    {id:'cn_u11l1',name:'Праздники',type:'flash',filter:w=>[438,439,440,441].includes(w.id)},
+    {id:'cn_u11l2',name:'Культурные традиции',type:'quiz',filter:w=>w.hsk===3&&w.id>=180&&w.id<=210},
+    {id:'cn_u11l3',name:'Чувства и отношения',type:'flash',filter:w=>[493,494,495,496,497].includes(w.id)},
+    {id:'cn_u11l4',name:'Культурный разговор',type:'dialogue',topic:'culture'},
+    {id:'cn_u11l5',name:'Финальный тест',type:'pinyintype',filter:w=>w.hsk===2&&w.id>=230&&w.id<=260},
+   ]},
+  {id:'cn_u12',name:'Мастерство',desc:'Сложные темы HSK 3',icon:'🎓',color:11,
+   lessons:[
+    {id:'cn_u12l1',name:'Грамматика: частицы',type:'tones',filter:w=>w.hsk===3&&w.id<=100},
+    {id:'cn_u12l2',name:'Сложные слова',type:'quiz',filter:w=>w.hsk===3&&w.id>=400&&w.id<=430},
+    {id:'cn_u12l3',name:'ИИ разговор',type:'dialogue',topic:'greet'},
+    {id:'cn_u12l4',name:'Черты иероглифов',type:'write',filter:w=>w.hsk<=2},
+    {id:'cn_u12l5',name:'Финал',type:'quiz',filter:w=>w.hsk===3},
+   ]},
+];
+
+// English curriculum (10 units, 5 lessons each)
+const EN_CURRICULUM=[
+  {id:'en_u1',name:'Hello!',desc:'Greetings and introductions',icon:'👋',color:0,
+   lessons:[
+    {id:'en_u1l1',name:'Basic greetings',type:'en_flash',filter:w=>w.topic==='greet'},
+    {id:'en_u1l2',name:'Nice to meet you',type:'quiz',filter:w=>w.topic==='greet'||w.topic==='social'},
+    {id:'en_u1l3',name:'Where are you from?',type:'en_flash',filter:w=>w.topic==='social'&&w.level==='A1'},
+    {id:'en_u1l4',name:'Numbers',type:'quiz',filter:w=>w.topic==='numbers'},
+    {id:'en_u1l5',name:'Review',type:'en_flash',filter:w=>w.level==='A1'&&w.topic!=='verbs'},
+   ]},
+  {id:'en_u2',name:'Every day',desc:'Daily verbs and routines',icon:'☀️',color:1,
+   lessons:[
+    {id:'en_u2l1',name:'Core verbs',type:'en_flash',filter:w=>w.topic==='verbs'&&w.level==='A1'},
+    {id:'en_u2l2',name:'I want / I need',type:'quiz',filter:w=>['e32','e33','e34','e35','e36'].includes(w.id)},
+    {id:'en_u2l3',name:'Time words',type:'en_flash',filter:w=>w.topic==='time'},
+    {id:'en_u2l4',name:'Questions',type:'quiz',filter:w=>w.topic==='questions'},
+    {id:'en_u2l5',name:'Sentences',type:'voice',filter:w=>w.topic==='verbs'&&w.level==='A1'},
+   ]},
+  {id:'en_u3',name:'Food & drink',desc:'Order and enjoy',icon:'🍽️',color:2,
+   lessons:[
+    {id:'en_u3l1',name:'Food words',type:'en_flash',filter:w=>w.topic==='food'},
+    {id:'en_u3l2',name:'At the restaurant',type:'quiz',filter:w=>w.topic==='food'},
+    {id:'en_u3l3',name:'The bill please',type:'en_flash',filter:w=>['e77','e78','e79','e80','e81','e83'].includes(w.id)},
+    {id:'en_u3l4',name:'Speaking practice',type:'voice',filter:w=>w.topic==='food'},
+    {id:'en_u3l5',name:'Review',type:'quiz',filter:w=>w.topic==='food'},
+   ]},
+  {id:'en_u4',name:'Travel',desc:'Airport, hotel, directions',icon:'✈️',color:3,
+   lessons:[
+    {id:'en_u4l1',name:'Travel phrases',type:'en_flash',filter:w=>w.topic==='travel'},
+    {id:'en_u4l2',name:'Directions',type:'quiz',filter:w=>w.topic==='travel'},
+    {id:'en_u4l3',name:'At the hotel',type:'en_flash',filter:w=>['e73','e74','e172','e173'].includes(w.id)},
+    {id:'en_u4l4',name:'Speaking',type:'voice',filter:w=>w.topic==='travel'},
+    {id:'en_u4l5',name:'Review',type:'quiz',filter:w=>w.topic==='travel'},
+   ]},
+  {id:'en_u5',name:'Work & study',desc:'Office, meetings, career',icon:'💼',color:4,
+   lessons:[
+    {id:'en_u5l1',name:'Work vocab',type:'en_flash',filter:w=>w.topic==='work'},
+    {id:'en_u5l2',name:'Business English',type:'quiz',filter:w=>w.topic==='business'},
+    {id:'en_u5l3',name:'Meetings',type:'en_flash',filter:w=>['e85','e86','e87','e88'].includes(w.id)},
+    {id:'en_u5l4',name:'Speaking',type:'voice',filter:w=>w.topic==='work'},
+    {id:'en_u5l5',name:'Review',type:'quiz',filter:w=>w.topic==='work'||w.topic==='business'},
+   ]},
+  {id:'en_u6',name:'Feelings',desc:'Emotions and relationships',icon:'❤️',color:5,
+   lessons:[
+    {id:'en_u6l1',name:'Emotions',type:'en_flash',filter:w=>w.topic==='emotions'},
+    {id:'en_u6l2',name:'Adjectives',type:'quiz',filter:w=>w.topic==='adj'},
+    {id:'en_u6l3',name:'Relationships',type:'en_flash',filter:w=>w.topic==='social'&&w.level!=='A1'},
+    {id:'en_u6l4',name:'Speaking',type:'voice',filter:w=>w.topic==='emotions'||w.topic==='adj'},
+    {id:'en_u6l5',name:'Review',type:'quiz',filter:w=>w.topic==='emotions'},
+   ]},
+  {id:'en_u7',name:'Tech & digital',desc:'Apps, internet, devices',icon:'📱',color:6,
+   lessons:[
+    {id:'en_u7l1',name:'Tech words',type:'en_flash',filter:w=>w.topic==='tech'},
+    {id:'en_u7l2',name:'Digital life',type:'quiz',filter:w=>w.topic==='tech'},
+    {id:'en_u7l3',name:'Health & body',type:'en_flash',filter:w=>w.topic==='health'},
+    {id:'en_u7l4',name:'Speaking',type:'voice',filter:w=>w.topic==='tech'},
+    {id:'en_u7l5',name:'Review',type:'quiz',filter:w=>w.topic==='tech'||w.topic==='health'},
+   ]},
+  {id:'en_u8',name:'Phrasal verbs',desc:'Give up, find out, look up',icon:'🔧',color:7,
+   lessons:[
+    {id:'en_u8l1',name:'Common phrasal',type:'en_flash',filter:w=>w.topic==='phrasal'},
+    {id:'en_u8l2',name:'In context',type:'quiz',filter:w=>w.topic==='phrasal'},
+    {id:'en_u8l3',name:'Grammar words',type:'en_flash',filter:w=>w.topic==='grammar'},
+    {id:'en_u8l4',name:'Speaking',type:'voice',filter:w=>w.topic==='phrasal'},
+    {id:'en_u8l5',name:'Review',type:'quiz',filter:w=>w.topic==='phrasal'||w.topic==='grammar'},
+   ]},
+  {id:'en_u9',name:'Idioms',desc:'Natural English expressions',icon:'🗣️',color:8,
+   lessons:[
+    {id:'en_u9l1',name:'Common idioms',type:'en_flash',filter:w=>w.topic==='idioms'},
+    {id:'en_u9l2',name:'Useful phrases',type:'quiz',filter:w=>w.topic==='phrases'},
+    {id:'en_u9l3',name:'Advanced phrases',type:'en_flash',filter:w=>w.topic==='phrases'&&(w.level==='B1'||w.level==='B2')},
+    {id:'en_u9l4',name:'Speaking',type:'voice',filter:w=>w.topic==='idioms'||w.topic==='phrases'},
+    {id:'en_u9l5',name:'Review',type:'quiz',filter:w=>w.topic==='idioms'||w.topic==='phrases'},
+   ]},
+  {id:'en_u10',name:'Mastery',desc:'B2 vocabulary and fluency',icon:'🎓',color:9,
+   lessons:[
+    {id:'en_u10l1',name:'Advanced vocab',type:'en_flash',filter:w=>w.level==='B2'},
+    {id:'en_u10l2',name:'Business advanced',type:'quiz',filter:w=>w.topic==='business'&&w.level==='B2'},
+    {id:'en_u10l3',name:'Environment',type:'en_flash',filter:w=>w.topic==='environment'},
+    {id:'en_u10l4',name:'Final speaking',type:'voice',filter:w=>w.level==='B2'},
+    {id:'en_u10l5',name:'Final test',type:'quiz',filter:w=>w.level==='B2'},
+   ]},
+];
+
+// Progress tracking: lessonId → {done, stars, attempts}
+function getLessonProgress(){
+  if(!ST.lessonProgress)ST.lessonProgress={};
+  return ST.lessonProgress;
+}
+function setLessonDone(lessonId, stars){
+  if(!ST.lessonProgress)ST.lessonProgress={};
+  ST.lessonProgress[lessonId]={done:true,stars:stars||1,ts:Date.now()};
+  sv();
+}
+function getLessonStars(lessonId){
+  return (ST.lessonProgress||{})[lessonId]?.stars||0;
+}
+function getUnitProgress(unit){
+  const done=unit.lessons.filter(l=>getLessonStars(l.id)>0).length;
+  return {done,total:unit.lessons.length,pct:Math.round(done/unit.lessons.length*100)};
+}
+function isLessonUnlocked(unitIdx,lessonIdx,curriculum){
+  if(unitIdx===0&&lessonIdx===0)return true;
+  // First lesson of unit: previous unit must be >=60% done
+  if(lessonIdx===0){
+    if(unitIdx===0)return true;
+    const prev=curriculum[unitIdx-1];
+    const pp=getUnitProgress(prev);
+    return pp.pct>=60;
+  }
+  // Other lessons: previous lesson done
+  const prevLesson=curriculum[unitIdx].lessons[lessonIdx-1];
+  return getLessonStars(prevLesson.id)>0;
+}
+function isUnitUnlocked(unitIdx,curriculum){
+  if(unitIdx===0)return true;
+  const prev=curriculum[unitIdx-1];
+  return getUnitProgress(prev).pct>=60;
+}
+
+
+// ============================================================
+// 🗺️ PATH RENDER — Duolingo-style winding path
+// ============================================================
+let activePopover = null;
+
+function renderPath(){
+  const scroll=g('path-scroll');if(!scroll)return;
+  scroll.innerHTML='';
+  const curriculum=ST.lang==='en'?EN_CURRICULUM:CN_CURRICULUM;
+  // Update header
+  const flag=g('ph-flag'),name=g('ph-name');
+  if(flag)flag.textContent=ST.lang==='en'?'🇬🇧':'🇨🇳';
+  if(name)name.textContent=ST.lang==='en'?'Английский':'Китайский';
+  g('ph-str').textContent=ST.streak;
+  g('ph-xp').textContent=ST.totalXp;
+
+  // Winding path offsets: center, right, center, left, center...
+  const positions=['center','right','center','left'];
+  const nodeOffsets={center:'0px',right:'60px',left:'-60px'};
+
+  curriculum.forEach((unit,ui)=>{
+    const unlocked=isUnitUnlocked(ui,curriculum);
+    const prog=getUnitProgress(unit);
+
+    // Unit header
+    const header=document.createElement('div');
+    header.className=`unit-header uc${unit.color}`;
+    header.innerHTML=`
+      <div class="unit-num">РАЗДЕЛ ${ui+1}</div>
+      <div style="display:flex;align-items:center;gap:10px;position:relative;z-index:1">
+        <span style="font-size:28px">${unit.icon}</span>
+        <div><div class="unit-name">${unit.name}</div><div class="unit-desc">${unit.desc}</div></div>
+        ${!unlocked?'<div style="margin-left:auto;font-size:24px;position:relative;z-index:1">🔒</div>':''}
+      </div>
+      <div class="unit-progress-bar" style="position:relative;z-index:1">
+        <div class="unit-progress-fill" style="width:${prog.pct}%"></div>
+      </div>`;
+    if(!unlocked){header.style.opacity='.5';header.style.filter='grayscale(.7)';}
+    scroll.appendChild(header);
+
+    // Lesson nodes
+    unit.lessons.forEach((lesson,li)=>{
+      const lessonUnlocked=unlocked&&isLessonUnlocked(ui,li,curriculum);
+      const stars=getLessonStars(lesson.id);
+      const pos=positions[(ui*5+li)%positions.length];
+      const offset=nodeOffsets[pos]||'0px';
+
+      const row=document.createElement('div');
+      row.className='path-row';
+      row.style.paddingTop=li===0?'16px':'4px';
+
+      // Determine node color & icon
+      let nodeBg, nodeIcon;
+      if(stars>0){
+        nodeBg=`var(--uc${unit.color},linear-gradient(135deg,var(--green),#30D158))`;
+        nodeIcon='⭐';
+      } else if(lessonUnlocked){
+        nodeBg=`var(--uc${unit.color},var(--red))`;
+        nodeIcon=getLessonIcon(lesson.type);
+      } else {
+        nodeBg='var(--s3)';
+        nodeIcon='🔒';
+      }
+
+      const isActive=lessonUnlocked&&stars===0;
+      row.innerHTML=`
+        <div class="path-node ${stars>0?'done':''}${isActive?' active':''}${!lessonUnlocked?' locked':''}"
+          style="background:${nodeBg};margin-left:${offset}"
+          onclick="nodeClick(${ui},${li},'${lesson.id}',${lessonUnlocked})"
+          data-unit="${ui}" data-lesson="${li}" data-id="${lesson.id}">
+          <span style="font-size:${stars>0?'24':'28'}px">${stars>0?getStarEmoji(stars):nodeIcon}</span>
+          <div class="node-stars">${'★'.repeat(stars)}${'☆'.repeat(Math.max(0,3-stars))}</div>
+        </div>`;
+      scroll.appendChild(row);
+    });
+
+    // Spacer between units
+    const spacer=document.createElement('div');
+    spacer.style.height='12px';
+    scroll.appendChild(spacer);
+  });
+
+  // Scroll to first active lesson
+  setTimeout(()=>{
+    const active=scroll.querySelector('.path-node.active');
+    if(active)active.scrollIntoView({behavior:'smooth',block:'center'});
+  },300);
+}
+
+function getLessonIcon(type){
+  const icons={flash:'🃏',quiz:'🧠',voice:'🎤',reverse:'↩️',dialogue:'💬',
+               tones:'🎵',write:'✍️',pinyintype:'⌨️',en_flash:'📖',review:'🔄'};
+  return icons[type]||'📖';
+}
+function getStarEmoji(stars){
+  return ['','🥉','🥈','🏆'][Math.min(stars,3)]||'⭐';
+}
+
+let _nodeTimer=null;
+function nodeClick(ui,li,lessonId,unlocked){
+  if(!unlocked){toast('🔒 Заверши предыдущие уроки!');sndWrong();return;}
+  // Toggle popover
+  if(activePopover){activePopover.remove();activePopover=null;if(_nodeTimer)clearTimeout(_nodeTimer);}
+  const node=document.querySelector('[data-id="'+lessonId+'"]');
+  if(!node)return;
+  const curriculum=ST.lang==='en'?EN_CURRICULUM:CN_CURRICULUM;
+  const unit=curriculum[ui],lesson=unit.lessons[li];
+  const stars=getLessonStars(lessonId);
+
+  const pop=document.createElement('div');
+  pop.className='node-popover';
+  pop.innerHTML=`
+    <div class="popover-name">${getLessonIcon(lesson.type)} ${lesson.name}</div>
+    <div class="popover-desc">${unit.name} · ${stars>0?'★'.repeat(stars)+' выполнено':'Не начато'}</div>
+    <button class="popover-start" onclick="startPathLesson('${lesson.id}',${ui},${li})">
+      ${stars>0?'🔄 Повторить':'▶ Начать урок'}
+    </button>`;
+  node.style.position='relative';
+  node.appendChild(pop);
+  activePopover=pop;
+  _nodeTimer=setTimeout(()=>{if(activePopover===pop){pop.remove();activePopover=null;}},4000);
+}
+
+function startPathLesson(lessonId,ui,li){
+  if(activePopover){activePopover.remove();activePopover=null;}
+  const curriculum=ST.lang==='en'?EN_CURRICULUM:CN_CURRICULUM;
+  const unit=curriculum[ui],lesson=unit.lessons[li];
+
+  // Get lesson words
+  let cards;
+  const vocab=ST.lang==='en'?EN_VOCAB:VOCAB;
+  if(lesson.filter){
+    cards=shuf(vocab.filter(lesson.filter)).slice(0,15);
+    if(!cards.length)cards=shuf(vocab).slice(0,10);
+  } else {
+    cards=shuf(vocab).slice(0,15);
+  }
+
+  // Track current lesson for star awarding
+  ST._currentLesson=lessonId;
+
+  const isEn=ST.lang==='en';
+  const type=lesson.type==='en_flash'?'flash':lesson.type;
+
+  if(lesson.type==='dialogue'){
+    const topic=lesson.filter||'greet';
+    SES={type:'dialogue',topic,cards:shuf(vocab).slice(0,10),idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,isEn};
+    showLesson();showV('v-dia');initDia();
+  } else if(lesson.type==='tones'){
+    SES={type:'tones',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,isEn};
+    showLesson();showV('v-tones');renderTones();
+  } else if(lesson.type==='write'){
+    SES={type:'write',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,isEn};
+    showLesson();showV('v-write');renderWrite();
+  } else if(lesson.type==='pinyintype'){
+    SES={type:'pinyintype',cards:cards.slice(0,12),idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,isEn};
+    showLesson();showV('v-pinyin-type');renderPinyinType();
+  } else if(lesson.type==='voice'){
+    SES={type:'voice',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,isEn};
+    showLesson();showV('v-voice');renderVoice();
+  } else if(isEn||lesson.type==='en_flash'){
+    SES={type:'flash',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:ST.difficulty<=2?3:99,isEn:true};
+    showLesson();showV('v-flash');renderEnFlash();
+  } else if(lesson.type==='reverse'){
+    SES={type:'reverse',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:99,isEn};
+    showLesson();showV('v-quiz');renderQuiz();
+  } else if(lesson.type==='quiz'){
+    SES={type:'quiz',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:ST.difficulty<=2?3:99,isEn};
+    showLesson();showV('v-quiz');renderQuiz();
+  } else {
+    SES={type:'flash',cards,idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:ST.difficulty<=2?3:99,isEn};
+    showLesson();showV('v-flash');if(isEn)renderEnFlash();else renderFlash();
+  }
+  sndStartLesson();recPlay();
+}
+
+// Award stars when lesson completes
+const _origFinishSes=finishSes;
+finishSes=function(){
+  if(ST._currentLesson){
+    const acc=SES.correct/(SES.correct+SES.wrong||1);
+    const stars=acc>=0.95?3:acc>=0.7?2:1;
+    const prev=getLessonStars(ST._currentLesson);
+    if(stars>prev){setLessonDone(ST._currentLesson,stars);}
+    ST._currentLesson=null;
+    setTimeout(renderPath,300);
+  }
+  _origFinishSes();
+};
+
+
+// ============================================================
+// 🔐 AUTH SYSTEM
+// ============================================================
+let _lsLang = null;
+
+function initAuth(){
+  // Check if already logged in
+  const acct = localStorage.getItem('shuohua_account');
+  if(acct){
+    try{
+      const data=JSON.parse(acct);
+      ST.account=data;
+      // Check if lang chosen
+      if(ST.lang&&ST.onboarded){
+        hideAuth();showPath();
+      } else if(ST.lang){
+        hideAuth();showLangSel();
+      } else {
+        hideAuth();showLangSel();
+      }
+    }catch(e){ showAuth(); }
+  } else {
+    showAuth();
+  }
+}
+
+function showAuth(){
+  const a=g('s-auth');if(a)a.classList.remove('hidden');
+}
+function hideAuth(){
+  const a=g('s-auth');if(a)a.classList.add('hidden');
+}
+function showLangSel(){
+  const l=g('s-langsel');if(l){l.classList.add('show');}
+}
+function hideLangSel(){
+  const l=g('s-langsel');if(l)l.classList.remove('show');
+}
+function showPath(){
+  hideLangSel();
+  // Hide all screens, show path
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  const ps=g('s-path');if(ps)ps.classList.add('on');
+  g('nav').classList.remove('hide');
+  // Update nav active state
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('on',i===0));
+  renderPath();
+}
+
+function saveAccount(data){
+  ST.account=data;
+  localStorage.setItem('shuohua_account',JSON.stringify(data));
+}
+
+function authGuest(){
+  const guestId='guest_'+Math.random().toString(36).substr(2,8);
+  saveAccount({type:'guest',id:guestId,name:'Гость'});
+  hideAuth();
+  if(ST.lang){showPath();}else{showLangSel();}
+}
+
+function toggleEmailForm(){
+  const form=g('auth-email-form');
+  const btn=g('auth-email-toggle');
+  if(form.classList.contains('show')){
+    form.classList.remove('show');
+    btn.textContent='✉️ Войти по email';
+  } else {
+    form.classList.add('show');
+    btn.textContent='✕ Отмена';
+    setTimeout(()=>g('auth-email').focus(),100);
+  }
+}
+
+function authEmail(){
+  const email=g('auth-email').value.trim();
+  const pass=g('auth-pass').value;
+  const err=g('auth-err');
+  if(!email||!email.includes('@')){err.textContent='Введи корректный email';return;}
+  if(!pass||pass.length<6){err.textContent='Пароль минимум 6 символов';return;}
+  err.textContent='';
+  // Simulated auth — store hashed in localStorage
+  const key='shuohua_email_'+btoa(email.toLowerCase());
+  const existing=localStorage.getItem(key);
+  if(existing){
+    const stored=JSON.parse(existing);
+    if(stored.pass!==btoa(pass)){err.textContent='Неверный пароль';return;}
+    saveAccount({type:'email',id:email,name:email.split('@')[0]});
+  } else {
+    localStorage.setItem(key,JSON.stringify({pass:btoa(pass),created:Date.now()}));
+    saveAccount({type:'email',id:email,name:email.split('@')[0]});
+  }
+  hideAuth();
+  if(ST.lang){showPath();}else{showLangSel();}
+}
+
+function authGoogle(){
+  // Google One Tap / Identity Services
+  if(typeof google!=='undefined'&&google.accounts){
+    google.accounts.id.prompt();
+  } else {
+    // Fallback: simulate
+    toast('Google войдёт через браузер 🔄');
+    setTimeout(()=>{
+      saveAccount({type:'google',id:'google_user',name:'Google User'});
+      hideAuth();
+      if(ST.lang){showPath();}else{showLangSel();}
+    },800);
+  }
+}
+
+// ── LANGUAGE SELECT ──────────────────────────────────────────
+function lsSelect(lang,el){
+  _lsLang=lang;
+  document.querySelectorAll('.langsel-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const btn=g('ls-btn');
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
+
+function lsConfirm(){
+  if(!_lsLang)return;
+  ST.lang=_lsLang;
+  ST.onboarded=true;
+  if(!ST.lessonProgress)ST.lessonProgress={};
+  sv();
+  hideLangSel();
+  // Show difficulty select briefly, then path
+  ST.difficulty=ST.difficulty||1;
+  showPath();
+  const lname=_lsLang==='en'?'английский 🇬🇧':'китайский 🇨🇳';
+  setTimeout(()=>toast('🎉 Начинаем изучать '+lname+'!'),500);
+}
+
+function showLangSwitch(){
+  // Quick lang switcher from path header
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;'
+    +'display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(12px)';
+  overlay.innerHTML=`
+    <div style="background:var(--glass-nav);backdrop-filter:var(--glass-blur);border-radius:28px 28px 0 0;
+      width:100%;max-width:480px;padding:24px 20px max(24px,env(safe-area-inset-bottom));
+      border:1px solid var(--glass-border);animation:sup .3s cubic-bezier(.34,1.1,.64,1)">
+      <div style="width:36px;height:4px;background:var(--sep);border-radius:2px;margin:0 auto 20px"></div>
+      <div style="font-size:18px;font-weight:800;color:var(--label);margin-bottom:16px">Сменить язык</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        ${['cn','en'].map(l=>`
+          <button onclick="switchLang('${l}');this.closest('[style*=fixed]').remove()"
+            style="padding:16px;border-radius:var(--rlg);background:${ST.lang===l?'var(--rl)':'var(--glass-inset)'};
+            border:2px solid ${ST.lang===l?'var(--red)':'var(--sep)'};
+            font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;color:var(--label);
+            display:flex;flex-direction:column;align-items:center;gap:6px">
+            <span style="font-size:32px">${l==='cn'?'🇨🇳':'🇬🇧'}</span>
+            ${l==='cn'?'Китайский':'Английский'}
+          </button>`).join('')}
+      </div>
+    </div>`;
+  overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+  document.body.appendChild(overlay);
+}
+
+function switchLang(lang){
+  ST.lang=lang;sv();
+  updateLangUI();
+  renderPath();
+  toast(lang==='en'?'🇬🇧 Английский':'🇨🇳 Китайский');
+}
+
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
   const cols=['#FF3B30','#FF9500','#34C759','#007AFF','#AF52DE','#FF2D55','#FFD60A'];
-  for(let i=0;i<55;i++){const p=document.createElement('div');p.className='cp';p.style.cssText=`left:${Math.random()*100}%;top:-10px;background:${cols[i%cols.length]};animation-delay:${Math.random()*.6}s;animation-duration:${1.5+Math.random()}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'};`;c.appendChild(p);}
+  const _mob=window.innerWidth<600;for(let i=0;i<(_mob?28:55);i++){const p=document.createElement('div');p.className='cp';p.style.cssText=`left:${Math.random()*100}%;top:-10px;background:${cols[i%cols.length]};animation-delay:${Math.random()*.6}s;animation-duration:${1.5+Math.random()}s;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'3px'};`;c.appendChild(p);}
   setTimeout(()=>c.innerHTML='',3500);
 }
 let tT=null;
-function toast(msg,dur=2500){const t=g('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),dur);}
+function toast(msg,dur=2500){const t=g('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),dur);}
 function showCbox(){g('cbox').classList.add('open');}
-function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,lang:'cn',profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
+function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,lang:'cn',lessonProgress:{},profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
 
 // SWIPE
 let swX=0;
@@ -5019,6 +5879,9 @@ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sw
 // INIT
 window.addEventListener('load',()=>{
   lv();
+  // Hide path, show auth first
+  const ps=g('s-path');if(ps)ps.classList.remove('on');
+  setTimeout(initAuth,1200); // after loading screen
   const _tips=['Разговорный китайский ждёт!','Загружаем 230 слов…','Готовим диалоги…','Почти готово!'];
   let _ti=0;const _tiv=setInterval(()=>{const el=g('loading-tip');if(el&&_ti<_tips.length)el.textContent=_tips[_ti++];},300);
   setTimeout(()=>{
