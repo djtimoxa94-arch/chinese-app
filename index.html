@@ -3604,6 +3604,28 @@ const AI_WELCOME = {
   culture:    '你好！中国文化很有趣！(Zhōngguó wénhuà hěn yǒuqù!) — Китайская культура очень интересна! 🐉\n\nО чём хочешь узнать? Праздники, традиции, история, современный Китай?',
 };
 
+
+// ── ДОПОЛНИТЕЛЬНЫЕ ПАТТЕРНЫ ИИ-УЧИТЕЛЯ ────────────────────────
+(function(){
+  if(AI_TEACHER_BRAIN[s])AI_TEACHER_BRAIN[s].unshift(...EXT[s]);
+});
+
+
+// Extra AI patterns (inline, no newline issues)
+if(typeof AI_TEACHER_BRAIN!=='undefined'){
+  var _p=[
+    [/цвет|красный|синий|зелён/i,['Цвета: [CN:红色|hóng sè|красный] [CN:蓝色|lán sè|синий] [CN:绿色|lǜ sè|зелёный] [CN:黄色|huáng sè|жёлтый] [CN:白色|bái sè|белый] [CN:黑色|hēi sè|чёрный]\n💡 Красный — цвет удачи!']],
+    [/семья|папа|мама|брат|сестра/i,['Семья: [CN:爸爸|bà ba|папа] [CN:妈妈|mā ma|мама] [CN:哥哥|gē ge|старший брат] [CN:弟弟|dì di|младший брат] [CN:爷爷|yé ye|дедушка] [CN:奶奶|nǎi nai|бабушка]']],
+    [/который час|время сейчас/i,['几点了？[CN:现在几点？|xiànzài jǐ diǎn?|Который час?] [CN:两点半|liǎng diǎn bàn|Половина третьего]\n💡 2 часа = 两点, не 二点!']],
+    [/профессия|кем работ/i,['Профессии: [CN:我是学生|wǒ shì xuésheng|Я студент] [CN:我是工程师|wǒ shì gōngchéngshī|Я инженер] [CN:在家工作|zài jiā gōngzuò|работаю из дома]']],
+    [/путешеств|туризм/i,['Путешествие! [CN:我是游客|wǒ shì yóukè|Я турист] [CN:我迷路了|wǒ mí lù le|заблудился] [CN:可以拍照吗？|kěyǐ pāizhào ma?|Можно фото?]\n💡 Скачай DiDi + Alipay!']]
+  ];
+  _p.forEach(function(p){AI_TEACHER_BRAIN.free.unshift(p);});
+  AI_TEACHER_BRAIN.grammar.unshift(
+    [/количеств|счётн|量词/i,['Счётные слова: [CN:一本书|yī běn shū|книга] [CN:一杯水|yī bēi shuǐ|стакан воды]\n💡 Между числом и существительным — счётное слово!']],
+    [/сравнени|больше чем|比/i,['Сравнение: А 比 В + прилаг. [CN:我比你高|wǒ bǐ nǐ gāo|Я выше тебя]']]
+  );
+}
 // callAiApi replaced by offline engine below
 
 
@@ -4482,6 +4504,128 @@ const VOCAB_CN_MORE=[
 ];
 VOCAB.push(...VOCAB_CN_MORE);
 VOCAB_CN_MORE.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
+
+const VOCAB_CN_NEW=[
+  {id:401,char:'高兴',pinyin:'gāo xìng',tones:[1,4],meaning:'радоваться / рад',en:'happy/glad',hsk:1,conv:false},
+  {id:402,char:'伤心',pinyin:'shāng xīn',tones:[1,1],meaning:'расстраиваться',en:'heartbroken/sad',hsk:2,conv:false},
+  {id:403,char:'失望',pinyin:'shī wàng',tones:[1,4],meaning:'разочарован',en:'disappointed',hsk:2,conv:false},
+  {id:404,char:'惊讶',pinyin:'jīng yà',tones:[1,4],meaning:'удивлён',en:'surprised/amazed',hsk:2,conv:false},
+  {id:405,char:'后悔',pinyin:'hòu huǐ',tones:[4,3],meaning:'сожалеть',en:'to regret',hsk:3,conv:true},
+  {id:406,char:'放松',pinyin:'fàng sōng',tones:[4,1],meaning:'расслабиться',en:'to relax',hsk:2,conv:true},
+  {id:407,char:'压力',pinyin:'yā lì',tones:[1,4],meaning:'стресс / давление',en:'stress/pressure',hsk:3,conv:true},
+  {id:408,char:'骄傲',pinyin:'jiāo ào',tones:[1,4],meaning:'гордый',en:'proud',hsk:3,conv:false},
+  {id:409,char:'打的',pinyin:'dǎ dī',tones:[3,1],meaning:'взять такси (разг.)',en:'to take a cab',hsk:2,conv:true},
+  {id:410,char:'堵车',pinyin:'dǔ chē',tones:[3,1],meaning:'пробка / затор',en:'traffic jam',hsk:2,conv:true},
+  {id:411,char:'停车',pinyin:'tíng chē',tones:[2,1],meaning:'парковаться',en:'to park',hsk:2,conv:true},
+  {id:412,char:'红绿灯',pinyin:'hóng lǜ dēng',tones:[2,4,1],meaning:'светофор',en:'traffic light',hsk:2,conv:true},
+  {id:413,char:'路口',pinyin:'lù kǒu',tones:[4,3],meaning:'перекрёсток',en:'intersection',hsk:2,conv:true},
+  {id:414,char:'理发店',pinyin:'lǐ fà diàn',tones:[3,4,4],meaning:'парикмахерская',en:'hair salon',hsk:2,conv:true},
+  {id:415,char:'书店',pinyin:'shū diàn',tones:[1,4],meaning:'книжный магазин',en:'bookstore',hsk:1,conv:false},
+  {id:416,char:'市场',pinyin:'shì chǎng',tones:[4,3],meaning:'рынок',en:'market',hsk:2,conv:false},
+  {id:417,char:'便利店',pinyin:'biàn lì diàn',tones:[4,4,4],meaning:'магазин у дома',en:'convenience store',hsk:2,conv:false},
+  {id:418,char:'年轻',pinyin:'nián qīng',tones:[2,1],meaning:'молодой',en:'young',hsk:2,conv:false},
+  {id:419,char:'可爱',pinyin:'kě ài',tones:[3,4],meaning:'милый / симпатичный',en:'cute/adorable',hsk:2,conv:false},
+  {id:420,char:'帅',pinyin:'shuài',tones:[4],meaning:'красивый (о мужчине)',en:'handsome',hsk:2,conv:false},
+  {id:421,char:'点餐',pinyin:'diǎn cān',tones:[3,1],meaning:'заказать блюдо',en:'to order food',hsk:2,conv:true},
+  {id:422,char:'素食',pinyin:'sù shí',tones:[4,2],meaning:'вегетарианская еда',en:'vegetarian food',hsk:3,conv:true},
+  {id:423,char:'加糖',pinyin:'jiā táng',tones:[1,2],meaning:'добавить сахар',en:'add sugar',hsk:2,conv:true},
+  {id:424,char:'少冰',pinyin:'shǎo bīng',tones:[3,1],meaning:'мало льда',en:'less ice',hsk:2,conv:true},
+  {id:425,char:'点赞',pinyin:'diǎn zàn',tones:[3,4],meaning:'поставить лайк',en:'to like (social media)',hsk:2,conv:true},
+  {id:426,char:'转发',pinyin:'zhuǎn fā',tones:[3,1],meaning:'репостить / переслать',en:'to share/repost',hsk:3,conv:true},
+  {id:427,char:'下载',pinyin:'xià zǎi',tones:[4,4],meaning:'скачать',en:'to download',hsk:2,conv:false},
+  {id:428,char:'上传',pinyin:'shàng chuán',tones:[4,2],meaning:'загрузить (в сеть)',en:'to upload',hsk:3,conv:false},
+  {id:429,char:'搜索',pinyin:'sōu suǒ',tones:[1,3],meaning:'поиск / искать',en:'to search',hsk:2,conv:false},
+  {id:430,char:'登录',pinyin:'dēng lù',tones:[1,4],meaning:'войти / авторизоваться',en:'to log in',hsk:2,conv:false},
+  {id:431,char:'租房',pinyin:'zū fáng',tones:[1,2],meaning:'снимать жильё',en:'to rent a house',hsk:2,conv:true},
+  {id:432,char:'房租',pinyin:'fáng zū',tones:[2,1],meaning:'арендная плата',en:'rent (money)',hsk:2,conv:true},
+  {id:433,char:'押金',pinyin:'yā jīn',tones:[1,1],meaning:'залог / депозит',en:'deposit',hsk:3,conv:true},
+  {id:434,char:'卧室',pinyin:'wò shì',tones:[4,4],meaning:'спальня',en:'bedroom',hsk:2,conv:false},
+  {id:435,char:'客厅',pinyin:'kè tīng',tones:[4,1],meaning:'гостиная',en:'living room',hsk:2,conv:false},
+  {id:436,char:'厨房',pinyin:'chú fáng',tones:[2,2],meaning:'кухня',en:'kitchen',hsk:2,conv:false},
+  {id:437,char:'浴室',pinyin:'yù shì',tones:[4,4],meaning:'ванная комната',en:'bathroom',hsk:2,conv:false},
+  {id:438,char:'生日',pinyin:'shēng rì',tones:[1,4],meaning:'день рождения',en:'birthday',hsk:1,conv:false},
+  {id:439,char:'婚礼',pinyin:'hūn lǐ',tones:[1,3],meaning:'свадьба',en:'wedding ceremony',hsk:3,conv:false},
+  {id:440,char:'假期',pinyin:'jià qī',tones:[4,1],meaning:'праздник / отпуск',en:'holiday/vacation',hsk:2,conv:false},
+  {id:441,char:'放假',pinyin:'fàng jià',tones:[4,4],meaning:'быть на каникулах',en:'to be on holiday',hsk:2,conv:true},
+  {id:442,char:'气温',pinyin:'qì wēn',tones:[4,1],meaning:'температура воздуха',en:'air temperature',hsk:2,conv:true},
+  {id:443,char:'雾霾',pinyin:'wù mái',tones:[4,2],meaning:'смог / туман',en:'smog/haze',hsk:3,conv:true},
+  {id:444,char:'彩虹',pinyin:'cǎi hóng',tones:[3,2],meaning:'радуга',en:'rainbow',hsk:2,conv:false},
+  {id:445,char:'口音',pinyin:'kǒu yīn',tones:[3,1],meaning:'акцент',en:'accent',hsk:3,conv:true},
+  {id:446,char:'方言',pinyin:'fāng yán',tones:[1,2],meaning:'диалект',en:'dialect',hsk:3,conv:true},
+  {id:447,char:'普通话',pinyin:'pǔ tōng huà',tones:[3,1,4],meaning:'мандаринский китайский',en:'Mandarin Chinese',hsk:2,conv:true},
+  {id:448,char:'翻译',pinyin:'fān yì',tones:[1,4],meaning:'переводить / переводчик',en:'to translate/translator',hsk:2,conv:true},
+  {id:449,char:'词典',pinyin:'cí diǎn',tones:[2,3],meaning:'словарь',en:'dictionary',hsk:2,conv:false},
+  {id:450,char:'语法',pinyin:'yǔ fǎ',tones:[3,3],meaning:'грамматика',en:'grammar',hsk:2,conv:false},
+  {id:451,char:'年轻人',pinyin:'nián qīng rén',tones:[2,1,2],meaning:'молодёжь / молодой человек',en:'young person/youth',hsk:2,conv:false},
+  {id:452,char:'老人',pinyin:'lǎo rén',tones:[3,2],meaning:'пожилой человек',en:'elderly person',hsk:1,conv:false},
+  {id:453,char:'失业',pinyin:'shī yè',tones:[1,4],meaning:'безработица / потерять работу',en:'unemployment/to lose job',hsk:3,conv:false},
+  {id:454,char:'工资',pinyin:'gōng zī',tones:[1,1],meaning:'зарплата',en:'salary/wages',hsk:2,conv:false},
+  {id:455,char:'奖金',pinyin:'jiǎng jīn',tones:[3,1],meaning:'премия / бонус',en:'bonus',hsk:3,conv:false},
+  {id:456,char:'请假',pinyin:'qǐng jià',tones:[3,4],meaning:'взять отгул / отпроситься',en:'to ask for leave',hsk:2,conv:true},
+  {id:457,char:'出差',pinyin:'chū chāi',tones:[1,1],meaning:'командировка',en:'business trip',hsk:2,conv:true},
+  {id:458,char:'加班费',pinyin:'jiā bān fèi',tones:[1,1,4],meaning:'оплата сверхурочных',en:'overtime pay',hsk:3,conv:false},
+  {id:459,char:'简历',pinyin:'jiǎn lì',tones:[3,4],meaning:'резюме',en:'resume/CV',hsk:3,conv:true},
+  {id:460,char:'面试',pinyin:'miàn shì',tones:[4,4],meaning:'собеседование',en:'interview',hsk:2,conv:true},
+];
+VOCAB.push(...VOCAB_CN_NEW);
+VOCAB_CN_NEW.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
+
+const EN_VOCAB_NEW=[
+  {id:'e151',char:'Excited',transl:'взволнованный',pron:'иксайтид',ipa:'ɪkˈsaɪtɪd',level:'A2',topic:'emotions'},
+  {id:'e152',char:'Nervous',transl:'нервный',pron:'нёрвас',ipa:'ˈnɜːvəs',level:'A2',topic:'emotions'},
+  {id:'e153',char:'Proud',transl:'гордый',pron:'праud',ipa:'praʊd',level:'A2',topic:'emotions'},
+  {id:'e154',char:'Embarrassed',transl:'смущённый',pron:'имбэраст',ipa:'ɪmˈbærəst',level:'B1',topic:'emotions'},
+  {id:'e155',char:'Disappointed',transl:'разочарованный',pron:'дисэпойнтид',ipa:'ˌdɪsəˈpɔɪntɪd',level:'B1',topic:'emotions'},
+  {id:'e156',char:'Relieved',transl:'облегчённый',pron:'риливд',ipa:'rɪˈliːvd',level:'B1',topic:'emotions'},
+  {id:'e157',char:'Confused',transl:'растерянный',pron:'конфьюзд',ipa:'kənˈfjuːzd',level:'A2',topic:'emotions'},
+  {id:'e158',char:'Bored',transl:'скучающий',pron:'борд',ipa:'bɔːd',level:'A1',topic:'emotions'},
+  {id:'e159',char:'Salary',transl:'зарплата',pron:'сэлэри',ipa:'ˈsæləri',level:'A2',topic:'work'},
+  {id:'e160',char:'Colleague',transl:'коллега',pron:'колиг',ipa:'ˈkɒliːg',level:'B1',topic:'work'},
+  {id:'e161',char:'Manager',transl:'менеджер / руководитель',pron:'мэниджэр',ipa:'ˈmænɪdʒər',level:'A2',topic:'work'},
+  {id:'e162',char:'Promotion',transl:'повышение по службе',pron:'промоушн',ipa:'prəˈməʊʃn',level:'B1',topic:'work'},
+  {id:'e163',char:'Resign',transl:'уволиться',pron:'ризайн',ipa:'rɪˈzaɪn',level:'B1',topic:'work'},
+  {id:'e164',char:'Remote work',transl:'удалённая работа',pron:'риmоут вёрк',ipa:'rɪˈməʊt wɜːk',level:'B1',topic:'work'},
+  {id:'e165',char:'Presentation',transl:'презентация',pron:'презентэйшн',ipa:'ˌprezənˈteɪʃn',level:'A2',topic:'work'},
+  {id:'e166',char:'Password',transl:'пароль',pron:'пасвёрд',ipa:'ˈpɑːswɜːd',level:'A1',topic:'tech'},
+  {id:'e167',char:'Update',transl:'обновить / обновление',pron:'апдейт',ipa:'ˈʌpdeɪt',level:'A2',topic:'tech'},
+  {id:'e168',char:'Download',transl:'скачать',pron:'даунлоуд',ipa:'ˈdaʊnləʊd',level:'A1',topic:'tech'},
+  {id:'e169',char:'Upload',transl:'загрузить',pron:'аплоуд',ipa:'ˈʌpləʊd',level:'A2',topic:'tech'},
+  {id:'e170',char:'Screenshot',transl:'скриншот',pron:'скринщот',ipa:'ˈskriːnʃɒt',level:'A2',topic:'tech'},
+  {id:'e171',char:'Charge',transl:'зарядить телефон',pron:'чарж',ipa:'tʃɑːdʒ',level:'A1',topic:'tech',example:'My phone needs to charge.',ex_ru:'Мой телефон нужно зарядить.'},
+  {id:'e172',char:'Rent',transl:'аренда / снимать жильё',pron:'рент',ipa:'rent',level:'A2',topic:'housing'},
+  {id:'e173',char:'Deposit',transl:'залог / депозит',pron:'депозит',ipa:'dɪˈpɒzɪt',level:'B1',topic:'housing'},
+  {id:'e174',char:'Landlord',transl:'арендодатель',pron:'лэндлорд',ipa:'ˈlændlɔːd',level:'B1',topic:'housing'},
+  {id:'e175',char:'Roommate',transl:'сосед по комнате',pron:'румейт',ipa:'ˈruːmeɪt',level:'A2',topic:'housing'},
+  {id:'e176',char:'Receipt',transl:'чек / квитанция',pron:'рисит',ipa:'rɪˈsiːt',level:'A2',topic:'shopping'},
+  {id:'e177',char:'Refund',transl:'возврат денег',pron:'рифанд',ipa:'ˈriːfʌnd',level:'B1',topic:'shopping'},
+  {id:'e178',char:'Sold out',transl:'распродано',pron:'солд аут',ipa:'səʊld aʊt',level:'A2',topic:'shopping'},
+  {id:'e179',char:'On sale',transl:'на распродаже / со скидкой',pron:'он сейл',ipa:'ɒn seɪl',level:'A1',topic:'shopping'},
+  {id:'e180',char:'Bargain',transl:'выгодная покупка / торговаться',pron:'баргин',ipa:'ˈbɑːɡɪn',level:'B1',topic:'shopping'},
+  {id:'e181',char:'Prescription',transl:'рецепт врача',pron:'прискрипшн',ipa:'prɪˈskrɪpʃn',level:'B1',topic:'health'},
+  {id:'e182',char:'Symptom',transl:'симптом',pron:'симптом',ipa:'ˈsɪmptəm',level:'B1',topic:'health'},
+  {id:'e183',char:'Appointment',transl:'запись к врачу',pron:'эпойнтмент',ipa:'əˈpɔɪntmənt',level:'B1',topic:'health'},
+  {id:'e184',char:'Pharmacy',transl:'аптека',pron:'фармэси',ipa:'ˈfɑːməsi',level:'A2',topic:'health'},
+  {id:'e185',char:'Insurance',transl:'страховка',pron:'иншуэрэнс',ipa:'ɪnˈʃʊərəns',level:'B1',topic:'health'},
+  {id:'e186',char:'Scholarship',transl:'стипендия',pron:'скхолэршип',ipa:'ˈskɒləʃɪp',level:'B1',topic:'academic'},
+  {id:'e187',char:'Assignment',transl:'задание',pron:'эсайнмент',ipa:'əˈsaɪnmənt',level:'A2',topic:'academic'},
+  {id:'e188',char:'Semester',transl:'семестр',pron:'симэстэр',ipa:'sɪˈmestər',level:'A2',topic:'academic'},
+  {id:'e189',char:'Campus',transl:'кампус',pron:'кэмпас',ipa:'ˈkæmpəs',level:'A2',topic:'academic'},
+  {id:'e190',char:'Major',transl:'специализация',pron:'мэйджор',ipa:'ˈmeɪdʒər',level:'B1',topic:'academic'},
+  {id:'e191',char:'Take your time',transl:'Не торопись',pron:'тейк ёр тайм',ipa:'teɪk jɔː taɪm',level:'A2',topic:'phrases',example:'Take your time, there is no rush.',ex_ru:'Не торопись, спешить некуда.'},
+  {id:'e192',char:'Keep in touch',transl:'Будем на связи',pron:'кип ин тач',ipa:'kiːp ɪn tʌtʃ',level:'A2',topic:'phrases',example:'Keep in touch!',ex_ru:'Будем на связи!'},
+  {id:'e193',char:'On the other hand',transl:'С другой стороны',pron:'он зэ азэр хэнд',ipa:'ɒn ðə ˈʌðər hænd',level:'B1',topic:'phrases'},
+  {id:'e194',char:'In other words',transl:'Другими словами',pron:'ин азэр вёрдз',ipa:'ɪn ˈʌðər wɜːdz',level:'B1',topic:'phrases'},
+  {id:'e195',char:'To be honest',transl:'Честно говоря',pron:'ту би онест',ipa:'tə biː ˈɒnɪst',level:'B1',topic:'phrases'},
+  {id:'e196',char:'It is worth it',transl:'Оно того стоит',pron:'итс вёрс ит',ipa:'ɪts wɜːθ ɪt',level:'B1',topic:'phrases',example:'It is a long way but it is worth it.',ex_ru:'Далеко, но оно того стоит.'},
+  {id:'e197',char:'Make up your mind',transl:'Определись / Прими решение',pron:'мейк ап ёр майнд',ipa:'meɪk ʌp jɔː maɪnd',level:'B1',topic:'phrases'},
+  {id:'e198',char:'As a matter of fact',transl:'По правде говоря',pron:'эз э мэтэр оф фэкт',ipa:'æz ə ˈmætər əv fækt',level:'B1',topic:'phrases'},
+  {id:'e199',char:'Not to mention',transl:'Не говоря уже о...',pron:'нот ту мэншн',ipa:'nɒt tə ˈmenʃn',level:'B2',topic:'phrases'},
+  {id:'e200',char:'Never mind',transl:'Ничего / Не обращай внимания',pron:'нэвэр майнд',ipa:'ˈnevə maɪnd',level:'A1',topic:'phrases',example:'Never mind, it is okay.',ex_ru:'Ничего, всё нормально.'},
+];
+EN_VOCAB.push(...EN_VOCAB_NEW);
+EN_VOCAB_NEW.forEach(w=>{if(!EN_WORDDATA[w.id])EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
 
 // EFFECTS
 function confetti(){
