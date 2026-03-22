@@ -498,102 +498,69 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 
 <!-- STATS -->
 <div class="scr" id="s-stats">
-  <div class="ph"><div class="pt">Прогресс</div></div>
-  <div class="scroll"><div class="si">
-    <div class="shero">
-      <div style="display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1">
-        <div><div class="slv" id="stlv">1</div><div class="slvn">Уровень — <span id="stlvn">Новичок</span></div></div>
-        <div style="font-size:48px" id="stlvi">🐣</div>
+  <div class="scr-inner">
+    <div class="scr-title">📊 Прогресс</div>
+    <div class="stat-card">
+      <div class="stat-row">
+        <div class="stat-box"><div style="font-size:28px;font-weight:900;color:var(--orange)" id="s-str">0</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.4px;margin-top:3px">СЕРИЯ</div></div>
+        <div class="stat-box"><div style="font-size:28px;font-weight:900;color:var(--gold)" id="s-xp">0</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.4px;margin-top:3px">XP</div></div>
+        <div class="stat-box"><div style="font-size:28px;font-weight:900;color:var(--p2)" id="s-lv">1</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.4px;margin-top:3px">УРОВЕНЬ</div></div>
       </div>
-      <div class="sgrid">
-        <div class="sgi"><div class="sgiv" style="color:#FF9F0A" id="ststr">0</div><div class="sgil">Серия 🔥</div></div>
-        <div class="sgi"><div class="sgiv" style="color:#FFD60A" id="stxp">0</div><div class="sgil">Всего XP</div></div>
-        <div class="sgi"><div class="sgiv" style="color:#30D158" id="stlearn">0</div><div class="sgil">Изучено</div></div>
-        <div class="sgi"><div class="sgiv" id="stcards">0</div><div class="sgil">Карточки</div></div>
-        <div class="sgi"><div class="sgiv" id="stacc">0%</div><div class="sgil">Точность</div></div>
-        <div class="sgi"><div class="sgiv" id="stses">0</div><div class="sgil">Сессии</div></div>
+      <div class="stat-row" style="margin-bottom:0">
+        <div class="stat-box"><div style="font-size:28px;font-weight:900;color:var(--emerald)" id="s-words">0</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.4px;margin-top:3px">СЛОВ</div></div>
+        <div class="stat-box"><div style="font-size:28px;font-weight:900;color:var(--coral)" id="s-acc">0%</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.4px;margin-top:3px">ТОЧНОСТЬ</div></div>
+        <div class="stat-box"><div style="font-size:28px;font-weight:900;color:var(--teal)" id="s-days">0</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.4px;margin-top:3px">ДНЕЙ</div></div>
       </div>
     </div>
-    <div class="sl">Активность — 12 недель</div>
-    <div class="card" style="padding:16px;overflow-x:auto">
-      <div class="hmap" id="hmap"></div>
-      <div class="hmleg"><span>Меньше</span><div class="hmcell"></div><div class="hmcell l1"></div><div class="hmcell l2"></div><div class="hmcell l3"></div><div class="hmcell l4"></div><span>Больше</span></div>
-    </div>
-    <div class="sl">Активность за неделю</div>
-    <div class="card" style="padding:16px"><div class="wbars" id="wchart"></div></div>
-    <div class="sl">HSK прогресс</div>
-    <div class="card" style="padding:16px">
-      <div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="font-weight:700;color:var(--green)">HSK 1</span><span style="color:var(--l2)" id="sp1">0/90</span></div><div class="xptr"><div class="xpf" id="sf1" style="width:0%;background:var(--green)"></div></div></div>
-      <div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="font-weight:700;color:var(--orange)">HSK 2</span><span style="color:var(--l2)" id="sp2">0/90</span></div><div class="xptr"><div class="xpf" id="sf2" style="width:0%;background:var(--orange)"></div></div></div>
-      <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="font-weight:700;color:var(--red)">HSK 3</span><span style="color:var(--l2)" id="sp3">0/50</span></div><div class="xptr"><div class="xpf" id="sf3" style="width:0%;background:var(--red)"></div></div></div>
-    </div>
-    <div class="sl">Достижения</div>
-    <div class="card" id="achlist"></div>
-  </div></div>
+    <div class="sl">Активность (12 нед.)</div>
+    <div class="lcard"><div id="s-hmap" class="hm-grid"></div></div>
+    <div class="sl">🏆 Достижения</div>
+    <div class="lcard" id="achicard" style="padding:4px 16px"></div>
+  </div>
 </div>
-
 <!-- PROFILE -->
 <div class="scr" id="s-prof">
-  <div class="profhero">
-    <div class="profbg" id="profbg">
-      <div class="profbg-grad" id="profbg-grad"></div>
-      <svg class="profbg-pattern" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="profbg-pattern"></svg>
+  <div class="scr-inner">
+    <div class="scr-title">👤 Профиль</div>
+    <div class="prof-avatar" id="prof-ava">😊</div>
+    <div class="prof-name" id="prof-name">Ученик</div>
+    <div class="prof-sub" id="prof-sub">Уровень 1</div>
+    <div class="sl">Имя</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <input class="inp" id="pname-inp" placeholder="Твоё имя" style="flex:1">
+      <button class="badge-btn" onclick="saveProfName()">Сохранить</button>
     </div>
-    <div class="prof-ava-wrap">
-      <div class="ava-ring" onclick="openEditProfile()" id="ava-ring">
-        <svg id="ava-svg" width="80" height="80" viewBox="0 0 80 80"></svg>
-        <div class="ava-edit-ico">✏️</div>
+    <div class="sl">Настройки</div>
+    <div class="settings-card">
+      <div class="setting-row"><div><div class="setting-label">🔊 Автовоспроизведение</div><div class="setting-sub">Произносить слова автоматически</div></div><button class="tog" id="tog-autoplay" onclick="togSet('autoplay',this)"></button></div>
+      <div class="setting-row"><div><div class="setting-label">🇷🇺 Транскрипция</div><div class="setting-sub">Русское произношение под пиньинь</div></div><button class="tog" id="tog-ruTranslit" onclick="togSet('ruTranslit',this)"></button></div>
+      <div class="setting-row"><div><div class="setting-label">🐢 Медленная речь</div><div class="setting-sub">Замедленное произношение</div></div><button class="tog" id="tog-slowSpeech" onclick="togSet('slowSpeech',this)"></button></div>
+      <div class="setting-row"><div><div class="setting-label">🔔 Напоминания</div><div class="setting-sub">Уведомления о занятиях</div></div><button class="tog" id="tog-notif" onclick="togSet('notif',this)"></button></div>
+    </div>
+    <div class="sl">Сложность</div>
+    <div class="settings-card">
+      <div class="setting-row"><div><div class="setting-label">Уровень обучения</div></div>
+        <select onchange="chDiff(parseInt(this.value))" id="diff-sel" style="background:var(--glass-card);border:1px solid var(--border2);color:var(--label);padding:8px 12px;border-radius:var(--r);font-family:var(--f)">
+          <option value="1">🐣 Новичок</option>
+          <option value="2">💬 Начинающий</option>
+          <option value="3">🗣️ Разговорный</option>
+          <option value="4">🎓 Продвинутый</option>
+        </select>
       </div>
     </div>
-    <button class="prof-edit-btn" onclick="openEditProfile()">✏️ Изменить</button>
-    <button style="position:absolute;top:max(20px,env(safe-area-inset-top));left:16px;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);border:none;border-radius:999px;padding:8px 14px;font-family:var(--f);font-size:13px;font-weight:700;color:#fff;cursor:pointer;z-index:3" onclick="openSettings()">⚙️</button>
+    <div class="sl">Прогресс</div>
+    <div class="lcard">
+      <div style="display:flex;gap:12px">
+        <div style="flex:1;text-align:center"><div id="pstat-xp" style="font-size:26px;font-weight:900;color:var(--gold)">0</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.5px;margin-top:2px">XP</div></div>
+        <div style="flex:1;text-align:center"><div id="pstat-str" style="font-size:26px;font-weight:900;color:var(--orange)">0</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.5px;margin-top:2px">СЕРИЯ</div></div>
+        <div style="flex:1;text-align:center"><div id="pstat-lv" style="font-size:26px;font-weight:900;color:var(--p2)">1</div><div style="font-size:11px;color:var(--l2);font-weight:700;letter-spacing:.5px;margin-top:2px">УРОВЕНЬ</div></div>
+      </div>
+    </div>
+    <div style="margin-top:20px;text-align:center">
+      <button onclick="showCbox()" style="padding:11px 20px;border-radius:999px;background:rgba(255,71,87,.12);border:1.5px solid var(--red);color:var(--red);font-family:var(--f);font-size:13px;font-weight:700;cursor:pointer">⚠️ Сбросить прогресс</button>
+    </div>
   </div>
-  <div class="prof-info">
-    <div class="prof-name" id="prof-name">Ученик</div>
-    <div class="prof-level"><span id="prof-lvl-ico">🐣</span><span id="prof-lvl-txt">Уровень 1 — Новичок</span></div>
-  </div>
-  <div class="scroll"><div class="si" style="padding-top:0">
-    <div class="profstats">
-      <div class="pst"><div class="pstn" style="color:var(--red)" id="pstr">0</div><div class="pstl">Серия 🔥</div></div>
-      <div class="pst"><div class="pstn" style="color:var(--orange)" id="pxp">0</div><div class="pstl">XP</div></div>
-      <div class="pst"><div class="pstn" style="color:var(--green)" id="plearn">0</div><div class="pstl">Изучено</div></div>
-      <div class="pst"><div class="pstn" style="color:var(--blue)" id="pdays">0</div><div class="pstl">Дней</div></div>
-    </div>
-    <div style="margin-bottom:12px">
-      <button onclick="shareProgress()" style="width:100%;padding:13px;background:linear-gradient(135deg,#007AFF,#5AC8FA);color:#fff;border:none;border-radius:var(--rlg);font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
-        📤 Поделиться прогрессом
-      </button>
-    </div>
-    <div class="sl">Рекорды</div>
-    <div class="sbrec">
-      <div class="sb"><div class="sbn" style="color:var(--red)" id="pbstr">0</div><div class="sbl">Лучшая серия</div></div>
-      <div class="sb"><div class="sbn" style="color:var(--orange)" id="pbxp">0</div><div class="sbl">Всего XP</div></div>
-      <div class="sb"><div class="sbn" style="color:var(--green)" id="pbcards">0</div><div class="sbl">Карточек</div></div>
-      <div class="sb"><div class="sbn" style="color:var(--blue)" id="pbsess">0</div><div class="sbl">Сессий</div></div>
-    </div>
-    <div class="sl">Активность этого месяца</div>
-    <div class="card" style="padding:16px">
-      <div id="month-cal"></div>
-    </div>
-    <div class="sl">За последние 12 недель</div>
-    <div class="card" style="padding:16px;overflow-x:auto">
-      <div class="hmap" id="profhmap"></div>
-    </div>
-
-    <div class="sl">🗺️ Путь к мастерству</div>
-    <div class="card" style="padding:16px" id="roadmap-card">
-      <div id="roadmap-content"></div>
-    </div>
-    <div class="sl">Избранные слова</div>
-    <div id="pfavlist" class="lcard"></div>
-    <div class="sl">Достижения</div>
-    <div class="card" id="profachs"></div>
-    <div style="margin-top:16px">
-      <button onclick="showCbox()" style="width:100%;padding:14px;border-radius:var(--rlg);background:var(--rl);color:var(--red);border:none;font-family:var(--f);font-size:15px;font-weight:700;cursor:pointer">🗑 Сбросить прогресс</button>
-    </div>
-  </div></div>
 </div>
-
 <!-- SETTINGS -->
 <div class="scr" id="s-set">
   <div class="ph"><div class="pt">Настройки</div></div>
@@ -687,7 +654,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 </div>
 
 <nav id="nav">
-  <button class="nb on" id="nb0" onclick="goTab('s-home',0)"><span class="ni">🏠</span>Главная</button>
+  <button class="nb on" id="nb0" onclick="showPath()"><span class="ni">🏠</span>Главная</button>
   <button class="nb" id="nb1" onclick="goTab('s-course',1);renderCourse()"><span class="ni">🗺️<span class="nbdot" id="revdot"></span></span>Курс</button>
   <button class="nb" id="nb2" onclick="goTab('s-ai',2);initAiTeacher()"><span class="ni">🤖</span>ИИ Учитель</button>
   <button class="nb" id="nb2v" onclick="goTab('s-vocab',3);renderV()"><span class="ni">📚</span>Словарь</button>
@@ -778,8 +745,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--label);fo
 <div class="toast" id="toast"></div>
 <div id="confetti"></div>
 <div class="cbox" id="cbox"><div class="cbin"><h3>⚠️ Сброс</h3><p>Весь прогресс и статистика будут удалены безвозвратно.</p><div class="cbbtns"><button class="cbb r" onclick="doReset()">Сбросить</button><button class="cbb g" onclick="g('cbox').classList.remove('open')">Отмена</button></div></div></div>
-<script>
-// ============================================================
+<script>// ============================================================
 const VOCAB=[
   {id:1,char:'一',pinyin:'yī',tones:[1],meaning:'один',en:'one',hsk:1,conv:false},
   {id:2,char:'二',pinyin:'èr',tones:[4],meaning:'два',en:'two',hsk:1,conv:false},
@@ -1321,7 +1287,7 @@ function goTab(sid,n){
   document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('on',i===n));
   g('nav').classList.remove('hide');
 }
-function exitLesson(){stopMic();synth.cancel();goTab('s-home',0);updateHome();}
+function exitLesson(){stopMic();synth.cancel();showPath();updateHome();}
 
 // ONBOARDING
 let obLangVal='cn';
@@ -1638,7 +1604,6 @@ function chkVoice(txt,word){
   else{g('vofb').textContent=`❌ Ответ: ${word.meaning}`;g('vofb').className='vofb bad';SES.wrong++;SES.mistakes.push(word);ST.totalWrong++;const wd=ST.wordData[word.id];wd.mastery=Math.max((wd.mastery||0)-1,0);wd.wrong=(wd.wrong||0)+1;wd.nextReview=Date.now()+3600000;}
   tick();g('vonext').style.display='block';
 }
-function voNext(){lessonNext();}
 
 // BANNER
 function showBan(ok,word){
@@ -1677,7 +1642,7 @@ function showComp(){
   g('retryn').textContent=mistakes.length;g('retrybtn').style.display=mistakes.length?'block':'none';
   g('comp').classList.add('open');sv();
 }
-function finishSes(){checkAchievements();g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';goTab('s-home',0);updateHome();updateSrsWidget();}
+function finishSes(){checkAchievements();g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';showPath();updateHome();updateSrsWidget();}
 function retryMis(){
   g('comp').classList.remove('open');g('cring').style.strokeDashoffset='327';
   const mis=[...SES.mistakes];SES={type:SES.type,cards:shuf(mis),idx:0,correct:0,wrong:0,xp:0,mistakes:[],lives:SES.lives<99?3:99,diaStep:0};
@@ -1741,23 +1706,18 @@ function togFavModal(){if(!activeWord)return;const i=(ST.favorites||[]).indexOf(
 
 // STATS
 function renderStats(){
-  const lv=Math.min(ST.level-1,6);
-  g('stlv').textContent=ST.level;g('stlvn').textContent=LVN[lv];g('stlvi').textContent=LVI[lv];
-  g('ststr').textContent=ST.streak;g('stxp').textContent=ST.totalXp;
-  g('stlearn').textContent=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
-  g('stcards').textContent=ST.totalCards;
-  const acc=ST.totalCards>0?Math.round(ST.totalCorrect/ST.totalCards*100):0;
-  g('stacc').textContent=acc+'%';g('stses').textContent=ST.sessions;
-  renderHmap('hmap');
-  const DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],mx=Math.max(...ST.weekAct,1),ch=g('wchart');ch.innerHTML='';
-  ST.weekAct.forEach((v,i)=>{const col=document.createElement('div');col.className='wbc';const h=Math.max(v/mx*52,v>0?6:0);col.innerHTML=`<div class="wbb" style="height:${h}px;opacity:${v>0?1:.18}"></div><div class="wbd">${DN[i]}</div>`;ch.appendChild(col);});
-  const h1t=VOCAB.filter(w=>w.hsk===1).length,h2t=VOCAB.filter(w=>w.hsk===2).length,h3t=VOCAB.filter(w=>w.hsk===3).length;
-  const h1l=lc(1),h2l=lc(2),h3l=lc(3);
-  g('sf1').style.width=(h1l/h1t*100)+'%';g('sp1').textContent=`${h1l}/${h1t}`;
-  g('sf2').style.width=(h2l/h2t*100)+'%';g('sp2').textContent=`${h2l}/${h2t}`;
-  g('sf3').style.width=(h3l/h3t*100)+'%';g('sp3').textContent=`${h3l}/${h3t}`;
-  renderAchs('achlist',acc);
+  try{g('s-str').textContent=ST.streak;}catch(e){}
+  try{g('s-xp').textContent=ST.totalXp;}catch(e){}
+  try{g('s-lv').textContent=ST.level;}catch(e){}
+  try{g('s-words').textContent=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;}catch(e){}
+  const tot=ST.totalCorrect+ST.totalWrong;
+  try{g('s-acc').textContent=tot>0?Math.round(ST.totalCorrect/tot*100)+'%':'0%';}catch(e){}
+  const d=ST.startDate?Math.floor((Date.now()-new Date(ST.startDate))/(86400000)):0;
+  try{g('s-days').textContent=d;}catch(e){}
+  try{renderHmap('s-hmap');}catch(e){}
+  try{if(typeof renderAchievements==='function')renderAchievements('achicard');}catch(e){}
 }
+
 function renderHmap(tid){
   const cont=g(tid);if(!cont)return;cont.innerHTML='';
   const today=new Date(),start=new Date(today);start.setDate(start.getDate()-84+1);
@@ -1788,32 +1748,19 @@ function renderAchs(cid,acc){
 
 // PROFILE
 function renderProf(){
-  const p=ST.profile,lv=Math.min(ST.level-1,6);
-  // Avatar
-  renderAvaSvg('ava-svg',p.avaStyle,p.avaColor,p.avaAccent,80);
-  // Background pattern with profile color
-  const bg=g('profbg-grad');if(bg)bg.style.background=`linear-gradient(135deg,${p.avaColor}dd,${p.avaAccent||'#FFD60A'}88,${p.avaColor}99)`;
-  const pat=g('profbg-pattern');if(pat){let circles='';for(let i=0;i<8;i++){const cx=Math.random()*100,cy=Math.random()*100,r=10+Math.random()*30;circles+=`<circle cx="${cx}%" cy="${cy}%" r="${r}" fill="white" opacity="${.05+Math.random()*.1}"/>`;}pat.innerHTML=circles;}
-  g('prof-name').textContent=p.name||'Ученик';
-  g('prof-lvl-ico').textContent=LVI[lv];g('prof-lvl-txt').textContent=`Уровень ${ST.level} — ${LVN[lv]}`;
-  const learned=VOCAB.filter(w=>(ST.wordData[w.id]?.mastery||0)>=2).length;
-  const daysActive=Object.keys(ST.heatmap).filter(k=>ST.heatmap[k]>0).length;
-  g('pstr').textContent=ST.streak;g('pxp').textContent=ST.totalXp;g('plearn').textContent=learned;g('pdays').textContent=daysActive;
-  g('pbstr').textContent=ST.bestStreak||ST.streak;g('pbxp').textContent=ST.totalXp;g('pbcards').textContent=ST.totalCards;g('pbsess').textContent=ST.sessions;
-  renderHmap('profhmap');
-  renderMonthCalendar('month-cal');
-  renderRoadmap();
-  // Favs
-  const fl=g('pfavlist');fl.innerHTML='';
-  const favWords=VOCAB.filter(w=>(ST.favorites||[]).includes(w.id)).slice(0,5);
-  if(!favWords.length){fl.innerHTML='<div style="padding:14px 16px;color:var(--l2);font-size:14px;background:var(--surface);border-radius:var(--r)">Нет избранных слов</div>';}
-  else{favWords.forEach(w=>{const row=document.createElement('div');row.className='vi';row.innerHTML=`<div class="vich">${w.char}</div><div class="vii"><div class="vipy">${w.pinyin}${getRuPinyin(w.pinyin)?`<span style="color:var(--teal);font-weight:700;margin-left:8px;font-size:11px">${getRuPinyin(w.pinyin)}</span>`:''}
-</div><div class="vim">${w.transl||w.meaning}</div></div><span style="font-size:18px;color:var(--orange)">⭐</span>`;row.onclick=()=>openModal(w);fl.appendChild(row);});}
-  const acc=ST.totalCards>0?Math.round(ST.totalCorrect/ST.totalCards*100):0;
-  renderAchs('profachs',acc);
+  try{g('prof-name').textContent=ST.profile.name||'Ученик';}catch(e){}
+  try{g('prof-sub').textContent='Уровень '+ST.level+' · '+(ST.lang==='en'?'🇬🇧 Английский':'🇨🇳 Китайский');}catch(e){}
+  try{g('prof-ava').textContent=ST.profile.emoji||'😊';}catch(e){}
+  try{g('pname-inp').value=ST.profile.name||'';}catch(e){}
+  try{g('diff-sel').value=ST.difficulty||1;}catch(e){}
+  try{g('pstat-xp').textContent=ST.totalXp;}catch(e){}
+  try{g('pstat-str').textContent=ST.streak;}catch(e){}
+  try{g('pstat-lv').textContent=ST.level;}catch(e){}
+  ['autoplay','ruTranslit','slowSpeech','notif'].forEach(k=>{
+    try{const el=g('tog-'+k);if(el)el.classList.toggle('on',!!ST.settings[k]);}catch(e){}
+  });
 }
 
-// EDIT PROFILE
 function openEditProfile(){
   editStyle=ST.profile.avaStyle||0;editColor=ST.profile.avaColor||'#FF3B30';editAccent=ST.profile.avaAccent||'#FFD60A';
   g('nameinp').value=ST.profile.name||'';
@@ -3586,7 +3533,7 @@ EN_VOCAB.forEach(w => { if (!EN_WORDDATA[w.id]) EN_WORDDATA[w.id] = {mastery:0,c
 function setLang(lang){
   ST.lang=lang;sv();
   updateLangUI();
-  goTab('s-home',0);updateHome();
+  showPath();updateHome();
   toast(lang==='en'?'🇬🇧 Английский режим':'🇨🇳 Китайский режим');
 }
 function updateLangUI(){
@@ -4484,40 +4431,7 @@ finishSes=function(){
 // ============================================================
 let _lsLang = null;
 
-function initAuth(){
-  try{
-    const acct=localStorage.getItem('shuohua_account');
-    if(acct){
-      const data=JSON.parse(acct);
-      ST.account=data;
-      if(ST.lang){
-        hideAuth();
-        showPath();
-      } else {
-        hideAuth();
-        showLangSel();
-      }
-    } else {
-      showAuth();
-    }
-  }catch(e){
-    console.error('initAuth err',e);
-    showAuth();
-  }
-}
 
-function showAuth(){
-  const a=g('s-auth');if(a)a.classList.remove('hidden');
-}
-function hideAuth(){
-  const a=g('s-auth');if(a)a.classList.add('hidden');
-}
-function showLangSel(){
-  const l=g('s-langsel');if(l){l.classList.add('show');}
-}
-function hideLangSel(){
-  const l=g('s-langsel');if(l)l.classList.remove('show');
-}
 function showPath(){
   hideLangSel();
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
@@ -4528,52 +4442,9 @@ function showPath(){
   try{updateHome();renderPath();}catch(e){console.error(e);}
 }
 
-function saveAccount(data){
-  ST.account=data;
-  localStorage.setItem('shuohua_account',JSON.stringify(data));
-}
 
-function authGuest(){
-  const guestId='guest_'+Math.random().toString(36).substr(2,8);
-  saveAccount({type:'guest',id:guestId,name:'Гость'});
-  hideAuth();
-  if(ST.lang){showPath();}else{showLangSel();}
-}
 
-function toggleEmailForm(){
-  const form=g('auth-email-form');
-  const btn=g('auth-email-toggle');
-  if(form.classList.contains('show')){
-    form.classList.remove('show');
-    btn.textContent='✉️ Войти по email';
-  } else {
-    form.classList.add('show');
-    btn.textContent='✕ Отмена';
-    setTimeout(()=>g('auth-email').focus(),100);
-  }
-}
 
-function authEmail(){
-  const email=g('auth-email').value.trim();
-  const pass=g('auth-pass').value;
-  const err=g('auth-err');
-  if(!email||!email.includes('@')){err.textContent='Введи корректный email';return;}
-  if(!pass||pass.length<6){err.textContent='Пароль минимум 6 символов';return;}
-  err.textContent='';
-  // Simulated auth — store hashed in localStorage
-  const key='shuohua_email_'+btoa(email.toLowerCase());
-  const existing=localStorage.getItem(key);
-  if(existing){
-    const stored=JSON.parse(existing);
-    if(stored.pass!==btoa(pass)){err.textContent='Неверный пароль';return;}
-    saveAccount({type:'email',id:email,name:email.split('@')[0]});
-  } else {
-    localStorage.setItem(key,JSON.stringify({pass:btoa(pass),created:Date.now()}));
-    saveAccount({type:'email',id:email,name:email.split('@')[0]});
-  }
-  hideAuth();
-  if(ST.lang){showPath();}else{showLangSel();}
-}
 
 function authGoogle(){
   // Google One Tap / Identity Services
@@ -4591,27 +4462,7 @@ function authGoogle(){
 }
 
 // ── LANGUAGE SELECT ──────────────────────────────────────────
-function lsSelect(lang,el){
-  _lsLang=lang;
-  document.querySelectorAll('.langsel-card').forEach(c=>c.classList.remove('sel'));
-  el.classList.add('sel');
-  const btn=g('ls-btn');
-  if(btn){btn.disabled=false;btn.style.opacity='1';}
-}
 
-function lsConfirm(){
-  if(!_lsLang)return;
-  ST.lang=_lsLang;
-  ST.onboarded=true;
-  if(!ST.lessonProgress)ST.lessonProgress={};
-  sv();
-  hideLangSel();
-  // Show difficulty select briefly, then path
-  ST.difficulty=ST.difficulty||1;
-  showPath();
-  const lname=_lsLang==='en'?'английский 🇬🇧':'китайский 🇨🇳';
-  setTimeout(()=>toast('🎉 Начинаем изучать '+lname+'!'),500);
-}
 
 function showLangSwitch(){
   // Quick lang switcher from path header
@@ -4729,9 +4580,8 @@ function authEmail(){
   saveAccount({type:'email',id:email,name:email.split('@')[0]});
   hideAuth();if(ST.lang&&ST.onboarded)showPath();else showLangSel();
 }
-let _lsLang2=null;
-function lsSelect(lang,el){_lsLang2=lang;document.querySelectorAll('.ls-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');const btn=g('ls-btn');if(btn){btn.disabled=false;btn.style.opacity='1';}}
-function lsConfirm(){if(!_lsLang2)return;ST.lang=_lsLang2;ST.onboarded=true;sv();hideLangSel();showPath();setTimeout(()=>toast('🎉 Начинаем изучать '+(_lsLang2==='en'?'английский 🇬🇧':'китайский 🇨🇳')+'!'),400);}
+function lsSelect(lang,el){_lsLang=lang;document.querySelectorAll('.ls-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');const btn=g('ls-btn');if(btn){btn.disabled=false;btn.style.opacity='1';}}
+function lsConfirm(){if(!_lsLang)return;ST.lang=_lsLang;ST.onboarded=true;sv();hideLangSel();showPath();setTimeout(()=>toast('🎉 Начинаем изучать '+(_lsLang==='en'?'английский 🇬🇧':'китайский 🇨🇳')+'!'),400);}
 
 
 function lhrtUpdate(){
@@ -4757,6 +4607,13 @@ function lessonNext(){
 }
 function voNext(){lessonNext();}
 
+function saveProfName(){
+  const v=g('pname-inp');if(!v)return;
+  const name=v.value.trim();if(!name)return;
+  ST.profile.name=name;sv();
+  try{renderProf();}catch(e){}
+  toast('✅ Сохранено!');
+}
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
@@ -4767,7 +4624,7 @@ function confetti(){
 let tT=null;
 function toast(msg,dur=2500){const t=g('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),dur);}
 function showCbox(){g('cbox').classList.add('open');}
-function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,lang:'cn',lessonProgress:{},profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');goTab('s-home',0);updateHome();}
+function doReset(){g('cbox').classList.remove('open');localStorage.removeItem('hz5');ST={xp:0,totalXp:0,streak:0,bestStreak:0,level:1,lastPlay:null,wordData:{},favorites:[],dailyCards:0,dailyGoal:10,startDate:new Date().toISOString().split('T')[0],weekAct:[0,0,0,0,0,0,0],heatmap:{},sessions:0,totalCards:0,totalCorrect:0,totalWrong:0,difficulty:1,lang:'cn',lessonProgress:{},profile:{name:'Ученик',avaStyle:0,avaColor:'#FF3B30',avaAccent:'#FFD60A'},settings:{autoplay:false,voiceInput:false,slowSpeech:false,sounds:true,ruTranslit:false,showCulture:true,darkMode:false,theme:'auto',notif:false,notifTime:'09:00'},onboarded:false};applyTheme(false);VOCAB.forEach(w=>{ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});toast('✓ Прогресс сброшен');showPath();updateHome();}
 
 // SWIPE
 let swX=0;
@@ -4806,7 +4663,7 @@ window.addEventListener('load',()=>{
 });
 window.addEventListener('popstate',()=>{
   if(g('s-lesson').classList.contains('on'))exitLesson();
-  if(g('comp').classList.contains('open')){g('comp').classList.remove('open');goTab('s-home',0);updateHome();}
+  if(g('comp').classList.contains('open')){g('comp').classList.remove('open');showPath();updateHome();}
 });
 history.pushState({},'','');
 // Keyboard shortcuts for quiz (1-4 keys like Duolingo)
