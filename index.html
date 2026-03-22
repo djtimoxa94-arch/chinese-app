@@ -2443,6 +2443,7 @@ function lv(){
   try{const s=localStorage.getItem('hz5');if(s){const d=JSON.parse(s);ST={...ST,...d};if(d.settings)ST.settings={...ST.settings,...d.settings};if(d.profile)ST.profile={...ST.profile,...d.profile};}}catch(e){}
   VOCAB.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
   if(!Array.isArray(ST.favorites))ST.favorites=[];
+  if(!ST.lessonProgress||typeof ST.lessonProgress!=='object')ST.lessonProgress={};
   if(!Array.isArray(ST.weekAct)||ST.weekAct.length!==7)ST.weekAct=[0,0,0,0,0,0,0];
   if(!ST.heatmap)ST.heatmap={};
   if(!ST.startDate)ST.startDate=new Date().toISOString().split('T')[0];
@@ -5697,22 +5698,23 @@ finishSes=function(){
 let _lsLang = null;
 
 function initAuth(){
-  // Check if already logged in
-  const acct = localStorage.getItem('shuohua_account');
-  if(acct){
-    try{
+  try{
+    const acct=localStorage.getItem('shuohua_account');
+    if(acct){
       const data=JSON.parse(acct);
       ST.account=data;
-      // Check if lang chosen
-      if(ST.lang&&ST.onboarded){
-        hideAuth();showPath();
-      } else if(ST.lang){
-        hideAuth();showLangSel();
+      if(ST.lang){
+        hideAuth();
+        showPath();
       } else {
-        hideAuth();showLangSel();
+        hideAuth();
+        showLangSel();
       }
-    }catch(e){ showAuth(); }
-  } else {
+    } else {
+      showAuth();
+    }
+  }catch(e){
+    console.error('initAuth err',e);
     showAuth();
   }
 }
@@ -5730,14 +5732,18 @@ function hideLangSel(){
   const l=g('s-langsel');if(l)l.classList.remove('show');
 }
 function showPath(){
+  // Hide everything
+  const ob=g('ob');if(ob)ob.style.display='none';
   hideLangSel();
-  // Hide all screens, show path
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  const ps=g('s-path');if(ps)ps.classList.add('on');
-  g('nav').classList.remove('hide');
-  // Update nav active state
+  document.querySelectorAll('.sheet,.modal,.cbox').forEach(s=>s.classList.remove('open'));
+  // Show path
+  const ps=g('s-path');
+  if(ps){ps.classList.add('on');}
+  const nav=g('nav');if(nav)nav.classList.remove('hide');
   document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('on',i===0));
-  renderPath();
+  updateHome();
+  try{renderPath();}catch(e){console.error('renderPath err',e);}
 }
 
 function saveAccount(data){
@@ -5878,21 +5884,33 @@ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sw
 
 // INIT
 window.addEventListener('load',()=>{
-  lv();
-  // Hide path, show auth first
-  const ps=g('s-path');if(ps)ps.classList.remove('on');
-  setTimeout(initAuth,1200); // after loading screen
-  const _tips=['Разговорный китайский ждёт!','Загружаем 230 слов…','Готовим диалоги…','Почти готово!'];
-  let _ti=0;const _tiv=setInterval(()=>{const el=g('loading-tip');if(el&&_ti<_tips.length)el.textContent=_tips[_ti++];},300);
+  // 1. Load saved data
+  try{ lv(); } catch(e){ console.error('lv err',e); }
+  
+  // 2. Dismiss loading screen after 1s
+  const _tips=['Загружаем...','Почти готово!'];
+  let _ti=0;
+  const _tiv=setInterval(()=>{
+    const el=g('loading-tip');
+    if(el&&_ti<_tips.length)el.textContent=_tips[_ti++];
+  },400);
+  
   setTimeout(()=>{
     clearInterval(_tiv);
-    setTimeout(checkAchievements,2000);
-    const lo=g('loading');lo.style.transition='opacity .5s';lo.style.opacity='0';
-    setTimeout(()=>lo.style.display='none',500);
-    if(!ST.onboarded){g('ob').style.display='flex';}
-    else{g('s-home').classList.add('on');updateHome();initPotd();updateLangUI();}
-    if(ST.settings.notif&&Notification.permission==='granted')scheduleNotif();
-  },1200);
+    const lo=g('loading');
+    if(lo){lo.style.transition='opacity .4s';lo.style.opacity='0';}
+    setTimeout(()=>{
+      if(lo)lo.style.display='none';
+      // Hand off to auth flow
+      try{ initAuth(); } catch(e){ console.error('initAuth err',e); authGuest(); }
+    },400);
+    // Schedule notifications if enabled
+    if(ST.settings&&ST.settings.notif&&Notification.permission==='granted'){
+      try{scheduleNotif();}catch(e){}
+    }
+    // Check achievements after 3s
+    setTimeout(()=>{try{checkAchievements();}catch(e){}},3000);
+  },1000);
 });
 window.addEventListener('popstate',()=>{
   if(g('s-lesson').classList.contains('on'))exitLesson();
