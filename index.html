@@ -1228,12 +1228,6 @@ function lv(){
   applyTheme(false);
 }
 function todayS(){return new Date().toISOString().split('T')[0];}
-function checkStreak(){
-  const t=new Date().toDateString(),y=new Date(Date.now()-86400000).toDateString();
-  if(ST.lastPlay===t)return;
-  if(ST.lastPlay!==y&&ST.lastPlay!==null)ST.streak=0;
-  ST.dailyCards=0;ST.weekAct[new Date().getDay()===0?6:new Date().getDay()-1]=0;
-}
 function recPlay(){
   const t=new Date().toDateString(),y=new Date(Date.now()-86400000).toDateString();
   if(ST.lastPlay===t)return;
@@ -4007,6 +4001,138 @@ const EN_VOCAB_MORE2=[
   {id:'e240',char:'Recovery',transl:'выздоровление',pron:'рикавэри',ipa:'rɪˈkʌvəri',level:'B1',topic:'health'},
 ];
 EN_VOCAB.push(...EN_VOCAB_MORE2);
+
+// ── CN HSK 4-5 ────────────────────────────────────────────
+const VOCAB_HSK45=[
+  {id:501,char:'抽象',pinyin:'chōu xiàng',tones:[1,4],meaning:'абстрактный',en:'abstract',hsk:4},
+  {id:502,char:'具体',pinyin:'jù tǐ',tones:[4,3],meaning:'конкретный',en:'concrete/specific',hsk:4},
+  {id:503,char:'理论',pinyin:'lǐ lùn',tones:[3,4],meaning:'теория',en:'theory',hsk:4},
+  {id:504,char:'实践',pinyin:'shí jiàn',tones:[2,4],meaning:'практика',en:'practice',hsk:4},
+  {id:505,char:'原则',pinyin:'yuán zé',tones:[2,2],meaning:'принцип',en:'principle',hsk:4},
+  {id:506,char:'概念',pinyin:'gài niàn',tones:[4,4],meaning:'концепция; понятие',en:'concept',hsk:4},
+  {id:507,char:'逻辑',pinyin:'luó ji',tones:[2,5],meaning:'логика',en:'logic',hsk:4},
+  {id:508,char:'矛盾',pinyin:'máo dùn',tones:[2,4],meaning:'противоречие',en:'contradiction',hsk:4},
+  {id:509,char:'民主',pinyin:'mín zhǔ',tones:[2,3],meaning:'демократия',en:'democracy',hsk:4},
+  {id:510,char:'自由',pinyin:'zì yóu',tones:[4,2],meaning:'свобода',en:'freedom',hsk:4},
+  {id:511,char:'平等',pinyin:'píng děng',tones:[2,3],meaning:'равенство',en:'equality',hsk:4},
+  {id:512,char:'权利',pinyin:'quán lì',tones:[2,4],meaning:'права',en:'rights',hsk:4},
+  {id:513,char:'义务',pinyin:'yì wù',tones:[4,4],meaning:'обязанность',en:'duty',hsk:4},
+  {id:514,char:'责任',pinyin:'zé rèn',tones:[2,4],meaning:'ответственность',en:'responsibility',hsk:4},
+  {id:515,char:'影响',pinyin:'yǐng xiǎng',tones:[3,3],meaning:'влияние; влиять',en:'influence',hsk:4},
+  {id:516,char:'解决',pinyin:'jiě jué',tones:[3,2],meaning:'решать (проблему)',en:'to solve',hsk:4},
+  {id:517,char:'经济',pinyin:'jīng jì',tones:[1,4],meaning:'экономика',en:'economy',hsk:4},
+  {id:518,char:'全球化',pinyin:'quán qiú huà',tones:[2,2,4],meaning:'глобализация',en:'globalization',hsk:5},
+  {id:519,char:'可持续',pinyin:'kě chí xù',tones:[3,2,4],meaning:'устойчивый',en:'sustainable',hsk:5},
+  {id:520,char:'创新',pinyin:'chuàng xīn',tones:[4,1],meaning:'инновация',en:'innovation',hsk:4},
+  {id:521,char:'合作',pinyin:'hé zuò',tones:[2,4],meaning:'сотрудничество',en:'cooperation',hsk:4},
+  {id:522,char:'竞争力',pinyin:'jìng zhēng lì',tones:[4,1,4],meaning:'конкурентоспособность',en:'competitiveness',hsk:5},
+  {id:523,char:'供应链',pinyin:'gōng yìng liàn',tones:[1,4,4],meaning:'цепочка поставок',en:'supply chain',hsk:5},
+  {id:524,char:'数字经济',pinyin:'shù zì jīng jì',tones:[4,4,1,4],meaning:'цифровая экономика',en:'digital economy',hsk:5},
+  {id:525,char:'算法',pinyin:'suàn fǎ',tones:[4,3],meaning:'алгоритм',en:'algorithm',hsk:5},
+  {id:526,char:'数据分析',pinyin:'shù jù fēn xī',tones:[4,4,1,1],meaning:'анализ данных',en:'data analysis',hsk:5},
+  {id:527,char:'云计算',pinyin:'yún jì suàn',tones:[2,4,4],meaning:'облачные вычисления',en:'cloud computing',hsk:5},
+  {id:528,char:'区块链',pinyin:'qū kuài liàn',tones:[1,4,4],meaning:'блокчейн',en:'blockchain',hsk:5},
+  {id:529,char:'虚拟现实',pinyin:'xū nǐ xiàn shí',tones:[1,3,4,2],meaning:'виртуальная реальность',en:'virtual reality',hsk:5},
+  {id:530,char:'机器学习',pinyin:'jī qì xué xí',tones:[1,4,2,2],meaning:'машинное обучение',en:'machine learning',hsk:5},
+  {id:531,char:'自信',pinyin:'zì xìn',tones:[4,4],meaning:'уверенность в себе',en:'self-confidence',hsk:4},
+  {id:532,char:'耐心',pinyin:'nài xīn',tones:[4,1],meaning:'терпение',en:'patience',hsk:4},
+  {id:533,char:'勤奋',pinyin:'qín fèn',tones:[2,4],meaning:'трудолюбивый',en:'diligent',hsk:4},
+  {id:534,char:'创造力',pinyin:'chuàng zào lì',tones:[4,4,4],meaning:'творческие способности',en:'creativity',hsk:5},
+  {id:535,char:'同理心',pinyin:'tóng lǐ xīn',tones:[2,3,1],meaning:'эмпатия',en:'empathy',hsk:5},
+  {id:536,char:'情商',pinyin:'qíng shāng',tones:[2,1],meaning:'эмоциональный интеллект',en:'emotional intelligence',hsk:5},
+  {id:537,char:'心理健康',pinyin:'xīn lǐ jiàn kāng',tones:[1,3,4,1],meaning:'психическое здоровье',en:'mental health',hsk:4},
+  {id:538,char:'承担',pinyin:'chéng dān',tones:[2,1],meaning:'брать на себя',en:'to undertake',hsk:4},
+  {id:539,char:'促进',pinyin:'cù jìn',tones:[4,4],meaning:'способствовать',en:'to promote',hsk:4},
+  {id:540,char:'实现',pinyin:'shí xiàn',tones:[2,4],meaning:'осуществлять',en:'to realize',hsk:4},
+  {id:541,char:'维护',pinyin:'wéi hù',tones:[2,4],meaning:'поддерживать; защищать',en:'to maintain',hsk:4},
+  {id:542,char:'克服',pinyin:'kè fú',tones:[4,2],meaning:'преодолевать',en:'to overcome',hsk:4},
+  {id:543,char:'掌握',pinyin:'zhǎng wò',tones:[3,4],meaning:'освоить; овладеть',en:'to master',hsk:4},
+  {id:544,char:'分析',pinyin:'fēn xī',tones:[1,1],meaning:'анализировать',en:'to analyze',hsk:4},
+  {id:545,char:'评估',pinyin:'píng gū',tones:[2,1],meaning:'оценивать',en:'to evaluate',hsk:4},
+  {id:546,char:'复杂',pinyin:'fù zá',tones:[4,2],meaning:'сложный',en:'complex',hsk:4},
+  {id:547,char:'全面',pinyin:'quán miàn',tones:[2,4],meaning:'всесторонний',en:'comprehensive',hsk:4},
+  {id:548,char:'系统',pinyin:'xì tǒng',tones:[4,3],meaning:'система; систематический',en:'systematic',hsk:4},
+  {id:549,char:'有效',pinyin:'yǒu xiào',tones:[3,4],meaning:'эффективный',en:'effective',hsk:4},
+  {id:550,char:'持续',pinyin:'chí xù',tones:[2,4],meaning:'продолжаться; непрерывный',en:'continuous/sustained',hsk:4},
+  {id:551,char:'哲学',pinyin:'zhé xué',tones:[2,2],meaning:'философия',en:'philosophy',hsk:5},
+  {id:552,char:'文明',pinyin:'wén míng',tones:[2,2],meaning:'цивилизация',en:'civilization',hsk:5},
+  {id:553,char:'传统',pinyin:'chuán tǒng',tones:[2,3],meaning:'традиция',en:'tradition',hsk:4},
+  {id:554,char:'现代化',pinyin:'xiàn dài huà',tones:[4,4,4],meaning:'модернизация',en:'modernization',hsk:5},
+  {id:555,char:'多元化',pinyin:'duō yuán huà',tones:[1,2,4],meaning:'диверсификация',en:'diversification',hsk:5},
+  {id:556,char:'专业化',pinyin:'zhuān yè huà',tones:[1,4,4],meaning:'специализация',en:'specialization',hsk:5},
+  {id:557,char:'个性化',pinyin:'gè xìng huà',tones:[4,4,4],meaning:'персонализация',en:'personalization',hsk:5},
+  {id:558,char:'信息化',pinyin:'xìn xī huà',tones:[4,1,4],meaning:'информатизация',en:'informatization',hsk:5},
+  {id:559,char:'批判性',pinyin:'pī pàn xìng',tones:[1,4,4],meaning:'критический',en:'critical',hsk:5},
+  {id:560,char:'可行性',pinyin:'kě xíng xìng',tones:[3,2,4],meaning:'осуществимость; возможность',en:'feasibility',hsk:5},
+];
+VOCAB.push(...VOCAB_HSK45);
+VOCAB_HSK45.forEach(w=>{if(!ST.wordData[w.id])ST.wordData[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
+
+// ── EN B2-C1 ─────────────────────────────────────────────────
+const EN_VOCAB_B2C1=[
+  {id:'e241',char:'Phenomenon',transl:'явление; феномен',pron:'фино́мэнон',ipa:'fɪˈnɒmɪnən',level:'B2',topic:'academic'},
+  {id:'e242',char:'Hypothesis',transl:'гипотеза',pron:'хайпо́зэсис',ipa:'haɪˈpɒθɪsɪs',level:'B2',topic:'academic'},
+  {id:'e243',char:'Methodology',transl:'методология',pron:'мэзэдо́лэджи',ipa:'ˌmeθəˈdɒlədʒi',level:'C1',topic:'academic'},
+  {id:'e244',char:'Comprehensive',transl:'всесторонний; исчерпывающий',pron:'компрэхэнсив',ipa:'ˌkɒmprɪˈhensɪv',level:'B2',topic:'adj'},
+  {id:'e245',char:'Ambiguous',transl:'неоднозначный; двусмысленный',pron:'эмбигьюэс',ipa:'æmˈbɪɡjuəs',level:'C1',topic:'adj'},
+  {id:'e246',char:'Profound',transl:'глубокий; значительный',pron:'профаунд',ipa:'prəˈfaʊnd',level:'C1',topic:'adj'},
+  {id:'e247',char:'Pragmatic',transl:'прагматичный; практичный',pron:'прэгма́тик',ipa:'præɡˈmætɪk',level:'B2',topic:'adj'},
+  {id:'e248',char:'Scrutinize',transl:'тщательно изучать',pron:'скрутинайз',ipa:'ˈskruːtɪnaɪz',level:'C1',topic:'verbs'},
+  {id:'e249',char:'Alleviate',transl:'облегчать; смягчать',pron:'элив иэйт',ipa:'əˈliːvieɪt',level:'C1',topic:'verbs'},
+  {id:'e250',char:'Exacerbate',transl:'усугублять; обострять',pron:'игза́сэрбэйт',ipa:'ɪɡˈzæsəbeɪt',level:'C1',topic:'verbs'},
+  {id:'e251',char:'Mitigate',transl:'смягчать; уменьшать',pron:'митигэйт',ipa:'ˈmɪtɪɡeɪt',level:'C1',topic:'verbs'},
+  {id:'e252',char:'Consolidate',transl:'укреплять; объединять',pron:'консо́лидэйт',ipa:'kənˈsɒlɪdeɪt',level:'B2',topic:'verbs'},
+  {id:'e253',char:'Leverage',transl:'использовать в своих целях',pron:'лэ́вэридж',ipa:'ˈliːvərɪdʒ',level:'B2',topic:'verbs'},
+  {id:'e254',char:'Inequality',transl:'неравенство',pron:'иниква́лити',ipa:'ˌɪnɪˈkwɒlɪti',level:'B2',topic:'society'},
+  {id:'e255',char:'Discrimination',transl:'дискриминация',pron:'дискриминэ́йшн',ipa:'dɪˌskrɪmɪˈneɪʃn',level:'B2',topic:'society'},
+  {id:'e256',char:'Stereotype',transl:'стереотип',pron:'стириотайп',ipa:'ˈsteriətaɪp',level:'B2',topic:'society'},
+  {id:'e257',char:'Diversity',transl:'разнообразие; многообразие',pron:'дайвёрсити',ipa:'daɪˈvɜːsɪti',level:'B2',topic:'society'},
+  {id:'e258',char:'Integration',transl:'интеграция; объединение',pron:'интэгрэ́йшн',ipa:'ˌɪntɪˈɡreɪʃn',level:'B2',topic:'society'},
+  {id:'e259',char:'Resilience',transl:'стойкость; устойчивость',pron:'рэзи́лиэнс',ipa:'rɪˈzɪliəns',level:'C1',topic:'emotions'},
+  {id:'e260',char:'Vulnerability',transl:'уязвимость',pron:'валнэраби́лити',ipa:'ˌvʌlnərəˈbɪlɪti',level:'C1',topic:'emotions'},
+  {id:'e261',char:'Perseverance',transl:'настойчивость; упорство',pron:'пёрсэви́эрэнс',ipa:'ˌpɜːsɪˈvɪərəns',level:'C1',topic:'emotions'},
+  {id:'e262',char:'Empathy',transl:'эмпатия; сочувствие',pron:'эмпэзи',ipa:'ˈempəθi',level:'B2',topic:'emotions'},
+  {id:'e263',char:'Nostalgia',transl:'ностальгия',pron:'ностэлджэ',ipa:'nɒˈstælɪə',level:'B2',topic:'emotions'},
+  {id:'e264',char:'Disillusionment',transl:'разочарование',pron:'дисилюжнмэнт',ipa:'ˌdɪsɪˈluːʒnmənt',level:'C1',topic:'emotions'},
+  {id:'e265',char:'Automation',transl:'автоматизация',pron:'отомэ́йшн',ipa:'ˌɔːtəˈmeɪʃn',level:'B2',topic:'tech'},
+  {id:'e266',char:'Cybersecurity',transl:'кибербезопасность',pron:'сайбэрсэкьюрити',ipa:'ˌsaɪbəsɪˈkjʊərɪti',level:'B2',topic:'tech'},
+  {id:'e267',char:'Infrastructure',transl:'инфраструктура',pron:'инфрэстрактчэ',ipa:'ˈɪnfrəstrʌktʃə',level:'B2',topic:'tech'},
+  {id:'e268',char:'Disruptive',transl:'разрушительный; новаторский',pron:'диса́птив',ipa:'dɪsˈrʌptɪv',level:'C1',topic:'tech'},
+  {id:'e269',char:'Biodiversity',transl:'биоразнообразие',pron:'байодайвёрсити',ipa:'ˌbaɪəʊdaɪˈvɜːsɪti',level:'C1',topic:'environment'},
+  {id:'e270',char:'Deforestation',transl:'вырубка лесов',pron:'дэфорэстэ́йшн',ipa:'dɪˌfɒrɪˈsteɪʃn',level:'B2',topic:'environment'},
+  {id:'e271',char:'Carbon footprint',transl:'углеродный след',pron:'карбн футприн',ipa:'ˈkɑːbən ˈfʊtprɪnt',level:'B2',topic:'environment'},
+  {id:'e272',char:'Renewable energy',transl:'возобновляемая энергия',pron:'риньюэбл энэджи',ipa:'rɪˈnjuːəbl ˈenədʒi',level:'B2',topic:'environment'},
+  {id:'e273',char:'Ecosystem',transl:'экосистема',pron:'иксисистэм',ipa:'ˈiːkəʊsɪstəm',level:'B2',topic:'environment'},
+  {id:'e274',char:'Entrepreneurship',transl:'предпринимательство',pron:'энтрэпрэнёршип',ipa:'ˌɒntrəprəˈnɜːʃɪp',level:'C1',topic:'business'},
+  {id:'e275',char:'Accountability',transl:'подотчётность; ответственность',pron:'экаунтэби́лити',ipa:'əˌkaʊntəˈbɪlɪti',level:'C1',topic:'business'},
+  {id:'e276',char:'Transparency',transl:'прозрачность; открытость',pron:'трэнспэрэнси',ipa:'trænsˈpærənsi',level:'B2',topic:'business'},
+  {id:'e277',char:'Scalable',transl:'масштабируемый',pron:'скэйлэбл',ipa:'ˈskeɪləbl',level:'C1',topic:'business'},
+  {id:'e278',char:'Nevertheless',transl:'тем не менее',pron:'нэвэрзэлэс',ipa:'ˌnevəðəˈles',level:'B2',topic:'grammar'},
+  {id:'e279',char:'Furthermore',transl:'более того; кроме того',pron:'фёрзэмо',ipa:'ˈfɜːðəmɔː',level:'B2',topic:'grammar'},
+  {id:'e280',char:'Subsequently',transl:'впоследствии; затем',pron:'сабсэквэнтли',ipa:'ˈsʌbsɪkwəntli',level:'C1',topic:'grammar'},
+  {id:'e281',char:'Conversely',transl:'наоборот; с другой стороны',pron:'конвёрсли',ipa:'ˈkɒnvɜːsli',level:'C1',topic:'grammar'},
+  {id:'e282',char:'Predominantly',transl:'преимущественно',pron:'придо́минэнтли',ipa:'prɪˈdɒmɪnəntli',level:'C1',topic:'grammar'},
+  {id:'e283',char:'Cut corners',transl:'халтурить; срезать углы',pron:'кат корнэз',ipa:'kʌt ˈkɔːnəz',level:'C1',topic:'idioms'},
+  {id:'e284',char:'On the fence',transl:'колебаться; быть нерешённым',pron:'он зэ фенс',ipa:'ɒn ðə fens',level:'B2',topic:'idioms'},
+  {id:'e285',char:'Bite the bullet',transl:'стиснуть зубы; пересилить себя',pron:'байт зэ булэт',ipa:'baɪt ðə bʊlɪt',level:'C1',topic:'idioms'},
+  {id:'e286',char:'Let the cat out',transl:'проболтаться; раскрыть секрет',pron:'лет зэ кэт аут',ipa:'let ðə kæt aʊt',level:'C1',topic:'idioms'},
+  {id:'e287',char:'Go the extra mile',transl:'приложить дополнительные усилия',pron:'гоу зэ экстра майл',ipa:'ɡəʊ ðə ekstrə maɪl',level:'C1',topic:'idioms'},
+  {id:'e288',char:'Make a breakthrough',transl:'совершить прорыв',pron:'мейк э брейкзру',ipa:'meɪk ə breɪkθruː',level:'C1',topic:'phrases'},
+  {id:'e289',char:'Reach a consensus',transl:'прийти к консенсусу',pron:'рич э консэнсэс',ipa:'riːtʃ ə kənsensəs',level:'C1',topic:'phrases'},
+  {id:'e290',char:'Bridge the gap',transl:'устранить разрыв',pron:'бридж зэ гэп',ipa:'brɪdʒ ðə ɡæp',level:'C1',topic:'phrases'},
+  {id:'e291',char:'Have a vested interest',transl:'иметь прямую заинтересованность',pron:'хэв э вэстид интэрэст',ipa:'hæv ə vestɪd ɪntrəst',level:'C1',topic:'phrases'},
+  {id:'e292',char:'Draw a distinction',transl:'провести различие',pron:'дро э дистинкшн',ipa:'drɔː ə dɪstɪŋkʃn',level:'C1',topic:'phrases'},
+  {id:'e293',char:'Paradigm shift',transl:'смена парадигмы',pron:'пэрэдайм шифт',ipa:'ˈpærədaɪm ʃɪft',level:'C1',topic:'academic'},
+  {id:'e294',char:'Vicious cycle',transl:'порочный круг',pron:'вишэс сайкл',ipa:'ˈvɪʃəs ˈsaɪkl',level:'C1',topic:'phrases'},
+  {id:'e295',char:'Double-edged sword',transl:'палка о двух концах',pron:'дабл эджд сорд',ipa:'ˌdʌbl ˈedʒd sɔːd',level:'C1',topic:'idioms'},
+  {id:'e296',char:'Groundbreaking',transl:'новаторский; революционный',pron:'граундбрейкин',ipa:'ˈɡraʊndbreɪkɪŋ',level:'C1',topic:'adj'},
+  {id:'e297',char:'Counterproductive',transl:'контрпродуктивный',pron:'каунтэрпродактив',ipa:'ˌkaʊntəprəˈdʌktɪv',level:'C1',topic:'adj'},
+  {id:'e298',char:'Cutting-edge',transl:'передовой; самый современный',pron:'катин эдж',ipa:'ˈkʌtɪŋ edʒ',level:'C1',topic:'adj'},
+  {id:'e299',char:'Far-reaching',transl:'далеко идущий; масштабный',pron:'фар ричин',ipa:'ˌfɑː ˈriːtʃɪŋ',level:'C1',topic:'adj'},
+  {id:'e300',char:'State-of-the-art',transl:'самый современный; передовой',pron:'стейт оф зэ арт',ipa:'ˌsteɪt əv ðə ɑːt',level:'C1',topic:'adj'},
+];
+EN_VOCAB.push(...EN_VOCAB_B2C1);
+EN_VOCAB_B2C1.forEach(w=>{if(!EN_WORDDATA[w.id])EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
 EN_VOCAB_MORE2.forEach(w=>{if(!EN_WORDDATA[w.id])EN_WORDDATA[w.id]={mastery:0,correct:0,wrong:0,nextReview:0};});
 
 
@@ -4614,6 +4740,177 @@ function saveProfName(){
   try{renderProf();}catch(e){}
   toast('✅ Сохранено!');
 }
+
+// ── STREAK CELEBRATION ────────────────────────────────────────
+function streakCelebration(days){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);animation:fadein .3s ease';
+  overlay.innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--orange),#FF6348);border-radius:32px;padding:36px 32px;text-align:center;max-width:320px;width:90%;box-shadow:0 20px 60px rgba(255,165,2,.5);animation:epop .5s cubic-bezier(.34,1.56,.64,1)">
+      <div style="font-size:72px;margin-bottom:8px">🔥</div>
+      <div style="font-size:28px;font-weight:900;color:#fff;margin-bottom:6px">${days} дней подряд!</div>
+      <div style="font-size:16px;color:rgba(255,255,255,.85);margin-bottom:24px">Ты молодец! Продолжай в том же духе</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.4);color:#fff;font-family:var(--f);font-size:16px;font-weight:800;padding:14px 32px;border-radius:999px;cursor:pointer;width:100%">Продолжать! 💪</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  try{sndLevelUp();}catch(e){}
+  try{confetti();}catch(e){}
+}
+
+// ── DAILY QUEST WIDGET ─────────────────────────────────────────
+function renderDailyQuest(containerId){
+  const el=document.getElementById(containerId);if(!el)return;
+  const goal=ST.dailyGoal||10;
+  const done=ST.dailyCards||0;
+  const pct=Math.min(100,Math.round(done/goal*100));
+  const complete=done>=goal;
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:15px;font-weight:800;color:var(--label)">🎯 Цель дня</div>
+      <div style="font-size:14px;font-weight:700;color:${complete?'var(--green)':'var(--l2)'}">${done}/${goal}</div>
+    </div>
+    <div style="height:12px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;border:1.5px solid var(--border)">
+      <div style="height:100%;width:${pct}%;background:${complete?'linear-gradient(90deg,var(--green),#00E096)':'linear-gradient(90deg,var(--p),var(--p2))'};border-radius:999px;transition:width .5s cubic-bezier(.34,1.2,.64,1)"></div>
+    </div>
+    ${complete?'<div style="font-size:13px;color:var(--green);font-weight:700;margin-top:8px;text-align:center">✅ Цель выполнена! +50 бонусных XP</div>':''}`;
+}
+
+// ── UNIT COMPLETION CHEST ──────────────────────────────────────
+function showUnitComplete(unitName, xpBonus){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;z-index:850;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(12px)';
+  overlay.innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--p),var(--p2));border-radius:32px;padding:36px 28px;text-align:center;max-width:300px;width:88%;box-shadow:0 20px 60px rgba(108,61,230,.6);animation:epop .5s cubic-bezier(.34,1.56,.64,1)">
+      <div style="font-size:64px;margin-bottom:6px;animation:ldpulse 1s ease-in-out infinite">🏆</div>
+      <div style="font-size:24px;font-weight:900;color:#fff;margin-bottom:6px">Раздел завершён!</div>
+      <div style="font-size:15px;color:rgba(255,255,255,.8);margin-bottom:6px">${unitName}</div>
+      <div style="font-size:28px;font-weight:900;color:var(--gold);margin:12px 0">+${xpBonus} XP</div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.4);color:#fff;font-family:var(--f);font-size:16px;font-weight:800;padding:14px 28px;border-radius:999px;cursor:pointer;width:100%;margin-top:8px">Отлично! 🎉</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  try{sndLevelUp();confetti();}catch(e){}
+  addXP(xpBonus);
+}
+
+// ── ENHANCED XP FLOAT ──────────────────────────────────────────
+function xpFloatAt(el, amount){
+  if(!el)return;
+  const rect=el.getBoundingClientRect();
+  const div=document.createElement('div');
+  div.textContent='+'+amount+' XP';
+  div.style.cssText=`position:fixed;left:${rect.left+rect.width/2}px;top:${rect.top}px;transform:translateX(-50%);font-size:15px;font-weight:900;color:var(--gold);pointer-events:none;z-index:900;animation:xpfloat 1.2s ease forwards;text-shadow:0 2px 8px rgba(0,0,0,.5)`;
+  document.body.appendChild(div);
+  setTimeout(()=>div.remove(),1200);
+}
+
+// ── CHECKSTREAK with celebration ──────────────────────────────
+function checkStreak(){
+  const today=new Date().toISOString().slice(0,10);
+  if(ST.lastPlay===today)return;
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  if(ST.lastPlay===yesterday){
+    ST.streak=(ST.streak||0)+1;
+    if(ST.streak>ST.bestStreak)ST.bestStreak=ST.streak;
+    // Celebrate milestones
+    if([3,7,14,30,60,100].includes(ST.streak)){
+      setTimeout(()=>streakCelebration(ST.streak),1500);
+    }
+  } else if(ST.lastPlay&&ST.lastPlay<yesterday){
+    if(!ST.streakShieldUsed){ST.streakShieldUsed=true;}
+    else{ST.streak=0;ST.streakShieldUsed=false;}
+  }
+  ST.lastPlay=today;
+  if(!Array.isArray(ST.weekAct)||ST.weekAct.length!==7)ST.weekAct=[0,0,0,0,0,0,0];
+  ST.weekAct[new Date().getDay()]=1;
+  sv();
+}
+
+// ── ENHANCED finishSes with unit complete check ──────────────
+const _origFinishSes2=finishSes;
+finishSes=function(){
+  // Check if unit is now complete
+  if(ST._currentLesson){
+    const cur=ST.lang==='en'?EN_CURRICULUM:CN_CURRICULUM;
+    // Find which unit this lesson belongs to
+    for(let ui=0;ui<cur.length;ui++){
+      const unit=cur[ui];
+      const li=unit.lessons.findIndex(l=>l.id===ST._currentLesson);
+      if(li>=0){
+        // Check unit completion after this lesson
+        const prevPct=getUnitPct(unit);
+        // Will complete after this:
+        const allDone=unit.lessons.every((l,i)=>i===li||(ST.lessonProgress[l.id]?.stars||0)>0);
+        if(allDone&&prevPct<100){
+          setTimeout(()=>showUnitComplete(unit.name,150),800);
+        }
+        break;
+      }
+    }
+  }
+  _origFinishSes2();
+};
+
+// ── ADD DAILY QUEST TO PATH HEADER ───────────────────────────
+const _origRenderPath=renderPath;
+renderPath=function(){
+  _origRenderPath();
+  // Add daily quest below header
+  const scroll=document.getElementById('path-scroll');if(!scroll)return;
+  const qw=document.createElement('div');
+  qw.style.cssText='margin:0 16px 4px;padding:14px 18px;background:var(--glass-card);border:1.5px solid var(--border2);border-radius:var(--rl2)';
+  qw.id='daily-quest-widget';
+  renderDailyQuest_inner(qw);
+  scroll.insertBefore(qw,scroll.firstChild);
+};
+function renderDailyQuest_inner(el){
+  if(!el)return;
+  const goal=ST.dailyGoal||10;
+  const done=ST.dailyCards||0;
+  const pct=Math.min(100,Math.round(done/goal*100));
+  const complete=done>=goal;
+  el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-size:14px;font-weight:800;color:var(--label)">🎯 Дневная цель</div><div style="font-size:13px;font-weight:700;color:${complete?'var(--green)':'var(--l2)'}">${done}/${goal}</div></div><div style="height:10px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${complete?'linear-gradient(90deg,var(--green),#00E096)':'linear-gradient(90deg,var(--p),var(--p2))'};border-radius:999px;transition:width .5s"></div></div>${complete?'<div style="font-size:12px;color:var(--green);font-weight:700;margin-top:6px">✅ Выполнено! Отличная работа!</div>':''}`;
+}
+
+
+// Add HSK 4-5 units to CN_CURRICULUM
+CN_CURRICULUM.push(
+  {id:'cn_u13',name:'HSK 4 Мышление',desc:'Абстракция, логика, принципы',icon:'🧩',color:0,
+   lessons:[
+    {id:'cn_u13l1',name:'Философия',type:'flash',filter:w=>w.hsk>=4&&w.id>=501&&w.id<=510},
+    {id:'cn_u13l2',name:'Общество',type:'quiz',filter:w=>w.hsk>=4&&w.id>=509&&w.id<=518},
+    {id:'cn_u13l3',name:'Соедини',type:'match',filter:w=>w.hsk>=4&&w.id>=501&&w.id<=520},
+    {id:'cn_u13l4',name:'Действия',type:'quiz',filter:w=>w.hsk>=4&&w.id>=538&&w.id<=550},
+    {id:'cn_u13l5',name:'Тест HSK4',type:'quiz',filter:w=>w.hsk===4},
+   ]},
+  {id:'cn_u14',name:'HSK 5 Технологии',desc:'ИИ, данные, будущее',icon:'🤖',color:4,
+   lessons:[
+    {id:'cn_u14l1',name:'Цифровой мир',type:'flash',filter:w=>w.hsk>=5&&w.id>=524&&w.id<=535},
+    {id:'cn_u14l2',name:'Инновации',type:'quiz',filter:w=>w.hsk>=4&&w.id>=518&&w.id<=530},
+    {id:'cn_u14l3',name:'Словарный банк',type:'wordbank',filter:w=>w.hsk>=4&&w.id>=501&&w.id<=530},
+    {id:'cn_u14l4',name:'Личностный рост',type:'flash',filter:w=>w.hsk>=4&&w.id>=531&&w.id<=545},
+    {id:'cn_u14l5',name:'Финал HSK5',type:'quiz',filter:w=>w.hsk===5},
+   ]}
+);
+// Add C1 units to EN_CURRICULUM
+EN_CURRICULUM.push(
+  {id:'en_u11',name:'B2+ Academic',desc:'Academic vocabulary & discourse',icon:'📚',color:3,
+   lessons:[
+    {id:'en_u11l1',name:'Academic words',type:'en_flash',filter:w=>w.topic==='academic'},
+    {id:'en_u11l2',name:'Advanced adj',type:'quiz',filter:w=>w.topic==='adj'&&(w.level==='B2'||w.level==='C1')},
+    {id:'en_u11l3',name:'Society',type:'en_flash',filter:w=>w.topic==='society'},
+    {id:'en_u11l4',name:'Match pairs',type:'match',filter:w=>w.level==='B2'},
+    {id:'en_u11l5',name:'Review B2',type:'quiz',filter:w=>w.level==='B2'&&w.topic!=='grammar'},
+   ]},
+  {id:'en_u12',name:'C1 Mastery',desc:'Near-native English',icon:'🎓',color:11,
+   lessons:[
+    {id:'en_u12l1',name:'C1 verbs',type:'en_flash',filter:w=>w.level==='C1'&&w.topic==='verbs'},
+    {id:'en_u12l2',name:'Idioms C1',type:'quiz',filter:w=>w.level==='C1'&&(w.topic==='idioms'||w.topic==='phrases')},
+    {id:'en_u12l3',name:'Word bank',type:'wordbank',filter:w=>w.level==='C1'},
+    {id:'en_u12l4',name:'Environment',type:'en_flash',filter:w=>w.topic==='environment'},
+    {id:'en_u12l5',name:'Final C1 test',type:'quiz',filter:w=>w.level==='C1'},
+   ]}
+);
+
 // EFFECTS
 function confetti(){
   const c=g('confetti');c.innerHTML='';
