@@ -1,35 +1,29 @@
-const CACHE = 'shuohua-v22';
+const CACHE = 'voxa-v1';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
-  self.skipWaiting(); // activate immediately
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
-  // Delete ALL old caches
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(k => {
-        if (k !== CACHE) { console.log('[SW] Deleting old cache:', k); return caches.delete(k); }
-      }))
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', e => {
-  // Network-first for HTML, cache-first for others
-  if (e.request.url.endsWith('.html') || e.request.url.endsWith('/')) {
+  if (e.request.url.includes('.html') || e.request.url.endsWith('/')) {
     e.respondWith(
       fetch(e.request).then(r => {
-        const clone = r.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
+        const c = r.clone();
+        caches.open(CACHE).then(ca => ca.put(e.request, c));
         return r;
       }).catch(() => caches.match('./index.html'))
     );
   } else {
-    e.respondWith(
-      caches.match(e.request).then(r => r || fetch(e.request))
-    );
+    e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
   }
 });
