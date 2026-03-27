@@ -1,5 +1,5 @@
 // Voxa SW v3 — force kills all old caches
-const CACHE = 'voxa-v3';
+const CACHE = 'voxa-v4';
 
 self.addEventListener('install', e => {
   // Skip waiting immediately — don't let old SW stay

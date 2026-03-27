@@ -3919,19 +3919,6 @@ function nodeClick(ui,li,lessonId,unlocked){
 
 
 // Award stars when lesson completes
-const _origFinishSes=finishSes;
-finishSes=function(){
-  if(ST._currentLesson){
-    const acc=SES.correct/(SES.correct+SES.wrong||1);
-    const stars=acc>=0.95?3:acc>=0.7?2:1;
-    const prev=getLessonStars(ST._currentLesson);
-    if(stars>prev){setLessonDone(ST._currentLesson,stars);}
-    ST._currentLesson=null;
-    setTimeout(renderPath,300);
-  }
-  _origFinishSes();
-};
-
 
 // ============================================================
 // 🔐 AUTH SYSTEM
@@ -4095,39 +4082,7 @@ document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sw
 // ── UNIT COMPLETE ─────────────────────────────────────────────────
 
 // ── DAILY QUEST on path ────────────────────────────────────────────
-const _origRenderPath=renderPath;
-renderPath=function(){
-  _origRenderPath();
-  const scroll=g('path-scroll');if(!scroll)return;
-  const old=g('dq-widget');if(old)old.remove();
-  const goal=ST.dailyGoal||10, done=ST.dailyCards||0;
-  const pct=Math.min(100,Math.round(done/goal*100));
-  const complete=done>=goal;
-  const w=document.createElement('div');w.id='dq-widget';
-  w.style.cssText='margin:10px 14px;background:'+(complete?'rgba(88,204,2,.1)':'rgba(255,255,255,.05)')+';border:2px solid '+(complete?'rgba(88,204,2,.3)':'rgba(255,255,255,.1)')+';border-radius:18px;padding:14px 18px';
-  w.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font-size:14px;font-weight:900;color:var(--label)">🎯 Дневная цель</span><span style="font-size:13px;font-weight:900;color:${complete?'#58CC02':'var(--l2)'}">${done}/${goal}</span></div><div style="height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${complete?'#58CC02':'linear-gradient(90deg,#7C3AED,#A78BFA)'};border-radius:999px;transition:width .5s"></div></div>${complete?'<div style="font-size:12px;color:#58CC02;font-weight:900;margin-top:8px;text-align:center">✅ Цель выполнена!</div>':''}`;
-  scroll.insertBefore(w,scroll.firstChild);
-};
-
 // ── FINISH with unit complete check ──────────────────────────────
-const _origFinishSesExtra=finishSes;
-finishSes=function(){
-  if(ST._currentLesson){
-    const cur=ST.lang==='en'?EN_CURRICULUM:CN_CURRICULUM;
-    for(let ui=0;ui<cur.length;ui++){
-      const unit=cur[ui];
-      const li=unit.lessons.findIndex(l=>l.id===ST._currentLesson);
-      if(li>=0){
-        const allDone=unit.lessons.every((l,i2)=>i2===li||(ST.lessonProgress[l.id]?.stars||0)>0);
-        const pct=Math.round(unit.lessons.filter(l=>(ST.lessonProgress[l.id]?.stars||0)>0).length/unit.lessons.length*100);
-        if(allDone&&pct<100)setTimeout(()=>showUnitComplete(unit.name,150),900);
-        break;
-      }
-    }
-  }
-  _origFinishSesExtra();
-};
-
 // ── HSK4-5 & C1 curriculum units ─────────────────────────────────
 if(typeof CN_CURRICULUM!=='undefined'&&CN_CURRICULUM.length<14){
   CN_CURRICULUM.push(
@@ -4176,7 +4131,7 @@ window.addEventListener('popstate',()=>{
   if(g('s-lesson').classList.contains('on'))exitLesson();
   if(g('comp').classList.contains('open')){g('comp').classList.remove('open');goTab('s-home',0);updateHome();}
 });
-history.pushState({},'','');
+try{try{if(typeof history!=='undefined')history.pushState({},'','');}catch(e){}}catch(e){}
 // Keyboard shortcuts for quiz (1-4 keys like Duolingo)
 document.addEventListener('keydown', e => {
   if(!g('v-quiz')||g('v-quiz').style.display==='none')return;
