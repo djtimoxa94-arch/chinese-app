@@ -1,5 +1,5 @@
 // Voxa SW v3 — force kills all old caches
-const CACHE = 'voxa-v4';
+const CACHE = 'voxa-v5';
 
 self.addEventListener('install', e => {
   // Skip waiting immediately — don't let old SW stay
@@ -10,7 +10,7 @@ self.addEventListener('install', e => {
 });
 
 self.addEventListener('activate', e => {
-  // Delete ALL old caches — including hanzhi-v1, shuohua-v22, voxa-v1, voxa-v2
+  // Delete ALL old caches — including hanzhi-v1, shuohua-v22, voxa-v5, voxa-v2
   e.waitUntil(
     caches.keys().then(keys => {
       console.log('[Voxa SW] Clearing caches:', keys);
